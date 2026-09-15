@@ -1,0 +1,29 @@
+{
+  "dataset_rows": 1338,
+  "training_rows": 1070,
+  "testing_rows": 268,
+  "best_model": "XGBoost Regressor",
+  "results": [
+    {
+      "model": "Linear Regression",
+      "MAE": 4181.19,
+      "MSE": 33596915.82,
+      "RMSE": 5796.28,
+      "R2": 0.7836
+    },
+    {
+      "model": "Random Forest Regressor",
+      "MAE": 2481.62,
+      "MSE": 20769964.88,
+      "RMSE": 4557.41,
+      "R2": 0.8662
+    },
+    {
+      "model": "XGBoost Regressor",
+      "MAE": 2374.08,
+      "MSE": 18778544.88,
+      "RMSE": 4333.42,
+      "R2": 0.879
+    }
+  ]
+}

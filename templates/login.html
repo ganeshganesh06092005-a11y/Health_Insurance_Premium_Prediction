@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block title %}Log in | Premium Predictor{% endblock %}{% block content %}
+<section class="auth-card"><p class="eyebrow">Welcome back</p><h1>Log in to your account</h1><form method="post" class="auth-form">
+  <label>Email<input type="email" name="email" autocomplete="email" required></label>
+  <label>Password<div class="password-control"><input type="password" name="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-toggle-password>Show</button></div></label>
+  <button type="submit">Log in</button>
+</form><p class="auth-foot">New here? <a href="{{ url_for('register') }}">Create an account</a></p></section>
+{% endblock %}

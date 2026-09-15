@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% block title %}Premium estimate{% endblock %}{% block content %}
+<section class="hero"><p class="eyebrow">Personalized planning</p><h1>Estimate your health insurance premium</h1><p>Use your health and income details to receive a transparent, academic estimate and plan recommendation.</p></section>
+<div class="layout"><form method="post" class="card" novalidate>
+  <h2 class="form-heading">Your profile</h2>
+  <label>Full name<input type="text" name="full_name" autocomplete="name" required value="{{ form_data.get('full_name', '') }}"></label>
+  <label>Annual salary (₹)<input type="number" name="salary" min="100000" max="10000000" step="1000" required value="{{ form_data.get('salary', '') }}"></label>
+  <label>Age<input type="number" name="age" min="18" max="100" required value="{{ form_data.get('age', '') }}"></label>
+  <label>Gender<select name="sex"><option value="female">Female</option><option value="male" {% if form_data.get('sex') == 'male' %}selected{% endif %}>Male</option></select></label>
+  <label>BMI<input type="number" name="bmi" min="10" max="60" step="0.1" required value="{{ form_data.get('bmi', '') }}"></label>
+  <label>Dependents<input type="number" name="children" min="0" max="10" required value="{{ form_data.get('children', '0') }}"></label>
+  <label>Smoking status<select name="smoker"><option value="no">Non-smoker</option><option value="yes" {% if form_data.get('smoker') == 'yes' %}selected{% endif %}>Smoker</option></select></label>
+  <label>Region<select name="region">{% for item in ['northeast', 'northwest', 'southeast', 'southwest'] %}<option value="{{ item }}" {% if form_data.get('region') == item %}selected{% endif %}>{{ item|title }}</option>{% endfor %}</select></label>
+  <h2 class="form-heading">Policy preferences</h2>
+  <label>Preferred plan<select name="plan_category"><option value="basic">Basic</option><option value="silver" {% if form_data.get('plan_category', 'silver') == 'silver' %}selected{% endif %}>Silver</option><option value="gold" {% if form_data.get('plan_category') == 'gold' %}selected{% endif %}>Gold</option></select></label>
+  <label>Policy duration<select name="policy_duration">{% for years in [5, 10, 15, 20] %}<option value="{{ years }}" {% if form_data.get('policy_duration', '5')|int == years %}selected{% endif %}>{{ years }} years</option>{% endfor %}</select></label>
+  <button type="submit">Calculate estimate</button>
+</form>
+{% if result is not none %}<aside class="result"><p>Recommended plan</p><strong>{{ result.plan }}</strong><p>Estimated annual premium</p><strong>₹{{ '{:,.0f}'.format(result.premium) }}</strong><p>Estimated benefit over {{ result.duration }} years</p><strong>₹{{ '{:,.0f}'.format(result.benefit) }}</strong><small>{{ result.description }}</small><hr><small>All values are estimates for academic demonstration, not an insurance quote or guaranteed maturity benefit.</small></aside>{% endif %}</div>
+{% endblock %}
