@@ -1,19 +1,117 @@
-{% extends 'base.html' %}{% block title %}Premium estimate{% endblock %}{% block content %}
-<section class="hero"><p class="eyebrow">Personalized planning</p><h1>Estimate your health insurance premium</h1><p>Use your health and income details to receive a transparent, academic estimate and plan recommendation.</p></section>
-<div class="layout"><form method="post" class="card" novalidate>
-  <h2 class="form-heading">Your profile</h2>
-  <label>Full name<input type="text" name="full_name" autocomplete="name" required value="{{ form_data.get('full_name', '') }}"></label>
-  <label>Annual salary (₹)<input type="number" name="salary" min="100000" max="10000000" step="1000" required value="{{ form_data.get('salary', '') }}"></label>
-  <label>Age<input type="number" name="age" min="18" max="100" required value="{{ form_data.get('age', '') }}"></label>
-  <label>Gender<select name="sex"><option value="female">Female</option><option value="male" {% if form_data.get('sex') == 'male' %}selected{% endif %}>Male</option></select></label>
-  <label>BMI<input type="number" name="bmi" min="10" max="60" step="0.1" required value="{{ form_data.get('bmi', '') }}"></label>
-  <label>Dependents<input type="number" name="children" min="0" max="10" required value="{{ form_data.get('children', '0') }}"></label>
-  <label>Smoking status<select name="smoker"><option value="no">Non-smoker</option><option value="yes" {% if form_data.get('smoker') == 'yes' %}selected{% endif %}>Smoker</option></select></label>
-  <label>Region<select name="region">{% for item in ['northeast', 'northwest', 'southeast', 'southwest'] %}<option value="{{ item }}" {% if form_data.get('region') == item %}selected{% endif %}>{{ item|title }}</option>{% endfor %}</select></label>
-  <h2 class="form-heading">Policy preferences</h2>
-  <label>Preferred plan<select name="plan_category"><option value="basic">Basic</option><option value="silver" {% if form_data.get('plan_category', 'silver') == 'silver' %}selected{% endif %}>Silver</option><option value="gold" {% if form_data.get('plan_category') == 'gold' %}selected{% endif %}>Gold</option></select></label>
-  <label>Policy duration<select name="policy_duration">{% for years in [5, 10, 15, 20] %}<option value="{{ years }}" {% if form_data.get('policy_duration', '5')|int == years %}selected{% endif %}>{{ years }} years</option>{% endfor %}</select></label>
-  <button type="submit">Calculate estimate</button>
-</form>
-{% if result is not none %}<aside class="result"><p>Recommended plan</p><strong>{{ result.plan }}</strong><p>Estimated annual premium</p><strong>₹{{ '{:,.0f}'.format(result.premium) }}</strong><p>Estimated benefit over {{ result.duration }} years</p><strong>₹{{ '{:,.0f}'.format(result.benefit) }}</strong><small>{{ result.description }}</small><hr><small>All values are estimates for academic demonstration, not an insurance quote or guaranteed maturity benefit.</small></aside>{% endif %}</div>
-{% endblock %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | Premium estimator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    {% if session.get('user_id') %}
+        <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <form method="post" action="{{ url_for('logout') }}"><button class="link-button" type="submit">Log out</button></form>
+    {% else %}
+        <a href="{{ url_for('login') }}">Log in</a>
+        <a href="{{ url_for('register') }}">Create account</a>
+    {% endif %}
+</nav>
+
+<main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="hero">
+        <p class="eyebrow">HealthSecure AI estimator</p>
+        <h1>Understand your health insurance premium before you choose a plan.</h1>
+        <p>Enter a few health and financial details. The trained machine-learning model estimates an annual premium and pairs it with a plan recommendation.</p>
+    </section>
+
+    <section class="layout" aria-label="Premium calculator">
+        <form class="card" method="post" action="{{ url_for('index') }}">
+            <h2 class="form-heading">Your profile</h2>
+            <label>Full name
+                <input name="full_name" value="{{ form_data.get('full_name', '') }}" required autocomplete="name">
+            </label>
+            <label>Age
+                <input type="number" name="age" min="18" max="100" value="{{ form_data.get('age', '') }}" required>
+            </label>
+            <label>Sex
+                <select name="sex" required>
+                    <option value="">Select</option>
+                    <option value="female" {% if form_data.get('sex') == 'female' %}selected{% endif %}>Female</option>
+                    <option value="male" {% if form_data.get('sex') == 'male' %}selected{% endif %}>Male</option>
+                </select>
+            </label>
+            <label>BMI
+                <input type="number" name="bmi" min="10" max="60" step="0.1" value="{{ form_data.get('bmi', '') }}" required>
+            </label>
+            <label>Dependents
+                <input type="number" name="children" min="0" max="10" value="{{ form_data.get('children', '0') }}" required>
+            </label>
+            <label>Smoking status
+                <select name="smoker" required>
+                    <option value="">Select</option>
+                    <option value="no" {% if form_data.get('smoker') == 'no' %}selected{% endif %}>Non-smoker</option>
+                    <option value="yes" {% if form_data.get('smoker') == 'yes' %}selected{% endif %}>Smoker</option>
+                </select>
+            </label>
+            <label>Region
+                <select name="region" required>
+                    <option value="">Select</option>
+                    {% for region in ['northeast', 'northwest', 'southeast', 'southwest'] %}
+                        <option value="{{ region }}" {% if form_data.get('region') == region %}selected{% endif %}>{{ region|title }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Annual salary (INR)
+                <input type="number" name="salary" min="100000" max="10000000" step="1000" value="{{ form_data.get('salary', '') }}" required>
+            </label>
+            <h2 class="form-heading">Coverage preference</h2>
+            <label>Policy duration
+                <select name="policy_duration" required>
+                    {% for duration in [5, 10, 15, 20] %}
+                        <option value="{{ duration }}" {% if form_data.get('policy_duration', '5')|int == duration %}selected{% endif %}>{{ duration }} years</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Plan category
+                <select name="plan_category" required>
+                    {% for plan in [('basic', 'Basic'), ('silver', 'Silver'), ('gold', 'Gold')] %}
+                        <option value="{{ plan[0] }}" {% if form_data.get('plan_category', 'silver') == plan[0] %}selected{% endif %}>{{ plan[1] }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit">Calculate my premium</button>
+        </form>
+
+        {% if result %}
+        <aside class="result" aria-live="polite">
+            <p class="eyebrow">Your estimate</p>
+            <strong>INR {{ "{:,.2f}".format(result.premium) }} / year</strong>
+            <p><b>{{ result.plan }} plan</b></p>
+            <p>{{ result.description }}</p>
+            <hr>
+            <p><small>Policy duration</small>{{ result.duration }} years</p>
+            <p><small>Estimated total benefit</small>INR {{ "{:,.2f}".format(result.benefit) }}</p>
+            <a class="secondary-btn" href="{{ url_for('history') }}">View saved predictions</a>
+        </aside>
+        {% else %}
+        <aside class="result muted">
+            <p class="eyebrow">How it works</p>
+            <strong>One estimate, grounded in your details.</strong>
+            <p>The model uses age, BMI, dependents, smoking status, region, and salary to estimate your annual medical cost.</p>
+            <p>Your result is saved to your private prediction history when you are signed in.</p>
+        </aside>
+        {% endif %}
+    </section>
+</main>
+</body>
+</html>

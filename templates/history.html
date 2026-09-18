@@ -1,2 +1,49 @@
-{% extends 'base.html' %}{% block title %}Recent estimates{% endblock %}{% block content %}
-<h1>Recent estimates</h1><div class="card table-wrap"><table><thead><tr><th>Date</th><th>Profile</th><th>Plan</th><th>Premium</th><th>Estimated benefit</th></tr></thead><tbody>{% for item in records %}<tr><td>{{ item.created_at.strftime('%d %b %Y, %H:%M') }}</td><td>{{ item.full_name }}<br>{{ item.age }}, BMI {{ item.bmi }}, {{ item.smoker }} smoker</td><td>{{ item.plan_category|title }} / {{ item.policy_duration }} years</td><td>₹{{ '{:,.0f}'.format(item.estimated_premium) }}</td><td>₹{{ '{:,.0f}'.format(item.estimated_benefit) }}</td></tr>{% else %}<tr><td colspan="5">No estimates saved yet.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | Prediction history</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    <span class="welcome">{{ session.get('user_name', 'member') }}</span>
+    <a href="{{ url_for('index') }}">New prediction</a>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <form method="post" action="{{ url_for('logout') }}"><button class="link-button" type="submit">Log out</button></form>
+</nav>
+<main>
+    <section class="hero compact-hero">
+        <p class="eyebrow">Private record</p>
+        <h1>Prediction history</h1>
+        <p>Review the inputs, plan choice, and annual premium from your latest estimates.</p>
+    </section>
+    <section class="panel">
+        {% if records %}
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Date</th><th>Applicant</th><th>Profile</th><th>Plan</th><th>Premium</th><th>Benefit</th></tr></thead>
+                <tbody>
+                {% for record in records %}
+                    <tr>
+                        <td>{{ record.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+                        <td>{{ record.full_name }}</td>
+                        <td>{{ record.age }} yrs, BMI {{ record.bmi }}, {{ record.smoker|title }}</td>
+                        <td>{{ record.plan_category|title }} / {{ record.policy_duration }} yrs</td>
+                        <td class="price">INR {{ '{:,.2f}'.format(record.estimated_premium) }}</td>
+                        <td>INR {{ '{:,.2f}'.format(record.estimated_benefit) }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="empty-state"><h2>Your history is empty</h2><p>Complete an estimate to create your first saved result.</p><a class="primary-btn" href="{{ url_for('index') }}">Create an estimate</a></div>
+        {% endif %}
+    </section>
+</main>
+</body>
+</html>

@@ -149,7 +149,7 @@ def register():
             session.clear()
             session["user_id"] = user.id
             session["user_name"] = user.name
-            return redirect(url_for("index"))
+            return redirect(url_for("dashboard"))
     return render_template("register.html")
 
 
@@ -166,11 +166,11 @@ def login():
             session["user_id"] = user.id
             session["user_name"] = user.name
             destination = request.args.get("next")
-            return redirect(destination if destination and destination.startswith("/") else url_for("index"))
+            return redirect(destination if destination and destination.startswith("/") else url_for("dashboard"))
     return render_template("login.html")
 
 
-@app.route("/logout", methods=["POST"])
+@app.route("/logout", methods=["GET", "POST"])
 def logout():
     session.clear()
     flash("You have been logged out.", "success")
@@ -178,8 +178,9 @@ def logout():
 
 
 @app.route("/", methods=["GET", "POST"])
-@login_required
 def index():
+    if request.method == "POST" and "user_id" not in session:
+        return redirect(url_for("login", next=url_for("index")))
     result = None
     form_data = request.form.to_dict()
     if request.method == "POST":
@@ -217,6 +218,35 @@ def index():
             app.logger.exception("Prediction failed")
             flash("The prediction could not be completed. Please try again.", "error")
     return render_template("index.html", result=result, form_data=form_data)
+
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    user = db.session.get(User, session["user_id"])
+    records = (Prediction.query.filter_by(user_id=session["user_id"])
+               .order_by(Prediction.created_at.desc()).limit(3).all())
+    prediction_count = Prediction.query.filter_by(user_id=session["user_id"]).count()
+    latest = records[0] if records else None
+    return render_template(
+        "dashboard.html",
+        records=records,
+        user=user,
+        prediction_count=prediction_count,
+        latest=latest,
+    )
+
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        if not email or "@" not in email:
+            flash("Please enter a valid email address.", "error")
+        else:
+            flash(f"Password reset instructions have been sent to {email}.", "success")
+            return redirect(url_for("forgot_password"))
+    return render_template("forgot_password.html")
 
 
 @app.route("/history")

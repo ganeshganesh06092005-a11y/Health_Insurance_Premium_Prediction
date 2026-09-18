@@ -1,8 +1,564 @@
-{% extends 'base.html' %}{% block title %}Create account | Premium Predictor{% endblock %}{% block content %}
-<section class="auth-card"><p class="eyebrow">Your private workspace</p><h1>Create your account</h1><form method="post" class="auth-form">
-  <label>Name<input type="text" name="name" autocomplete="name" required></label>
-  <label>Email<input type="email" name="email" autocomplete="email" required></label>
-  <label>Password<div class="password-control"><input type="password" name="password" minlength="8" autocomplete="new-password" required><button class="password-toggle" type="button" data-toggle-password>Show</button></div><small>Use at least 8 characters.</small></label>
-  <button type="submit">Create account</button>
-</form><p class="auth-foot">Already registered? <a href="{{ url_for('login') }}">Log in</a></p></section>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HealthSecure - Create Account</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 25px;
+
+            background:
+                radial-gradient(
+                    circle at 10% 20%,
+                    #dff7f5,
+                    transparent 30%
+                ),
+                #f2f8f9;
+        }
+
+        .container {
+            width: 1050px;
+            max-width: 100%;
+
+            display: grid;
+            grid-template-columns: 43% 57%;
+
+            background: white;
+
+            border-radius: 26px;
+            overflow: hidden;
+
+            box-shadow: 0 25px 70px rgba(10,48,61,0.14);
+        }
+
+
+        /* LEFT */
+
+        .left {
+            padding: 50px 40px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #063943,
+                    #08727a
+                );
+
+            color: white;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+
+            border-radius: 13px;
+
+            background: rgba(255,255,255,0.14);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+        }
+
+        .logo strong {
+            font-size: 19px;
+        }
+
+        .left h1 {
+            margin-top: 90px;
+
+            font-size: 38px;
+            line-height: 1.15;
+        }
+
+        .left h1 span {
+            color: #55ddd1;
+        }
+
+        .left p {
+            margin-top: 18px;
+
+            color: rgba(255,255,255,0.65);
+
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .benefits {
+            margin-top: 30px;
+        }
+
+        .benefit {
+            margin-top: 14px;
+
+            display: flex;
+            gap: 10px;
+            align-items: center;
+
+            font-size: 11px;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .check {
+            width: 24px;
+            height: 24px;
+
+            border-radius: 7px;
+
+            background: rgba(84,221,209,0.15);
+
+            color: #55ddd1;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* RIGHT */
+
+        .right {
+            padding: 48px 65px;
+        }
+
+        .right h2 {
+            font-size: 29px;
+            color: #123c45;
+        }
+
+        .description {
+            margin-top: 7px;
+
+            color: #8a999d;
+
+            font-size: 12px;
+        }
+
+        form {
+            margin-top: 28px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .group {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            color: #456168;
+        }
+
+        input {
+            width: 100%;
+            height: 48px;
+
+            padding: 0 14px;
+
+            border: 1px solid #dce7e8;
+            border-radius: 10px;
+
+            outline: none;
+
+            font-family: inherit;
+            font-size: 12px;
+
+            background: #fbfdfd;
+        }
+
+        input:focus {
+            border-color: #0b9995;
+
+            box-shadow:
+                0 0 0 4px rgba(11,153,149,0.08);
+        }
+
+        .password-info {
+            margin-top: -8px;
+            margin-bottom: 15px;
+
+            color: #9aa8aa;
+            font-size: 9px;
+        }
+
+        .create-btn {
+            width: 100%;
+            height: 51px;
+
+            border: none;
+            border-radius: 11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #087e7c,
+                    #0aa49b
+                );
+
+            color: white;
+
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow: 0 10px 22px rgba(7,126,124,0.18);
+        }
+
+        .login-link {
+            margin-top: 22px;
+
+            text-align: center;
+
+            color: #89989b;
+            font-size: 11px;
+        }
+
+        .login-link a {
+            color: #078d8b;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+
+        @media(max-width:750px) {
+
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .left {
+                display: none;
+            }
+
+            .right {
+                padding: 40px 25px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <div class="left">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🛡️
+            </div>
+
+            <strong>
+                HealthSecure
+            </strong>
+
+        </div>
+
+
+        <h1>
+            Start Your<br>
+            <span>Smart Journey.</span>
+        </h1>
+
+
+        <p>
+            Create your account and discover an intelligent
+            way to estimate health insurance premiums using
+            machine learning.
+        </p>
+
+
+        <div class="benefits">
+
+            <div class="benefit">
+                <div class="check">✓</div>
+                AI-powered premium prediction
+            </div>
+
+            <div class="benefit">
+                <div class="check">✓</div>
+                Personalized plan recommendations
+            </div>
+
+            <div class="benefit">
+                <div class="check">✓</div>
+                Prediction history
+            </div>
+
+            <div class="benefit">
+                <div class="check">✓</div>
+                Financial affordability analysis
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="right">
+
+        <h2>
+            Create Account
+        </h2>
+
+        <p class="description">
+            Enter your details to create your HealthSecure account.
+        </p>
+
+
+        <form id="registerForm" method="post" action="{{ url_for('register') }}">
+
+
+            <div class="row">
+
+                <div class="group">
+
+                    <label>
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        placeholder="Enter your name"
+                    >
+
+                </div>
+
+
+                <div class="group">
+
+                    <label>
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        placeholder="Enter your email"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="row">
+
+                <div class="group">
+
+                    <label>
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        required
+                        placeholder="Enter phone number"
+                    >
+
+                </div>
+
+
+                <div class="group">
+
+                    <label>
+                        Date of Birth
+                    </label>
+
+                    <input
+                        type="date"
+                        id="dob"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="group">
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    minlength="8"
+                    required
+                    placeholder="Create a password"
+                >
+
+            </div>
+
+
+            <div class="group">
+
+                <label>
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    minlength="8"
+                    required
+                    placeholder="Confirm your password"
+                >
+
+            </div>
+
+
+            <div class="password-info">
+                Password should contain at least 8 characters.
+            </div>
+
+
+            <button
+                type="submit"
+                class="create-btn"
+            >
+                Create Account →
+            </button>
+
+
+        </form>
+
+
+        <div class="login-link">
+
+            Already have an account?
+
+            <a href="{{ url_for('login') }}">
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+document.getElementById("registerForm")
+.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const phone =
+        document.getElementById("phone").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+
+    if (name === "" ||
+        email === "" ||
+        phone === "" ||
+        password === "" ||
+        confirmPassword === "") {
+
+        alert("Please fill all required fields.");
+
+        return;
+    }
+
+
+    if (password.length < 8) {
+
+        alert("Password must contain at least 8 characters.");
+
+        return;
+    }
+
+
+    if (password !== confirmPassword) {
+
+        alert("Passwords do not match.");
+
+        return;
+    }
+
+
+    event.target.submit();
+
+});
+
+</script>
+
+
+</body>
+</html>

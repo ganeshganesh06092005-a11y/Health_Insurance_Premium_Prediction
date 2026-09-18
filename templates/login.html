@@ -1,7 +1,1170 @@
-{% extends 'base.html' %}{% block title %}Log in | Premium Predictor{% endblock %}{% block content %}
-<section class="auth-card"><p class="eyebrow">Welcome back</p><h1>Log in to your account</h1><form method="post" class="auth-form">
-  <label>Email<input type="email" name="email" autocomplete="email" required></label>
-  <label>Password<div class="password-control"><input type="password" name="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-toggle-password>Show</button></div></label>
-  <button type="submit">Log in</button>
-</form><p class="auth-foot">New here? <a href="{{ url_for('register') }}">Create an account</a></p></section>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HealthSecure - Login</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #eef5f7;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+        }
+
+        /* MAIN CONTAINER */
+
+        .login-container {
+            width: 1180px;
+            max-width: 100%;
+            min-height: 680px;
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 52% 48%;
+            box-shadow: 0 25px 70px rgba(10, 48, 61, 0.16);
+        }
+
+
+        /* =========================
+           LEFT SIDE
+        ========================= */
+
+        .left-panel {
+            position: relative;
+            padding: 42px;
+            color: white;
+            overflow: hidden;
+
+            background:
+                radial-gradient(circle at 75% 30%,
+                rgba(48, 191, 183, 0.35),
+                transparent 30%),
+
+                linear-gradient(
+                    145deg,
+                    #063943,
+                    #075361 55%,
+                    #08727a
+                );
+        }
+
+        /* Decorative circles */
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .circle.one {
+            width: 430px;
+            height: 430px;
+            right: -180px;
+            top: -130px;
+        }
+
+        .circle.two {
+            width: 330px;
+            height: 330px;
+            left: -190px;
+            bottom: -150px;
+        }
+
+        .circle.three {
+            width: 180px;
+            height: 180px;
+            right: 40px;
+            bottom: 60px;
+        }
+
+
+        /* BRAND */
+
+        .brand {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 11px;
+            opacity: 0.65;
+            margin-top: 2px;
+        }
+
+
+        /* HERO CONTENT */
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            margin-top: 80px;
+        }
+
+        .small-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+
+            padding: 8px 14px;
+            border-radius: 30px;
+
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            background: #52e1d5;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #52e1d5;
+        }
+
+        .hero-content h1 {
+            font-size: 46px;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            margin-top: 22px;
+            max-width: 470px;
+        }
+
+        .hero-content h1 span {
+            color: #55ddd1;
+        }
+
+        .hero-content p {
+            margin-top: 20px;
+            max-width: 450px;
+
+            color: rgba(255,255,255,0.72);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+        /* FEATURES */
+
+        .features {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            max-width: 450px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 12px;
+            border-radius: 12px;
+
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .feature-icon {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+            background: rgba(84,221,209,0.14);
+
+            color: #55ddd1;
+            font-size: 16px;
+        }
+
+        .feature-text {
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .feature-text strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .feature-text span {
+            color: rgba(255,255,255,0.55);
+        }
+
+
+        /* AI GRAPHIC */
+
+        .ai-graphic {
+            position: absolute;
+            right: 38px;
+            bottom: 125px;
+
+            width: 175px;
+            height: 175px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(86,222,211,0.2),
+                    rgba(86,222,211,0.03) 60%,
+                    transparent 70%
+                );
+
+            border: 1px solid rgba(86,222,211,0.18);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-graphic::before {
+            content: "";
+            width: 115px;
+            height: 115px;
+
+            border-radius: 50%;
+            border: 1px dashed rgba(86,222,211,0.45);
+
+            position: absolute;
+        }
+
+        .shield {
+            font-size: 55px;
+            filter: drop-shadow(0 0 18px rgba(86,222,211,0.55));
+        }
+
+
+        /* STATS */
+
+        .stats {
+            position: absolute;
+            z-index: 2;
+
+            bottom: 30px;
+            left: 42px;
+            right: 42px;
+
+            display: flex;
+            justify-content: space-between;
+
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.13);
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 16px;
+        }
+
+        .stat span {
+            display: block;
+            margin-top: 4px;
+
+            font-size: 9px;
+            color: rgba(255,255,255,0.5);
+        }
+
+
+        /* =========================
+           RIGHT SIDE
+        ========================= */
+
+        .right-panel {
+            padding: 55px 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ffffff;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+        }
+
+
+        /* LOGIN ICON */
+
+        .login-icon {
+            width: 65px;
+            height: 65px;
+
+            margin-bottom: 25px;
+
+            border-radius: 19px;
+
+            background: #e7f8f6;
+            color: #087c7d;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 29px;
+
+            box-shadow: 0 10px 25px rgba(7,125,125,0.08);
+        }
+
+
+        /* LOGIN TITLE */
+
+        .login-box h2 {
+            font-size: 31px;
+            color: #123c45;
+            letter-spacing: -1px;
+        }
+
+        .login-box .welcome {
+            margin-top: 8px;
+            margin-bottom: 30px;
+
+            color: #829297;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+
+        /* INPUT */
+
+        .input-group {
+            margin-bottom: 19px;
+        }
+
+        .input-group label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            color: #38545a;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #9aabad;
+            font-size: 15px;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            height: 51px;
+
+            border: 1px solid #dfe8e9;
+            border-radius: 12px;
+
+            outline: none;
+
+            padding: 0 45px;
+
+            font-size: 13px;
+            font-family: inherit;
+
+            color: #183d44;
+
+            background: #fbfdfd;
+
+            transition: 0.25s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #18a9a0;
+            box-shadow: 0 0 0 4px rgba(24,169,160,0.08);
+            background: white;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #a9b6b9;
+        }
+
+
+        /* PASSWORD BUTTON */
+
+        .show-password {
+            position: absolute;
+
+            right: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+            background: transparent;
+
+            cursor: pointer;
+
+            color: #8da0a4;
+            font-size: 14px;
+        }
+
+
+        /* REMEMBER / FORGOT */
+
+        .options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin: 4px 0 25px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            font-size: 11px;
+            color: #718286;
+
+            cursor: pointer;
+        }
+
+        .remember input {
+            accent-color: #078d8b;
+        }
+
+        .forgot {
+            border: none;
+            background: transparent;
+
+            color: #078d8b;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        /* LOGIN BUTTON */
+
+        .login-btn {
+            width: 100%;
+            height: 53px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: linear-gradient(
+                135deg,
+                #087e7c,
+                #0aa49b
+            );
+
+            color: white;
+
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow: 0 10px 22px rgba(7,126,124,0.2);
+
+            transition: 0.25s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(7,126,124,0.27);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+
+        /* DIVIDER */
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin: 25px 0;
+
+            color: #a5b2b4;
+
+            font-size: 10px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e8eeee;
+        }
+
+
+        /* GOOGLE */
+
+        .google-btn {
+            width: 100%;
+            height: 49px;
+
+            border-radius: 12px;
+            border: 1px solid #e0e8e9;
+
+            background: white;
+
+            color: #52666b;
+
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .google-btn:hover {
+            background: #f8fbfb;
+            border-color: #cddbdc;
+        }
+
+
+        /* REGISTER */
+
+        .register {
+            text-align: center;
+
+            margin-top: 28px;
+
+            color: #829296;
+            font-size: 11px;
+        }
+
+        .register a {
+            color: #078d8b;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+
+        /* SECURITY TEXT */
+
+        .security {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+
+            margin-top: 22px;
+
+            color: #a0adaf;
+            font-size: 9px;
+        }
+
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel {
+                min-height: 500px;
+            }
+
+            .right-panel {
+                padding: 45px 35px;
+            }
+
+            .ai-graphic {
+                display: none;
+            }
+        }
+
+
+        @media (max-width: 550px) {
+
+            .left-panel {
+                padding: 30px 25px;
+            }
+
+            .hero-content {
+                margin-top: 55px;
+            }
+
+            .hero-content h1 {
+                font-size: 35px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                left: 25px;
+                right: 25px;
+            }
+
+            .stat strong {
+                font-size: 12px;
+            }
+
+            .stat span {
+                font-size: 7px;
+            }
+
+            .right-panel {
+                padding: 40px 25px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="login-container">
+
+
+        <!-- =================================
+             LEFT PANEL
+        ================================= -->
+
+        <section class="left-panel">
+
+            <div class="circle one"></div>
+            <div class="circle two"></div>
+            <div class="circle three"></div>
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    🛡️
+                </div>
+
+                <div>
+                    <div class="brand-name">
+                        HealthSecure
+                    </div>
+
+                    <div class="brand-subtitle">
+                        SMART INSURANCE PREDICTION
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- HERO -->
+
+            <div class="hero-content">
+
+                <div class="small-label">
+                    <span class="dot"></span>
+                    AI POWERED PLATFORM
+                </div>
+
+                <h1>
+                    Predict Smarter.<br>
+                    <span>Insure Better.</span>
+                </h1>
+
+                <p>
+                    Get an intelligent estimate of your health insurance
+                    premium using machine learning and personalized
+                    financial insights.
+                </p>
+
+
+                <!-- FEATURES -->
+
+                <div class="features">
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            ✦
+                        </div>
+
+                        <div class="feature-text">
+                            <strong>AI / ML Prediction</strong>
+                            <span>Smart premium estimation</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            ♡
+                        </div>
+
+                        <div class="feature-text">
+                            <strong>Personalized Plans</strong>
+                            <span>Plans based on your profile</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            ₹
+                        </div>
+
+                        <div class="feature-text">
+                            <strong>Salary Analysis</strong>
+                            <span>Premium affordability insights</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            ◈
+                        </div>
+
+                        <div class="feature-text">
+                            <strong>Smart Insights</strong>
+                            <span>Data-driven recommendations</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- AI GRAPHIC -->
+
+            <div class="ai-graphic">
+                <div class="shield">🛡️</div>
+            </div>
+
+
+            <!-- STATS -->
+
+            <div class="stats">
+
+                <div class="stat">
+                    <strong>10K+</strong>
+                    <span>Users</span>
+                </div>
+
+                <div class="stat">
+                    <strong>95%</strong>
+                    <span>Prediction Accuracy</span>
+                </div>
+
+                <div class="stat">
+                    <strong>50K+</strong>
+                    <span>Predictions</span>
+                </div>
+
+                <div class="stat">
+                    <strong>24/7</strong>
+                    <span>Smart Support</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             RIGHT PANEL
+        ================================= -->
+
+        <section class="right-panel">
+
+            <div class="login-box">
+
+
+                <!-- LOGIN ICON -->
+
+                <div class="login-icon">
+                    🔐
+                </div>
+
+
+                <h2>
+                    Welcome Back!
+                </h2>
+
+                <p class="welcome">
+                    Login to access your health insurance
+                    prediction dashboard.
+                </p>
+
+
+                <!-- EMAIL -->
+
+                <form method="post" action="{{ url_for('login') }}">
+
+                <div class="input-group">
+
+                    <label>
+                        Email Address
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            ✉
+                        </span>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            placeholder="Enter your email address"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
+                            placeholder="Enter your password"
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            onclick="togglePassword()"
+                            id="eyeButton"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- OPTIONS -->
+
+                <div class="options">
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                            id="remember"
+                        >
+
+                        Remember me
+
+                    </label>
+
+
+                    <a
+                        class="forgot"
+                        href="{{ url_for('forgot_password') }}"
+                    >
+                        Forgot Password?
+                    </a>
+
+                </div>
+
+
+                <!-- LOGIN -->
+
+                <button
+                    type="submit"
+                    class="login-btn"
+                >
+                    Login Securely →
+                </button>
+
+                </form>
+
+
+                <!-- DIVIDER -->
+
+                <div class="divider">
+                    OR CONTINUE WITH
+                </div>
+
+
+                <!-- GOOGLE -->
+
+                <button
+                    class="google-btn"
+                    onclick="googleLogin()"
+                >
+                    🌐 &nbsp; Continue with Google
+                </button>
+
+
+                <!-- REGISTER -->
+
+                <div class="register">
+
+                    Don't have an account?
+
+                    <a href="{{ url_for('register') }}">
+                        Create Account
+                    </a>
+
+                </div>
+
+
+                <!-- SECURITY -->
+
+                <div class="security">
+                    🔒 Your information is securely protected
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script>
+
+        // Show / Hide Password
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const eyeButton =
+                document.getElementById("eyeButton");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                eyeButton.innerHTML = "🙈";
+
+            } else {
+
+                password.type = "password";
+
+                eyeButton.innerHTML = "👁";
+
+            }
+
+        }
+
+
+
+        // Login
+
+        function loginUser() {
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value.trim();
+
+
+            if (email === "") {
+
+                alert("Please enter your email address.");
+
+                document.getElementById("email").focus();
+
+                return;
+            }
+
+
+            if (password === "") {
+
+                alert("Please enter your password.");
+
+                document.getElementById("password").focus();
+
+                return;
+            }
+
+
+            if (!email.includes("@")) {
+
+                alert("Please enter a valid email address.");
+
+                document.getElementById("email").focus();
+
+                return;
+            }
+
+
+            // Frontend demo
+
+            alert(
+                "Login successful! Welcome to HealthSecure."
+            );
+
+            /*
+              Later Flask connection:
+
+              window.location.href = "/dashboard";
+            */
+        }
+
+
+
+        // Forgot Password
+
+        function forgotPassword() {
+
+            const email =
+                document.getElementById("email").value.trim();
+
+
+            if (email === "") {
+
+                alert(
+                    "Please enter your email address first."
+                );
+
+                document.getElementById("email").focus();
+
+            } else {
+
+                alert(
+                    "Password reset link will be sent to: "
+                    + email
+                );
+
+            }
+
+        }
+
+
+
+        // Google Login
+
+        function googleLogin() {
+
+            alert(
+                "Google login will be connected later."
+            );
+
+        }
+
+
+
+        // Create Account
+
+        function createAccount() {
+
+            alert(
+                "Registration page will open here."
+            );
+
+            /*
+              Later Flask:
+
+              window.location.href = "/register";
+            */
+        }
+
+    </script>
+
+</body>
+</html>
