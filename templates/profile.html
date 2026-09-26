@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | Account Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    <span class="welcome">{{ session.get('user_name', 'member') }}</span>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('predict') }}">New Prediction</a>
+    <a href="{{ url_for('history') }}">History</a>
+    <a href="{{ url_for('what_if') }}">What-If Simulator</a>
+    <a href="{{ url_for('ai_insights_latest') }}">AI Insights</a>
+    <a href="{{ url_for('model_performance') }}">Model Performance</a>
+    <a href="{{ url_for('insurance_plans') }}">Plans</a>
+    <a href="{{ url_for('profile') }}" style="color: #82e3cf;">Profile</a>
+    <form method="post" action="{{ url_for('logout') }}">
+        <button class="link-button" type="submit">Log out</button>
+    </form>
+</nav>
+
+<main>
+    <section class="hero compact-hero">
+        <p class="eyebrow">Account Settings</p>
+        <h1>Manage Your Profile</h1>
+        <p>Update your personal information, manage security credentials, and keep your contact details current.</p>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="layout">
+        <!-- PERSONAL DETAILS FORM -->
+        <form class="card" method="post">
+            <h2 class="form-heading">Personal Information</h2>
+            <label style="grid-column: 1 / -1;">Full Name
+                <input name="name" value="{{ user.name }}" required>
+            </label>
+            <label style="grid-column: 1 / -1;">Email Address
+                <input type="email" name="email" value="{{ user.email }}" required>
+            </label>
+            <label>Phone Number
+                <input name="phone" value="{{ user.phone or '' }}" placeholder="+91 ...">
+            </label>
+            <label>Date of Birth
+                <input type="date" name="dob" value="{{ user.dob.isoformat() if user.dob else '' }}">
+            </label>
+            <button type="submit">Update Personal Details</button>
+        </form>
+
+        <!-- CHANGE PASSWORD FORM -->
+        <form class="card" method="post" action="{{ url_for('change_password') }}">
+            <h2 class="form-heading">Change Password</h2>
+            <label style="grid-column: 1 / -1;">Current Password
+                <input type="password" name="current_password" required>
+            </label>
+            <label style="grid-column: 1 / -1;">New Password (min 8 chars)
+                <input type="password" name="password" minlength="8" required>
+            </label>
+            <label style="grid-column: 1 / -1;">Confirm New Password
+                <input type="password" name="confirm_password" minlength="8" required>
+            </label>
+            <button type="submit">Change Password</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

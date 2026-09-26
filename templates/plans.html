@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | Recommended Insurance Plans</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    {% if session.get('user_id') %}
+        <span class="welcome">{{ session.get('user_name', 'member') }}</span>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('predict') }}">New Prediction</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('what_if') }}">What-If Simulator</a>
+        <a href="{{ url_for('ai_insights_latest') }}">AI Insights</a>
+        <a href="{{ url_for('model_performance') }}">Model Performance</a>
+        <a href="{{ url_for('insurance_plans') }}" style="color: #82e3cf;">Plans</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <form method="post" action="{{ url_for('logout') }}">
+            <button class="link-button" type="submit">Log out</button>
+        </form>
+    {% else %}
+        <a href="{{ url_for('insurance_plans') }}" style="color: #82e3cf;">Plans</a>
+        <a href="{{ url_for('login') }}">Log in</a>
+        <a href="{{ url_for('register') }}">Create Account</a>
+    {% endif %}
+</nav>
+
+<main>
+    <section class="hero">
+        <p class="eyebrow">Coverage Portfolio</p>
+        <h1>Recommended Health Insurance Plans</h1>
+        <p>HealthSecure pairs Machine Learning medical cost predictions with three structured insurance coverage tiers designed for various demographic and financial profiles.</p>
+    </section>
+
+    <!-- 3 PLAN CARDS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 24px; margin-bottom: 36px;">
+        <!-- BASIC PLAN -->
+        <div class="panel" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <span class="tag-pill tag-neutral" style="margin-bottom: 8px;">Tier 1 &bull; Essential</span>
+                <h2 style="margin: 4px 0 8px; color: var(--navy);">Basic Plan</h2>
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--blue); margin-bottom: 12px;">
+                    1.05x <span style="font-size: .85rem; color: var(--muted); font-weight: normal;">Benefit Factor</span>
+                </div>
+                <p style="color: #4a6372; font-size: .88rem; line-height: 1.5;">
+                    A cost-conscious coverage option providing essential hospitalization protection against catastrophic illness or acute injuries.
+                </p>
+                <hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--line);">
+                <ul style="padding-left: 20px; font-size: .84rem; color: #375364; line-height: 1.7;">
+                    <li>Inpatient hospitalization cover</li>
+                    <li>Day-care medical procedures</li>
+                    <li>Standard ambulance cover</li>
+                    <li>Annual health checkup voucher</li>
+                    <li>15% copay on specialized consultations</li>
+                </ul>
+            </div>
+            <div style="margin-top: 20px;">
+                <a class="secondary-btn" style="width: 100%; text-align: center;" href="{{ url_for('predict') }}">Choose Basic Plan</a>
+            </div>
+        </div>
+
+        <!-- SILVER PLAN (MOST POPULAR) -->
+        <div class="panel" style="margin-bottom: 0; border-top: 5px solid var(--mint); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 16px 40px rgba(13, 155, 136, 0.12);">
+            <div>
+                <span class="tag-pill tag-positive" style="margin-bottom: 8px;">Tier 2 &bull; Most Popular</span>
+                <h2 style="margin: 4px 0 8px; color: var(--navy);">Silver Plan</h2>
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--mint); margin-bottom: 12px;">
+                    1.20x <span style="font-size: .85rem; color: var(--muted); font-weight: normal;">Benefit Factor</span>
+                </div>
+                <p style="color: #4a6372; font-size: .88rem; line-height: 1.5;">
+                    Our balanced flagship tier. Covers comprehensive routine, specialist, and critical care protection with optimal financial return.
+                </p>
+                <hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--line);">
+                <ul style="padding-left: 20px; font-size: .84rem; color: #375364; line-height: 1.7;">
+                    <li>Comprehensive inpatient &amp; ICU coverage</li>
+                    <li>Pre &amp; post hospitalization (60 / 90 days)</li>
+                    <li>Zero room-rent capping</li>
+                    <li>Maternity &amp; newborn care inclusion</li>
+                    <li>Critical illness rider support</li>
+                </ul>
+            </div>
+            <div style="margin-top: 20px;">
+                <a class="primary-btn" style="width: 100%; text-align: center;" href="{{ url_for('predict') }}">Choose Silver Plan</a>
+            </div>
+        </div>
+
+        <!-- GOLD PLAN -->
+        <div class="panel" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <span class="tag-pill tag-warning" style="margin-bottom: 8px;">Tier 3 &bull; Comprehensive</span>
+                <h2 style="margin: 4px 0 8px; color: var(--navy);">Gold Plan</h2>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #c48318; margin-bottom: 12px;">
+                    1.40x <span style="font-size: .85rem; color: var(--muted); font-weight: normal;">Benefit Factor</span>
+                </div>
+                <p style="color: #4a6372; font-size: .88rem; line-height: 1.5;">
+                    The premium tier for high-net-worth protection, zero copays, international emergency medical evacuation, and comprehensive riders.
+                </p>
+                <hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--line);">
+                <ul style="padding-left: 20px; font-size: .84rem; color: #375364; line-height: 1.7;">
+                    <li>Unlimited sum insured restoration</li>
+                    <li>Zero copay nationwide across network hospitals</li>
+                    <li>Worldwide emergency evacuation</li>
+                    <li>Alternative medicine (AYUSH) coverage</li>
+                    <li>Annual comprehensive diagnostic suite</li>
+                </ul>
+            </div>
+            <div style="margin-top: 20px;">
+                <a class="secondary-btn" style="width: 100%; text-align: center;" href="{{ url_for('predict') }}">Choose Gold Plan</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEMO INSURANCE PLANS CATALOG FROM DATABASE -->
+    {% if demo_plans %}
+    <section class="panel" style="margin-bottom: 30px;">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Database Catalog</p>
+                <h2 style="margin: 0; color: var(--navy); font-family: Georgia, serif;">Active Demo Insurance Plans</h2>
+            </div>
+            <a class="secondary-btn" href="{{ url_for('compare_plans') }}">Compare Demo Plans Side-by-Side &rarr;</a>
+        </div>
+        <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
+            These demo insurance packages are stored in the MySQL database and matched against your Machine Learning predicted annual premium.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 18px;">
+            {% for dp in demo_plans %}
+            <div style="background: white; border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow);">
+                <div>
+                    <h3 style="margin: 0 0 6px; font-size: 1.15rem; color: var(--navy); font-family: Georgia, serif;">🛡️ {{ dp.plan_name }}</h3>
+                    <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px;">
+                        <span style="color: var(--muted); font-size: .72rem; text-transform: uppercase; font-weight: 600; display: block;">Annual Premium</span>
+                        <strong style="font-size: 1.2rem; color: var(--navy);">INR {{ '{:,.0f}'.format(dp.annual_premium) }}</strong>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; font-size: .8rem;">
+                        <div style="background: #fcfcfc; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px;">
+                            <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase;">Sum Insured</span>
+                            <strong>₹{{ '{:g}'.format(dp.coverage_amount / 100000) }} Lakhs</strong>
+                        </div>
+                        <div style="background: #fcfcfc; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px;">
+                            <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase;">Duration</span>
+                            <strong>{{ dp.policy_duration }} Years</strong>
+                        </div>
+                    </div>
+                    <p style="color: #4a6372; font-size: .82rem; line-height: 1.4; margin: 0 0 10px;">{{ dp.plan_description }}</p>
+                </div>
+                <div style="border-top: 1px solid var(--line); padding-top: 10px; margin-top: 8px;">
+                    <a class="secondary-btn" style="width: 100%; text-align: center; font-size: .8rem; padding: 6px 8px;" href="{{ url_for('plan_details', plan_id=dp.plan_id) }}">Inspect Details &rarr;</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- BENEFIT & AFFORDABILITY FORMULA EXPLANATION -->
+    <section class="panel">
+        <p class="eyebrow">Actuarial Formulation</p>
+        <h3 style="margin: 4px 0 10px; color: var(--navy); font-size: 1.2rem; font-family: Georgia, serif;">How Estimated Benefit is Computed</h3>
+        <p style="color: #4a6372; font-size: .9rem; line-height: 1.55; margin-bottom: 12px;">
+            In this academic project, the estimated total protective benefit is modeled as:
+        </p>
+        <div style="background: #f7fafb; padding: 14px 18px; border-radius: 6px; border: 1px solid var(--line); font-family: monospace; font-size: .95rem; color: var(--navy); margin-bottom: 14px;">
+            Estimated Benefit = (Annual Predicted Premium × Policy Duration in Years) × Benefit Factor Rate
+        </div>
+        <p class="disclaimer">
+            <b>Disclaimer:</b> The benefit calculation is a project-defined illustrative metric representing simulated insurance maturity protection. It does not represent an official financial return or investment guarantee.
+        </p>
+    </section>
+</main>
+</body>
+</html>

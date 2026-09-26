@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | What-If Scenario Simulator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    <span class="welcome">{{ session.get('user_name', 'member') }}</span>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('predict') }}">New Prediction</a>
+    <a href="{{ url_for('history') }}">History</a>
+    <a href="{{ url_for('what_if') }}" style="color: #82e3cf;">What-If Simulator</a>
+    <a href="{{ url_for('ai_insights_latest') }}">AI Insights</a>
+    <a href="{{ url_for('model_performance') }}">Model Performance</a>
+    <a href="{{ url_for('insurance_plans') }}">Plans</a>
+    <a href="{{ url_for('profile') }}">Profile</a>
+    <form method="post" action="{{ url_for('logout') }}">
+        <button class="link-button" type="submit">Log out</button>
+    </form>
+</nav>
+
+<main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="hero compact-hero">
+        <p class="eyebrow">Scenario Planning &amp; Decision Support</p>
+        <h1>What-If Scenario Simulator</h1>
+        <p>Modify risk factors like smoking cessation, BMI reduction, or demographic adjustments to immediately observe how the ML model shifts your estimated premium.</p>
+    </section>
+
+    <!-- Prediction Selector Dropdown if multiple exist -->
+    {% if user_predictions|length > 1 %}
+    <div style="margin-bottom: 20px; background: white; padding: 12px 18px; border-radius: 8px; border: 1px solid var(--line); display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: .85rem; font-weight: 600; color: var(--navy);">Baseline Profile:</span>
+        <select onchange="window.location.href='{{ url_for('what_if') }}?prediction_id=' + this.value;" style="width: auto; min-width: 280px; padding: 6px 12px; font-size: .85rem;">
+            {% for pred in user_predictions %}
+                <option value="{{ pred.id }}" {% if pred.id == prediction.id %}selected{% endif %}>
+                    #{{ pred.id }} - {{ pred.created_at.strftime('%d %b %Y') }} ({{ pred.plan_category|title }} Plan, ₹{{ '{:,.0f}'.format(pred.estimated_premium) }})
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <div class="whatif-container">
+        <!-- LEFT: CURRENT PROFILE & SCENARIO CONTROLS -->
+        <div>
+            <!-- CURRENT PROFILE DISPLAY CARD -->
+            <div class="current-profile-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div>
+                        <p class="eyebrow">Original Baseline</p>
+                        <h3 style="margin: 2px 0 0; color: var(--navy); font-size: 1.25rem; font-family: Georgia, serif;">Current Profile</h3>
+                    </div>
+                    <span style="font-size: .78rem; color: var(--muted);">Recorded {{ prediction.created_at.strftime('%d %b %Y') }}</span>
+                </div>
+
+                <div class="profile-param-list">
+                    <div class="profile-param-item">
+                        <span>Age</span>
+                        <strong>{{ prediction.age }} years</strong>
+                    </div>
+                    <div class="profile-param-item">
+                        <span>Gender</span>
+                        <strong>{{ prediction.sex|title }}</strong>
+                    </div>
+                    <div class="profile-param-item">
+                        <span>Body Mass Index (BMI)</span>
+                        <strong>{{ prediction.bmi }}</strong>
+                    </div>
+                    <div class="profile-param-item">
+                        <span>Smoking Status</span>
+                        <strong>{{ 'Yes (Smoker)' if prediction.smoker == 'yes' else 'No (Non-smoker)' }}</strong>
+                    </div>
+                    <div class="profile-param-item">
+                        <span>Number of Children</span>
+                        <strong>{{ prediction.children }} dependent(s)</strong>
+                    </div>
+                    <div class="profile-param-item">
+                        <span>Geographic Region</span>
+                        <strong>{{ prediction.region|title }}</strong>
+                    </div>
+                    <div class="profile-param-item" style="grid-column: 1 / -1;">
+                        <span>Annual Salary</span>
+                        <strong>INR {{ '{:,.2f}'.format(prediction.salary) }}</strong>
+                    </div>
+                </div>
+
+                <div class="profile-premium-box">
+                    <span>Current Estimated Premium</span>
+                    <strong>INR {{ '{:,.2f}'.format(prediction.estimated_premium) }} / yr</strong>
+                </div>
+            </div>
+
+            <!-- EDITABLE SCENARIO SIMULATOR FORM -->
+            <form class="card" method="post" action="{{ url_for('what_if_predict') }}" style="grid-template-columns: 1fr 1fr;">
+                <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+                <h2 class="form-heading">Simulate Profile Changes</h2>
+                
+                <label>Age
+                    <input type="number" name="age" min="18" max="100" value="{{ form_data.get('age', prediction.age) }}" required>
+                </label>
+                <label>Gender
+                    <select name="sex" required>
+                        <option value="female" {% if form_data.get('sex', prediction.sex) == 'female' %}selected{% endif %}>Female</option>
+                        <option value="male" {% if form_data.get('sex', prediction.sex) == 'male' %}selected{% endif %}>Male</option>
+                    </select>
+                </label>
+                <label>Body Mass Index (BMI)
+                    <input type="number" name="bmi" min="10" max="60" step="0.1" value="{{ form_data.get('bmi', prediction.bmi) }}" required>
+                </label>
+                <label>Number of Children
+                    <input type="number" name="children" min="0" max="10" value="{{ form_data.get('children', prediction.children) }}" required>
+                </label>
+                <label>Smoking Status
+                    <select name="smoker" required>
+                        <option value="no" {% if form_data.get('smoker', prediction.smoker) == 'no' %}selected{% endif %}>Non-smoker</option>
+                        <option value="yes" {% if form_data.get('smoker', prediction.smoker) == 'yes' %}selected{% endif %}>Smoker</option>
+                    </select>
+                </label>
+                <label>Geographic Region
+                    <select name="region" required>
+                        {% for reg in ['northeast', 'northwest', 'southeast', 'southwest'] %}
+                            <option value="{{ reg }}" {% if form_data.get('region', prediction.region) == reg %}selected{% endif %}>{{ reg|title }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="grid-column: 1 / -1;">Annual Salary (INR)
+                    <input type="number" name="salary" min="100000" max="10000000" step="1000" value="{{ form_data.get('salary', prediction.salary) }}" required>
+                </label>
+
+                <button type="submit">Calculate What-If Prediction</button>
+            </form>
+        </div>
+
+        <!-- RIGHT: SIMULATION RESULT COMPARISON & VISUALIZATION -->
+        <aside class="result" style="position: static;">
+            <p class="eyebrow">Scenario Comparison</p>
+            <h3 style="margin: 4px 0 16px; color: var(--navy); font-size: 1.35rem; font-family: Georgia, serif;">Model Evaluation</h3>
+
+            <div style="background: #fbfdfd; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px;">
+                <small>Original Prediction</small>
+                <strong style="margin: 4px 0 0; font-size: 1.6rem; color: #436274;">INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}</strong>
+            </div>
+
+            {% if scenario %}
+                <div style="background: #eff8f7; border: 1px solid #bce6df; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px;">
+                    <small style="color: var(--mint);">What-If Prediction</small>
+                    <strong style="margin: 4px 0 0; font-size: 1.8rem; color: var(--navy);">INR {{ '{:,.2f}'.format(scenario.premium) }}</strong>
+                </div>
+
+                <div style="margin-bottom: 18px; padding: 12px 14px; border-radius: 8px; background: {{ '#daf4e7' if scenario.difference <= 0 else '#fde8e8' }};">
+                    <small style="color: {{ '#156d45' if scenario.difference <= 0 else '#a12b2b' }}; font-weight: 700;">
+                        {{ 'Estimated Savings' if scenario.difference <= 0 else 'Estimated Surcharge' }}
+                    </small>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 2px;">
+                        <span style="font-size: 1.25rem; font-weight: 800; color: {{ '#156d45' if scenario.difference <= 0 else '#a12b2b' }};">
+                            INR {{ '{:,.2f}'.format(scenario.difference|abs) }}
+                        </span>
+                        <span class="diff-badge {{ 'saving' if scenario.difference <= 0 else 'increase' }}">
+                            {{ '{:+.2f}'.format(scenario.percentage) }}%
+                        </span>
+                    </div>
+                </div>
+
+                {% if changes %}
+                <div style="margin-bottom: 18px; padding: 12px 14px; background: #ffffff; border: 1px solid var(--line); border-radius: 8px; font-size: .83rem;">
+                    <b style="color: var(--navy); display: block; margin-bottom: 6px;">Parameters Modified:</b>
+                    <ul style="margin: 0; padding-left: 18px; color: #4a6372;">
+                        {% for chg in changes %}
+                            <li>{{ chg }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <!-- CHART: ORIGINAL VS WHAT-IF -->
+                <div style="margin-top: 14px; background: #ffffff; padding: 14px; border-radius: 8px; border: 1px solid var(--line);">
+                    <p class="eyebrow" style="margin-bottom: 8px;">Visual Premium Comparison</p>
+                    <canvas id="whatIfChart" height="190" aria-label="Original vs What-If comparison chart"></canvas>
+                </div>
+            {% else %}
+                <div style="padding: 24px 14px; text-align: center; color: var(--muted); background: #fbfdfd; border-radius: 8px; border: 1px dashed var(--line);">
+                    <p style="margin: 0; font-size: .9rem;">
+                        Tweak any factor on the left (e.g. switch smoking status or adjust BMI) and click <b>Calculate What-If Prediction</b> to simulate live price impact.
+                    </p>
+                </div>
+            {% endif %}
+
+            <p class="disclaimer" style="margin-top: 20px;">
+                <b>IMPORTANT SIMULATION DISCLAIMER:</b> This is an algorithmic model simulation for comparative decision support. Do not describe or treat the difference as a guaranteed real-world insurance price change or underwriting approval.
+            </p>
+        </aside>
+    </div>
+</main>
+
+{% if scenario %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('whatIfChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Original Premium', 'What-If Premium'],
+            datasets: [{
+                data: [{{ prediction.estimated_premium }}, {{ scenario.premium }}],
+                backgroundColor: ['#1677c8', '#0d9b88'],
+                borderRadius: 6,
+                maxBarThickness: 75
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'INR ' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(val) { return '₹' + (val / 1000) + 'k'; }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+</body>
+</html>

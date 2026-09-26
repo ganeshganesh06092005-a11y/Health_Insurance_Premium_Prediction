@@ -1,7 +1,7 @@
 # ML Training and Testing Report
 
-**Generated:** 14 September 2026, 13:07 UTC  
-**Dataset:** Medical Cost Personal Dataset (`data/insurance.csv`)  
+**Generated:** 26 September 2026, 17:08 UTC
+**Dataset:** Medical Cost Personal Dataset (`data/insurance.csv`)
 **Target variable:** `charges`
 
 ## Dataset and split
@@ -22,6 +22,7 @@ Features: age, sex, BMI, number of children, smoker status, region, and salary. 
 |---|---|---|---|---|
 | Linear Regression | 4181.19 | 33596915.82 | 5796.28 | 0.7836 |
 | Random Forest Regressor | 2481.62 | 20769964.88 | 4557.41 | 0.8662 |
+| Gradient Boosting Regressor | 2511.48 | 19952762.76 | 4466.85 | 0.8715 |
 | XGBoost Regressor | 2374.08 | 18778544.88 | 4333.42 | 0.879 |
 
 ## Selected model

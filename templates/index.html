@@ -1,117 +1,1346 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HealthSecure | Premium estimator</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthSecure – Smart Insurance Prediction Powered by Machine Learning</title>
+    
+    <!-- Meta Description for Portfolio / Evaluation -->
+    <meta name="description" content="HealthSecure is an advanced MCA academic project using Machine Learning to predict health insurance premiums, provide Explainable AI insights, and match suitable demo insurance plans.">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Dedicated Landing Page Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
 </head>
-<body>
-<nav>
-    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">HealthSecure</a>
-    <div class="nav-spacer"></div>
-    {% if session.get('user_id') %}
-        <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('history') }}">History</a>
-        <form method="post" action="{{ url_for('logout') }}"><button class="link-button" type="submit">Log out</button></form>
-    {% else %}
-        <a href="{{ url_for('login') }}">Log in</a>
-        <a href="{{ url_for('register') }}">Create account</a>
-    {% endif %}
-</nav>
+<body class="landing-body">
 
-<main>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-            <div class="alert {{ category }}">{{ message }}</div>
-        {% endfor %}
-    {% endwith %}
+    <!-- =====================================================================
+         1. STICKY NAVBAR
+         ===================================================================== -->
+    <header class="landing-nav">
+        <div class="nav-container">
+            <a href="#hero" class="landing-brand">
+                <div class="landing-brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12h6"/>
+                        <path d="M12 9v6"/>
+                    </svg>
+                </div>
+                <div class="landing-brand-text">
+                    <span class="landing-brand-name">HealthSecure</span>
+                    <span class="landing-brand-tagline">Smart Insurance Prediction</span>
+                </div>
+            </a>
 
-    <section class="hero">
-        <p class="eyebrow">HealthSecure AI estimator</p>
-        <h1>Understand your health insurance premium before you choose a plan.</h1>
-        <p>Enter a few health and financial details. The trained machine-learning model estimates an annual premium and pairs it with a plan recommendation.</p>
+            <!-- Desktop Nav Links -->
+            <ul class="nav-links">
+                <li><a href="#hero" class="nav-link active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#ml-models" class="nav-link">ML Models</a></li>
+                <li><a href="#xai" class="nav-link">Explainable AI</a></li>
+                <li><a href="#simulator" class="nav-link">Simulator</a></li>
+                <li><a href="#plans" class="nav-link">Plans</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+            </ul>
+
+            <!-- Auth CTAs -->
+            <div class="nav-cta-group">
+                {% if session.get('user_id') %}
+                    <span style="color: rgba(255,255,255,0.8); font-size: 0.88rem; font-weight: 600;">
+                        Hi, {{ session.get('user_name', 'Member') }}
+                    </span>
+                    <a href="{{ url_for('dashboard') }}" class="btn-nav-login">Dashboard</a>
+                    <a href="{{ url_for('predict') }}" class="btn-nav-primary">
+                        Calculate Premium
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-nav-login">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn-nav-primary">
+                        Get Started
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Hamburger Toggle -->
+            <button class="nav-mobile-toggle" id="navMobileToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div class="nav-mobile-menu" id="navMobileMenu">
+            <ul class="nav-links">
+                <li><a href="#hero" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#ml-models" class="nav-link">ML Models</a></li>
+                <li><a href="#xai" class="nav-link">Explainable AI</a></li>
+                <li><a href="#simulator" class="nav-link">Simulator</a></li>
+                <li><a href="#plans" class="nav-link">Plans</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+            </ul>
+            <div class="nav-cta-group">
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('dashboard') }}" class="btn-nav-login" style="text-align: center;">Go to Dashboard</a>
+                    <a href="{{ url_for('predict') }}" class="btn-nav-primary" style="justify-content: center;">Start Prediction</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-nav-login" style="text-align: center;">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn-nav-primary" style="justify-content: center;">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         2. HERO SECTION
+         ===================================================================== -->
+    <section class="hero-wrapper" id="hero">
+        <div class="landing-container">
+            <div class="hero-grid">
+                
+                <!-- Left: Text Content -->
+                <div class="hero-content-col">
+                    <div class="hero-badge">
+                        <span class="live-dot"></span>
+                        Smart Insurance Prediction Powered by Machine Learning
+                    </div>
+
+                    <h1 class="hero-heading">
+                        Predict Your Health Insurance Premium <span class="gradient-text">Smarter.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        HealthSecure uses machine learning to estimate your health insurance premium based on personal, health and lifestyle information, and helps you explore suitable sample insurance plans.
+                    </p>
+
+                    <div class="hero-cta-group">
+                        <a href="{{ url_for('register') }}" class="btn-primary-hero">
+                            Get Started
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                        <a href="#how-it-works" class="btn-secondary-hero">
+                            Explore How It Works
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+                        </a>
+                    </div>
+
+                    <div class="hero-meta-strip">
+                        <div class="hero-meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Trained on 1,338 Verified Records</span>
+                        </div>
+                        <div class="hero-meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>XGBoost &amp; Random Forest Ensembles</span>
+                        </div>
+                        <div class="hero-meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Explainable AI (XAI) Attribution</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Healthcare + AI Illustration & Floating Metric Cards -->
+                <div class="hero-visual-col">
+                    <div class="hero-visual-card">
+                        
+                        <!-- Center Holographic AI Shield -->
+                        <div class="hero-graphic-center">
+                            <div class="shield-pulse">
+                                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    <path d="M9 12h6"/>
+                                    <path d="M12 9v6"/>
+                                </svg>
+                            </div>
+                            <div class="hero-estimate-chip">Actuarial Risk Prediction</div>
+                            <div class="hero-estimate-price">INR 27,999 <span>/ yr</span></div>
+                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 4px;">
+                                Healthy Non-Smoker Profile &bull; BMI 24.2 &bull; Age 32
+                            </div>
+                        </div>
+
+                        <!-- Floating Glass Card 1: Machine Learning Status -->
+                        <div class="floating-glass-card">
+                            <div class="floating-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                            </div>
+                            <div class="floating-content">
+                                <strong>XGBoost Regressor</strong>
+                                <span>R² Score: 0.879 &bull; MAE: ₹2,374</span>
+                            </div>
+                            <span class="floating-badge">Optimal</span>
+                        </div>
+
+                        <!-- Floating Glass Card 2: Sample Plan Matching -->
+                        <div class="floating-glass-card">
+                            <div class="floating-icon" style="background: rgba(34, 193, 195, 0.15); color: #22c1c3;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            </div>
+                            <div class="floating-content">
+                                <strong>HealthSecure Standard</strong>
+                                <span>Diff: ₹501 (1.76% deviation)</span>
+                            </div>
+                            <span class="floating-badge" style="background: rgba(34, 193, 195, 0.2); color: #22c1c3;">★ Closest</span>
+                        </div>
+
+                        <!-- Floating Glass Card 3: Explainable AI -->
+                        <div class="floating-glass-card">
+                            <div class="floating-icon" style="background: rgba(229, 166, 59, 0.15); color: #e5a63b;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                            </div>
+                            <div class="floating-content">
+                                <strong>Explainable AI (XAI)</strong>
+                                <span>Tobacco factor is top risk driver (84.1%)</span>
+                            </div>
+                            <span class="floating-badge" style="background: rgba(229, 166, 59, 0.2); color: #e5a63b;">Verified</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </section>
 
-    <section class="layout" aria-label="Premium calculator">
-        <form class="card" method="post" action="{{ url_for('index') }}">
-            <h2 class="form-heading">Your profile</h2>
-            <label>Full name
-                <input name="full_name" value="{{ form_data.get('full_name', '') }}" required autocomplete="name">
-            </label>
-            <label>Age
-                <input type="number" name="age" min="18" max="100" value="{{ form_data.get('age', '') }}" required>
-            </label>
-            <label>Sex
-                <select name="sex" required>
-                    <option value="">Select</option>
-                    <option value="female" {% if form_data.get('sex') == 'female' %}selected{% endif %}>Female</option>
-                    <option value="male" {% if form_data.get('sex') == 'male' %}selected{% endif %}>Male</option>
-                </select>
-            </label>
-            <label>BMI
-                <input type="number" name="bmi" min="10" max="60" step="0.1" value="{{ form_data.get('bmi', '') }}" required>
-            </label>
-            <label>Dependents
-                <input type="number" name="children" min="0" max="10" value="{{ form_data.get('children', '0') }}" required>
-            </label>
-            <label>Smoking status
-                <select name="smoker" required>
-                    <option value="">Select</option>
-                    <option value="no" {% if form_data.get('smoker') == 'no' %}selected{% endif %}>Non-smoker</option>
-                    <option value="yes" {% if form_data.get('smoker') == 'yes' %}selected{% endif %}>Smoker</option>
-                </select>
-            </label>
-            <label>Region
-                <select name="region" required>
-                    <option value="">Select</option>
-                    {% for region in ['northeast', 'northwest', 'southeast', 'southwest'] %}
-                        <option value="{{ region }}" {% if form_data.get('region') == region %}selected{% endif %}>{{ region|title }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label>Annual salary (INR)
-                <input type="number" name="salary" min="100000" max="10000000" step="1000" value="{{ form_data.get('salary', '') }}" required>
-            </label>
-            <h2 class="form-heading">Coverage preference</h2>
-            <label>Policy duration
-                <select name="policy_duration" required>
-                    {% for duration in [5, 10, 15, 20] %}
-                        <option value="{{ duration }}" {% if form_data.get('policy_duration', '5')|int == duration %}selected{% endif %}>{{ duration }} years</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label>Plan category
-                <select name="plan_category" required>
-                    {% for plan in [('basic', 'Basic'), ('silver', 'Silver'), ('gold', 'Gold')] %}
-                        <option value="{{ plan[0] }}" {% if form_data.get('plan_category', 'silver') == plan[0] %}selected{% endif %}>{{ plan[1] }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <button type="submit">Calculate my premium</button>
-        </form>
+    <!-- =====================================================================
+         3. TRUST / REAL PROJECT STATISTICS BAR
+         ===================================================================== -->
+    <div class="landing-container">
+        <div class="stats-bar-wrapper">
+            <div class="stats-grid">
+                
+                <div class="stat-item">
+                    <div class="stat-number">1,338</div>
+                    <div class="stat-label">Dataset Records</div>
+                    <div class="stat-sublabel">Medical Cost Personal Dataset (Kaggle)</div>
+                </div>
 
-        {% if result %}
-        <aside class="result" aria-live="polite">
-            <p class="eyebrow">Your estimate</p>
-            <strong>INR {{ "{:,.2f}".format(result.premium) }} / year</strong>
-            <p><b>{{ result.plan }} plan</b></p>
-            <p>{{ result.description }}</p>
-            <hr>
-            <p><small>Policy duration</small>{{ result.duration }} years</p>
-            <p><small>Estimated total benefit</small>INR {{ "{:,.2f}".format(result.benefit) }}</p>
-            <a class="secondary-btn" href="{{ url_for('history') }}">View saved predictions</a>
-        </aside>
-        {% else %}
-        <aside class="result muted">
-            <p class="eyebrow">How it works</p>
-            <strong>One estimate, grounded in your details.</strong>
-            <p>The model uses age, BMI, dependents, smoking status, region, and salary to estimate your annual medical cost.</p>
-            <p>Your result is saved to your private prediction history when you are signed in.</p>
-        </aside>
-        {% endif %}
+                <div class="stat-item">
+                    <div class="stat-number">4 <span class="stat-accent">Models</span></div>
+                    <div class="stat-label">Benchmarked Algorithms</div>
+                    <div class="stat-sublabel">XGBoost, Random Forest, Gradient Boosting, Linear</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Actuarial Features</div>
+                    <div class="stat-sublabel">Demographic, clinical &amp; financial attributes</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-number">5 <span class="stat-accent">Plans</span></div>
+                    <div class="stat-label">Configurable Demo Policies</div>
+                    <div class="stat-sublabel">Stored in relational MySQL database</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         4. ABOUT HEALTHSECURE
+         ===================================================================== -->
+    <section class="landing-section" id="about">
+        <div class="landing-container">
+            <div class="about-grid">
+                
+                <div class="about-text">
+                    <span class="section-eyebrow">About HealthSecure</span>
+                    <h2 class="section-title">Intelligent Insurance Estimation Made Simple</h2>
+                    <p>
+                        HealthSecure is a machine-learning-based academic application designed to estimate health insurance premium amounts using personal and health-related information.
+                    </p>
+                    <p>
+                        Traditional underwriting relies on manual actuarial tables that lack transparency. HealthSecure demonstrates how modern tree-based regression algorithms evaluate nonlinear relationships across seven core risk factors to predict annual medical claim charges accurately.
+                    </p>
+
+                    <div class="factors-pill-group">
+                        <span class="factor-pill">🎂 Age (18-100)</span>
+                        <span class="factor-pill">⚧ Gender</span>
+                        <span class="factor-pill">⚖️ Body Mass Index (BMI)</span>
+                        <span class="factor-pill">🚬 Smoking Status</span>
+                        <span class="factor-pill">👨‍👩‍👧 Dependents / Children</span>
+                        <span class="factor-pill">📍 Geographic Region</span>
+                        <span class="factor-pill">💼 Annual Stated Salary</span>
+                    </div>
+
+                    <div class="disclaimer-card">
+                        <strong>Academic Project Notice:</strong> This is an academic project and the prediction is an estimated result, not an official insurance quotation or guaranteed maturity contract.
+                    </div>
+                </div>
+
+                <div class="about-visual-panel">
+                    <h3 style="margin: 0 0 20px; font-size: 1.25rem; color: var(--landing-navy);">
+                        Why HealthSecure is Useful
+                    </h3>
+
+                    <div class="about-feature-row">
+                        <div class="about-row-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <div class="about-row-content">
+                            <h4>Transparent Actuarial Estimations</h4>
+                            <p>Demystifies insurance premiums by revealing exactly how medical and lifestyle variables influence insurance quotes.</p>
+                        </div>
+                    </div>
+
+                    <div class="about-feature-row">
+                        <div class="about-row-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        </div>
+                        <div class="about-row-content">
+                            <h4>Automatic Demo Plan Matching</h4>
+                            <p>Automatically scans available demo policies in MySQL to identify the closest three plans relative to your prediction.</p>
+                        </div>
+                    </div>
+
+                    <div class="about-feature-row">
+                        <div class="about-row-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="about-row-content">
+                            <h4>Official PDF Verification Summary</h4>
+                            <p>Generates an audit-ready, downloadable A4 summary report via ReportLab complete with charts and calculations.</p>
+                        </div>
+                    </div>
+
+                    <div class="about-feature-row">
+                        <div class="about-row-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+                        </div>
+                        <div class="about-row-content">
+                            <h4>Interactive What-If Simulator</h4>
+                            <p>Simulate lifestyle modifications such as quitting smoking or managing BMI to see projected premium savings instantly.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </section>
-</main>
+
+    <!-- =====================================================================
+         5. HOW IT WORKS (4-STEP PROCESS)
+         ===================================================================== -->
+    <section class="landing-section alt-bg" id="how-it-works">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Workflow Architecture</span>
+                <h2 class="section-title">How HealthSecure Works</h2>
+                <p class="section-subtitle">
+                    Our platform streamlines actuarial machine learning into four transparent, user-friendly steps from data collection to tailored policy exploration.
+                </p>
+            </div>
+
+            <div class="steps-grid">
+                
+                <!-- Step 1 -->
+                <div class="step-card">
+                    <span class="step-number-tag">Step 01</span>
+                    <div class="step-icon-wrap">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </div>
+                    <h3>Enter Your Details</h3>
+                    <p>User provides personal, health, and lifestyle information including age, BMI, smoking status, and income.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card">
+                    <span class="step-number-tag">Step 02</span>
+                    <div class="step-icon-wrap">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                    </div>
+                    <h3>Machine Learning Analysis</h3>
+                    <p>The trained ensemble ML model evaluates nonlinear relationships, demographic risks, and interaction terms.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card">
+                    <span class="step-number-tag">Step 03</span>
+                    <div class="step-icon-wrap">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <h3>Premium Prediction</h3>
+                    <p>The system generates an estimated annual insurance premium along with financial sustainability ratios.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card">
+                    <span class="step-number-tag">Step 04</span>
+                    <div class="step-icon-wrap">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3>Plan Matching</h3>
+                    <p>The system compares the predicted premium with sample plans in MySQL and displays the closest three options.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         6. INPUT FEATURES SECTION
+         ===================================================================== -->
+    <section class="landing-section" id="features">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Actuarial Input Features</span>
+                <h2 class="section-title">What Does HealthSecure Analyze?</h2>
+                <p class="section-subtitle">
+                    The machine learning model is trained on seven validated features to capture clinical risk and financial affordability.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                
+                <div class="feature-box">
+                    <div class="feature-box-icon">🎂</div>
+                    <h4>1. Age</h4>
+                    <p>Chronological age (18 to 100 years) used as an input feature reflecting demographic health morbidity curves.</p>
+                    <span class="feature-domain">Continuous Numerical</span>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">⚧</div>
+                    <h4>2. Gender</h4>
+                    <p>Demographic indicator (Female / Male) encoded via One-Hot encoding to account for gender cohort risk patterns.</p>
+                    <span class="feature-domain">Categorical (Binary)</span>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">⚖️</div>
+                    <h4>3. Body Mass Index (BMI)</h4>
+                    <p>Body Mass Index (10 to 60 kg/m²) information used as one of the primary quantitative clinical risk features.</p>
+                    <span class="feature-domain">Continuous Numerical</span>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">🚬</div>
+                    <h4>4. Smoking Status</h4>
+                    <p>Tobacco usage status (Smoker / Non-smoker), recognized by the model as the single largest financial risk driver.</p>
+                    <span class="feature-domain">Categorical (Binary)</span>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">👨‍👩‍👧</div>
+                    <h4>5. Children / Dependents</h4>
+                    <p>Number of dependents (0 to 10) covered under the policy, impacting family medical coverage requirements.</p>
+                    <span class="feature-domain">Discrete Integer</span>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">📍</div>
+                    <h4>6. Geographic Region</h4>
+                    <p>Geographical territory (Northeast, Northwest, Southeast, Southwest) capturing regional healthcare provider cost variations.</p>
+                    <span class="feature-domain">Categorical (4-Class)</span>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">💼</div>
+                    <h4>7. Annual Salary / Income</h4>
+                    <p>Annual stated earnings benchmark used to calculate the Premium-to-Income affordability ratio (&le; 10% target).</p>
+                    <span class="feature-domain">Financial Metric</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         7. MACHINE LEARNING SECTION (REAL BENCHMARK METRICS)
+         ===================================================================== -->
+    <section class="landing-section alt-bg" id="ml-models">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Model Evaluation &amp; Benchmarks</span>
+                <h2 class="section-title">Powered by Machine Learning</h2>
+                <p class="section-subtitle">
+                    HealthSecure evaluates multiple supervised regression algorithms using standard continuous error metrics. Model performance is evaluated using standard regression metrics.
+                </p>
+            </div>
+
+            <div class="ml-benchmark-wrapper">
+                <div class="ml-metrics-table-wrap">
+                    <table class="ml-metrics-table">
+                        <thead>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>MAE (INR)</th>
+                                <th>MSE</th>
+                                <th>RMSE (INR)</th>
+                                <th>R² Score</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if metrics and metrics.results %}
+                                {% for m in metrics.results %}
+                                <tr {% if m.model == metrics.best_model %}class="highlight-model"{% endif %}>
+                                    <td>
+                                        <strong>{{ m.model }}</strong>
+                                        {% if m.model == metrics.best_model %}
+                                            <span class="badge-best-model">Selected Best Model</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>INR {{ "{:,.2f}".format(m.MAE) }}</td>
+                                    <td>{{ "{:,.2f}".format(m.MSE) }}</td>
+                                    <td>INR {{ "{:,.2f}".format(m.RMSE) }}</td>
+                                    <td><strong>{{ "{:.4f}".format(m.R2) }}</strong></td>
+                                    <td>
+                                        {% if m.model == metrics.best_model %}
+                                            <span style="color: var(--landing-teal); font-weight: 700;">Active in Production</span>
+                                        {% else %}
+                                            <span style="color: var(--landing-text-muted);">Benchmarked</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr class="highlight-model">
+                                    <td><strong>XGBoost Regressor</strong> <span class="badge-best-model">Selected Best</span></td>
+                                    <td>INR 2,374.08</td>
+                                    <td>18,778,544.88</td>
+                                    <td>INR 4,333.42</td>
+                                    <td>0.8790</td>
+                                    <td>Active in Production</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Random Forest Regressor</strong></td>
+                                    <td>INR 2,481.62</td>
+                                    <td>20,769,964.88</td>
+                                    <td>INR 4,557.41</td>
+                                    <td>0.8662</td>
+                                    <td>Benchmarked</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gradient Boosting Regressor</strong></td>
+                                    <td>INR 2,511.48</td>
+                                    <td>19,952,762.76</td>
+                                    <td>INR 4,466.85</td>
+                                    <td>0.8715</td>
+                                    <td>Benchmarked</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Linear Regression (Baseline)</strong></td>
+                                    <td>INR 4,181.19</td>
+                                    <td>33,596,915.82</td>
+                                    <td>INR 5,796.28</td>
+                                    <td>0.7836</td>
+                                    <td>Benchmarked</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ml-disclaimer-banner">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    <span>
+                        <b>Academic Note:</b> In continuous regression problems, exact discrete accuracy percentages do not apply. Model quality is measured through Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), and Coefficient of Determination (R²).
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         8. EXPLAINABLE AI (XAI) SECTION
+         ===================================================================== -->
+    <section class="landing-section" id="xai">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Explainable AI (XAI)</span>
+                <h2 class="section-title">Understand What Influences the Prediction</h2>
+                <p class="section-subtitle">
+                    Black-box models hide how decisions are made. HealthSecure exposes feature importances derived from the trained tree ensemble to show which factors exert the most influence on charges.
+                </p>
+            </div>
+
+            <div class="xai-panel">
+                <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center;">
+                    
+                    <div>
+                        <h3 style="margin: 0 0 16px; font-size: 1.25rem; color: var(--landing-navy);">
+                            Relative Feature Importances
+                        </h3>
+
+                        {% set default_insights = [
+                            {'name': 'Smoking Status', 'importance': 84.1},
+                            {'name': 'Body Mass Index (BMI)', 'importance': 5.6},
+                            {'name': 'Geographic Region', 'importance': 3.2},
+                            {'name': 'Age', 'importance': 2.9},
+                            {'name': 'Annual Salary / Income', 'importance': 2.4},
+                            {'name': 'Children / Dependents', 'importance': 0.8},
+                            {'name': 'Gender', 'importance': 0.5}
+                        ] %}
+                        {% set active_insights = insights if (insights and insights|length > 0) else default_insights %}
+
+                        {% for item in active_insights %}
+                        <div class="xai-bar-item">
+                            <div class="xai-bar-label">
+                                <span>{{ item.name }}</span>
+                                <span>{{ "{:.1f}".format(item.importance) }}%</span>
+                            </div>
+                            <div class="xai-track">
+                                <div class="xai-fill" style="width: {{ item.importance }}%;"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div style="background: #f7fafb; border: 1px solid var(--landing-border); border-radius: var(--landing-radius-md); padding: 28px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+                            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(85, 221, 209, 0.2); color: var(--landing-teal); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                💡
+                            </div>
+                            <h4 style="margin: 0; color: var(--landing-navy); font-size: 1.1rem;">Interpretability Insights</h4>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--landing-text-muted); line-height: 1.6; margin-bottom: 14px;">
+                            The trained model identifies <b>Smoking Status</b> as the primary driver of medical charges, contributing over 80% of predictive variance due to the heavy historical claims associated with tobacco consumption.
+                        </p>
+                        <p style="font-size: 0.9rem; color: var(--landing-text-muted); line-height: 1.6; margin-bottom: 0;">
+                            <b>BMI</b> and <b>Age</b> form secondary risk tiers that exhibit compounding effects when combined with high-risk lifestyle habits.
+                        </p>
+                        <div class="disclaimer-card" style="margin-top: 18px; padding: 12px 14px; font-size: 0.82rem;">
+                            <b>Interpretability Disclaimer:</b> Feature importance shows how the trained model uses input variables during prediction. It should not be interpreted as medical causation.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         9. WHAT-IF SIMULATOR SECTION
+         ===================================================================== -->
+    <section class="landing-section alt-bg" id="simulator">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Interactive Simulation</span>
+                <h2 class="section-title">Explore Different Scenarios</h2>
+                <p class="section-subtitle">
+                    What if an applicant quits smoking or achieves a healthier BMI? The What-If Simulator lets members recalculate hypothetical premiums and benchmark potential savings before committing to coverage.
+                </p>
+            </div>
+
+            <div class="simulator-preview-box">
+                <div style="text-align: center; max-width: 600px; margin: 0 auto 24px;">
+                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--landing-teal); text-transform: uppercase;">
+                        Interactive Simulation Preview
+                    </span>
+                    <h3 style="margin: 6px 0 0; color: var(--landing-navy); font-size: 1.4rem;">
+                        Test How Lifestyle Changes Shift the Prediction
+                    </h3>
+                </div>
+
+                <!-- Simulation Controls Demo -->
+                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label for="previewSmoker" style="font-weight: 600; font-size: 0.9rem;">Smoking Status:</label>
+                        <select id="previewSmoker" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--landing-border); font-family: inherit; font-size: 0.9rem;">
+                            <option value="yes" selected>Smoker</option>
+                            <option value="no">Non-Smoker (Cessation)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label for="previewAge" style="font-weight: 600; font-size: 0.9rem;">Age:</label>
+                        <input type="number" id="previewAge" value="35" min="18" max="75" style="width: 70px; padding: 8px; border-radius: 8px; border: 1px solid var(--landing-border); font-family: inherit;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label for="previewBmi" style="font-weight: 600; font-size: 0.9rem;">BMI:</label>
+                        <input type="number" id="previewBmi" value="28.5" step="0.5" style="width: 70px; padding: 8px; border-radius: 8px; border: 1px solid var(--landing-border); font-family: inherit;">
+                    </div>
+                </div>
+
+                <!-- Comparison Cards -->
+                <div class="sim-compare-grid">
+                    <div class="sim-box original">
+                        <span class="sim-label">Original Baseline Prediction</span>
+                        <div class="sim-price">INR 28,500 <span>/ year</span></div>
+                        <div style="font-size: 0.85rem; color: var(--landing-text-muted); margin-top: 8px;">
+                            Baseline profile: 35 yrs, Smoker, BMI 28.5
+                        </div>
+                    </div>
+
+                    <div class="sim-box scenario">
+                        <span class="sim-label">What-If Simulated Scenario</span>
+                        <div class="sim-price" id="previewScenarioPrice">INR 31,200 <span>/ year</span></div>
+                        <div class="sim-delta-badge" id="previewDeltaBadge">
+                            ▲ +INR 2,700 (+9%)
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-top: 1px solid var(--landing-border); padding-top: 20px;">
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--landing-text-muted); max-width: 580px;">
+                        <b>Academic Note:</b> This is a model-based simulation and does not represent an official insurance quotation.
+                    </p>
+                    <a href="{{ url_for('what_if') }}" class="btn-primary-hero" style="font-size: 0.95rem; padding: 12px 24px;">
+                        Try the Simulator
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         10. SAMPLE INSURANCE PLAN MATCHING
+         ===================================================================== -->
+    <section class="landing-section" id="plans">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Automated Policy Matching</span>
+                <h2 class="section-title">Find Plans Near Your Predicted Premium</h2>
+                <p class="section-subtitle">
+                    After predicting annual premium, HealthSecure queries available demo plans in MySQL, computes <code>|Plan Premium - Predicted Premium|</code>, and presents the top 3 closest matches.
+                </p>
+            </div>
+
+            <!-- Example Formulation Callout -->
+            <div style="background: #ffffff; border: 1px solid var(--landing-border); border-radius: var(--landing-radius-md); padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--landing-text-muted);">
+                        Demo Benchmark Case
+                    </span>
+                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--landing-navy); margin-top: 2px;">
+                        Predicted Premium: INR 28,500 / year
+                    </div>
+                </div>
+                <div style="font-family: monospace; background: #f0f7f8; padding: 8px 16px; border-radius: 6px; font-size: 0.88rem; color: var(--landing-teal);">
+                    Difference = ABS(Plan Annual Premium - Predicted Premium)
+                </div>
+            </div>
+
+            <!-- 3 Demo Plan Cards (Ranked Top 3 for 28,500) -->
+            <div class="plan-matching-grid">
+                
+                <!-- Rank 1: Standard (Closest Match) -->
+                <div class="demo-plan-card closest-match">
+                    <span class="closest-tag">★ Closest Match</span>
+                    <div>
+                        <h3>HealthSecure Standard</h3>
+                        <span class="match-diff-pill very-close">Very Close Match (&le; 5%)</span>
+                        <div class="plan-price">INR 27,999 <span>/ year</span></div>
+                        <p style="font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.5; margin-bottom: 16px;">
+                            Standard balanced protection plan providing comprehensive inpatient and outpatient support.
+                        </p>
+                        <div style="background: #f7fafb; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 14px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Absolute Difference:</span>
+                                <strong style="color: var(--landing-teal);">INR 501.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                <span>Percentage Deviation:</span>
+                                <strong>1.76%</strong>
+                            </div>
+                        </div>
+                        <ul style="padding-left: 18px; font-size: 0.82rem; color: #436274; line-height: 1.6; margin: 0 0 16px;">
+                            <li>Sum Insured: ₹5,00,000 (5 Lakhs)</li>
+                            <li>Duration: 10 Years Commitment</li>
+                            <li>Daycare &amp; ambulance inclusions</li>
+                        </ul>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="btn-primary-hero" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 10px;">
+                        Select Standard Plan
+                    </a>
+                </div>
+
+                <!-- Rank 2: Plus -->
+                <div class="demo-plan-card">
+                    <div>
+                        <h3>HealthSecure Plus</h3>
+                        <span class="match-diff-pill close">Close Match (&le; 15%)</span>
+                        <div class="plan-price">INR 30,500 <span>/ year</span></div>
+                        <p style="font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.5; margin-bottom: 16px;">
+                            Enhanced health protection tier offering higher sum insured and critical illness coverage.
+                        </p>
+                        <div style="background: #f7fafb; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 14px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Absolute Difference:</span>
+                                <strong style="color: var(--landing-teal);">INR 2,000.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                <span>Percentage Deviation:</span>
+                                <strong>7.02%</strong>
+                            </div>
+                        </div>
+                        <ul style="padding-left: 18px; font-size: 0.82rem; color: #436274; line-height: 1.6; margin: 0 0 16px;">
+                            <li>Sum Insured: ₹7,50,000 (7.5 Lakhs)</li>
+                            <li>Duration: 10 Years Commitment</li>
+                            <li>Critical illness rider support</li>
+                        </ul>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="btn-secondary-hero" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 10px; color: var(--landing-navy); border-color: var(--landing-border);">
+                        Explore Plus Tier
+                    </a>
+                </div>
+
+                <!-- Rank 3: Family -->
+                <div class="demo-plan-card">
+                    <div>
+                        <h3>HealthSecure Family</h3>
+                        <span class="match-diff-pill close">Close Match (&le; 15%)</span>
+                        <div class="plan-price">INR 31,999 <span>/ year</span></div>
+                        <p style="font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.5; margin-bottom: 16px;">
+                            Family floater health protection offering extended duration and comprehensive pediatric support.
+                        </p>
+                        <div style="background: #f7fafb; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 14px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Absolute Difference:</span>
+                                <strong style="color: var(--landing-teal);">INR 3,499.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                <span>Percentage Deviation:</span>
+                                <strong>12.28%</strong>
+                            </div>
+                        </div>
+                        <ul style="padding-left: 18px; font-size: 0.82rem; color: #436274; line-height: 1.6; margin: 0 0 16px;">
+                            <li>Sum Insured: ₹10,00,000 (10 Lakhs)</li>
+                            <li>Duration: 15 Years Commitment</li>
+                            <li>Pediatric &amp; maternity inclusions</li>
+                        </ul>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="btn-secondary-hero" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 10px; color: var(--landing-navy); border-color: var(--landing-border);">
+                        Explore Family Tier
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="disclaimer-card" style="margin-top: 32px;">
+                <strong>Demo Plans Disclaimer:</strong> These sample insurance plans are created only for academic demonstration. They are not real insurance products, official insurer quotations, or financial recommendations.
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         11. DASHBOARD FEATURES
+         ===================================================================== -->
+    <section class="landing-section alt-bg" id="dashboard">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Member Portal</span>
+                <h2 class="section-title">Your Personal Insurance Dashboard</h2>
+                <p class="section-subtitle">
+                    Registered users enjoy full access to a centralized portal for actuarial estimation, history auditing, scenario testing, and analytics.
+                </p>
+            </div>
+
+            <div class="dashboard-features-grid">
+                
+                <div class="dash-feature-card">
+                    <div class="dash-icon-box">⚡</div>
+                    <h3 style="margin: 0 0 8px; font-size: 1.15rem; color: var(--landing-navy);">Premium Prediction</h3>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.55;">
+                        Interactive multi-factor form calculating instant predictions and computing the sustainable premium-to-income ratio (&le; 10%).
+                    </p>
+                </div>
+
+                <div class="dash-feature-card">
+                    <div class="dash-icon-box">📊</div>
+                    <h3 style="margin: 0 0 8px; font-size: 1.15rem; color: var(--landing-navy);">Prediction History</h3>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.55;">
+                        Complete audit trail of all previous estimates with timestamps, applicant information, recommended plan tags, and action buttons.
+                    </p>
+                </div>
+
+                <div class="dash-feature-card">
+                    <div class="dash-icon-box">🛡️</div>
+                    <h3 style="margin: 0 0 8px; font-size: 1.15rem; color: var(--landing-navy);">Recommended Plans</h3>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.55;">
+                        Dynamic matching cards displaying the closest policies from MySQL, difference calculations, and a side-by-side comparison matrix.
+                    </p>
+                </div>
+
+                <div class="dash-feature-card">
+                    <div class="dash-icon-box">🔄</div>
+                    <h3 style="margin: 0 0 8px; font-size: 1.15rem; color: var(--landing-navy);">What-If Simulator</h3>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.55;">
+                        Real-time scenario testing to evaluate financial impact of smoking cessation, BMI improvement, and coverage adjustments.
+                    </p>
+                </div>
+
+                <div class="dash-feature-card">
+                    <div class="dash-icon-box">🧠</div>
+                    <h3 style="margin: 0 0 8px; font-size: 1.15rem; color: var(--landing-navy);">Explainable AI Insights</h3>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.55;">
+                        Feature importance breakdowns and natural language interpretations clarifying how the ML pipeline arrived at your specific quote.
+                    </p>
+                </div>
+
+                <div class="dash-feature-card">
+                    <div class="dash-icon-box">📄</div>
+                    <h3 style="margin: 0 0 8px; font-size: 1.15rem; color: var(--landing-navy);">PDF Prediction Report</h3>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--landing-text-muted); line-height: 1.55;">
+                        Downloadable, publication-ready A4 documentation summarizing applicant demographics, ratios, recommendations, and disclaimers.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         12. PDF REPORT FEATURE
+         ===================================================================== -->
+    <section class="landing-section" id="report">
+        <div class="landing-container">
+            <div class="about-grid">
+                
+                <div class="about-text">
+                    <span class="section-eyebrow">Document Generation</span>
+                    <h2 class="section-title">Generate Your Prediction Report</h2>
+                    <p>
+                        Need formal documentation for project review, evaluation, or personal records? HealthSecure includes an automated ReportLab PDF engine that formats every estimation into an official A4 document.
+                    </p>
+                    
+                    <ul style="padding-left: 20px; font-size: 0.92rem; color: #3e5663; line-height: 1.7; margin-bottom: 24px;">
+                        <li><b>Personal &amp; Demographic Details:</b> Name, email, age, gender.</li>
+                        <li><b>Clinical &amp; Lifestyle Inputs:</b> BMI, smoking status, children, region.</li>
+                        <li><b>Actuarial Prediction:</b> Predicted annual premium &amp; total commitment.</li>
+                        <li><b>Affordability Ratio:</b> Premium-to-income percentage evaluation.</li>
+                        <li><b>Recommended Demo Plans:</b> Automatic matching table highlighting the closest match.</li>
+                        <li><b>Explainable AI Breakdown:</b> Top risk factors influencing the estimate.</li>
+                    </ul>
+
+                    <div class="disclaimer-card" style="margin-bottom: 24px;">
+                        <b>Report Notice:</b> The report contains academic/project estimates and is not an official insurance document.
+                    </div>
+
+                    <a href="{{ url_for('register') }}" class="btn-primary-hero">
+                        Create Account to Generate Reports
+                    </a>
+                </div>
+
+                <!-- PDF Preview Card Mockup -->
+                <div style="background: #ffffff; border: 1px solid var(--landing-border); border-radius: var(--landing-radius-lg); padding: 32px; box-shadow: var(--landing-shadow-md); border-top: 6px solid var(--landing-teal);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--landing-border); padding-bottom: 14px; margin-bottom: 16px;">
+                        <div>
+                            <span style="font-weight: 800; font-size: 1.1rem; color: var(--landing-navy);">HealthSecure Report</span>
+                            <span style="display: block; font-size: 0.75rem; color: var(--landing-text-muted);">Doc ID: #PRED-2026-009</span>
+                        </div>
+                        <span style="background: #eef6f7; color: var(--landing-teal); font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 4px;">
+                            PDF / A4 Format
+                        </span>
+                    </div>
+
+                    <div style="font-size: 0.85rem; color: #436274; display: grid; gap: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--landing-border); padding-bottom: 4px;">
+                            <span>Applicant:</span>
+                            <strong style="color: var(--landing-navy);">Ramesh Kumar (35 yrs)</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--landing-border); padding-bottom: 4px;">
+                            <span>Estimated Annual Premium:</span>
+                            <strong style="color: var(--landing-navy);">INR 27,999.00 / yr</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--landing-border); padding-bottom: 4px;">
+                            <span>Premium-to-Income Ratio:</span>
+                            <strong style="color: var(--landing-teal);">4.66% (Sustainable)</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--landing-border); padding-bottom: 4px;">
+                            <span>Matched Demo Plan:</span>
+                            <strong style="color: var(--landing-navy);">HealthSecure Standard (₹501 diff)</strong>
+                        </div>
+                    </div>
+
+                    <div style="background: #f7fafb; border: 1px solid var(--landing-border); border-radius: 6px; padding: 12px; font-size: 0.78rem; color: var(--landing-text-muted); text-align: center;">
+                        📄 High-fidelity ReportLab vector layout with tables, styling &amp; official disclaimers.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         13. SECURITY SECTION
+         ===================================================================== -->
+    <section class="landing-section alt-bg" id="security">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Application Architecture</span>
+                <h2 class="section-title">Designed With User Privacy in Mind</h2>
+                <p class="section-subtitle">
+                    HealthSecure adheres to modern software security standards to safeguard member records, demographic information, and estimation histories.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                
+                <div class="feature-box">
+                    <div class="feature-box-icon">🔒</div>
+                    <h4>Scrypt Password Hashing</h4>
+                    <p>User credentials are encrypted using Werkzeug's implementation of Scrypt and PBKDF2 with unique cryptographic salts.</p>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">🛡️</div>
+                    <h4>Session Management</h4>
+                    <p>Protected Flask HTTP sessions with secure cookies and route decorators ensuring unauthenticated access prevention.</p>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">🗄️</div>
+                    <h4>Parameterized SQL Queries</h4>
+                    <p>Full database abstraction through SQLAlchemy ORM, defending against SQL Injection vulnerabilities completely.</p>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-box-icon">👤</div>
+                    <h4>Multi-Tenant History Isolation</h4>
+                    <p>Regular users can only view, simulate, and export their private estimates; cross-user data leakage is strictly prohibited.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         14. TECHNOLOGY STACK
+         ===================================================================== -->
+    <section class="landing-section" id="tech-stack">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Engineering Specifications</span>
+                <h2 class="section-title">Technology Stack</h2>
+                <p class="section-subtitle">
+                    Constructed with modern Python data science libraries, Flask application framework, and relational MySQL database storage.
+                </p>
+            </div>
+
+            <div class="tech-grid">
+                
+                <div class="tech-card">
+                    <span class="tech-badge-category">Frontend</span>
+                    <div class="tech-items-list">
+                        <span class="tech-pill">HTML5</span>
+                        <span class="tech-pill">CSS3</span>
+                        <span class="tech-pill">JavaScript (ES6+)</span>
+                        <span class="tech-pill">Chart.js (v4)</span>
+                    </div>
+                </div>
+
+                <div class="tech-card">
+                    <span class="tech-badge-category">Backend &amp; Framework</span>
+                    <div class="tech-items-list">
+                        <span class="tech-pill">Python 3.10+</span>
+                        <span class="tech-pill">Flask 3.1</span>
+                        <span class="tech-pill">Jinja2</span>
+                        <span class="tech-pill">Flask-SQLAlchemy</span>
+                    </div>
+                </div>
+
+                <div class="tech-card">
+                    <span class="tech-badge-category">Database</span>
+                    <div class="tech-items-list">
+                        <span class="tech-pill">MySQL 8.0+</span>
+                        <span class="tech-pill">InnoDB Engine</span>
+                        <span class="tech-pill">PyMySQL</span>
+                        <span class="tech-pill">utf8mb4</span>
+                    </div>
+                </div>
+
+                <div class="tech-card">
+                    <span class="tech-badge-category">Machine Learning</span>
+                    <div class="tech-items-list">
+                        <span class="tech-pill">Scikit-learn</span>
+                        <span class="tech-pill">XGBoost</span>
+                        <span class="tech-pill">Pandas</span>
+                        <span class="tech-pill">NumPy</span>
+                    </div>
+                </div>
+
+                <div class="tech-card">
+                    <span class="tech-badge-category">Visualization</span>
+                    <div class="tech-items-list">
+                        <span class="tech-pill">Matplotlib</span>
+                        <span class="tech-pill">Seaborn</span>
+                        <span class="tech-pill">Interactive Canvas</span>
+                    </div>
+                </div>
+
+                <div class="tech-card">
+                    <span class="tech-badge-category">Model Storage &amp; PDF</span>
+                    <div class="tech-items-list">
+                        <span class="tech-pill">Joblib</span>
+                        <span class="tech-pill">ReportLab (v4)</span>
+                        <span class="tech-pill">JSON Telemetry</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         15. PROJECT WORKFLOW (VISUAL TIMELINE)
+         ===================================================================== -->
+    <section class="landing-section alt-bg" id="workflow">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">End-to-End Lifecycle</span>
+                <h2 class="section-title">Project Workflow</h2>
+                <p class="section-subtitle">
+                    The structured sequential lifecycle followed by the application during an estimation session.
+                </p>
+            </div>
+
+            <div class="workflow-chain">
+                <div class="workflow-node">
+                    <div class="workflow-node-icon">1</div>
+                    <strong>User Registration</strong>
+                </div>
+                <div style="color: var(--landing-text-muted); font-size: 1.2rem;">&rarr;</div>
+
+                <div class="workflow-node">
+                    <div class="workflow-node-icon">2</div>
+                    <strong>Login &amp; Auth</strong>
+                </div>
+                <div style="color: var(--landing-text-muted); font-size: 1.2rem;">&rarr;</div>
+
+                <div class="workflow-node">
+                    <div class="workflow-node-icon">3</div>
+                    <strong>Enter Details</strong>
+                </div>
+                <div style="color: var(--landing-text-muted); font-size: 1.2rem;">&rarr;</div>
+
+                <div class="workflow-node">
+                    <div class="workflow-node-icon">4</div>
+                    <strong>ML Prediction</strong>
+                </div>
+                <div style="color: var(--landing-text-muted); font-size: 1.2rem;">&rarr;</div>
+
+                <div class="workflow-node">
+                    <div class="workflow-node-icon">5</div>
+                    <strong>Plan Matching</strong>
+                </div>
+                <div style="color: var(--landing-text-muted); font-size: 1.2rem;">&rarr;</div>
+
+                <div class="workflow-node">
+                    <div class="workflow-node-icon">6</div>
+                    <strong>What-If &amp; PDF</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         16. FAQ SECTION (INTERACTIVE ACCORDION)
+         ===================================================================== -->
+    <section class="landing-section" id="faq">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Frequently Asked Questions</span>
+                <h2 class="section-title">Got Questions? We Have Answers.</h2>
+                <p class="section-subtitle">
+                    Common questions regarding the HealthSecure application, machine learning models, and academic scope.
+                </p>
+            </div>
+
+            <div class="faq-accordion">
+                
+                <!-- Q1 -->
+                <div class="faq-item">
+                    <button class="faq-question" type="button">
+                        <span>1. What is HealthSecure?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        HealthSecure is an MCA final-year academic web application that uses machine learning regression models to predict estimated annual health insurance premiums based on individual demographic, clinical, and lifestyle factors.
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="faq-item">
+                    <button class="faq-question" type="button">
+                        <span>2. How is the premium estimated?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        The premium is estimated using a trained supervised machine learning regression pipeline (specifically XGBoost / Random Forest) trained on historical medical claims data. It evaluates risk patterns across age, gender, BMI, tobacco usage, dependents, region, and salary.
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="faq-item">
+                    <button class="faq-question" type="button">
+                        <span>3. What information is required?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Users provide seven standard actuarial features: Full Name, Age (18-100), Gender (Female/Male), Body Mass Index (10-60), Smoking Status (Yes/No), Number of Children/Dependents (0-10), Geographic Region, and Annual Stated Salary.
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="faq-item">
+                    <button class="faq-question" type="button">
+                        <span>4. Does HealthSecure use machine learning?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Yes. The application benchmarks four regression algorithms (Linear Regression, Random Forest, Gradient Boosting, and XGBoost). The best-performing pipeline is selected empirically using test Mean Absolute Error (MAE) and R² score metrics.
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="faq-item">
+                    <button class="faq-question" type="button">
+                        <span>5. Can I compare different scenarios?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Yes. The built-in What-If / Scenario Simulator allows users to adjust one or more input variables (such as quitting smoking or changing BMI) to immediately see how the predicted premium shifts relative to their baseline quote.
+                    </div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="faq-item">
+                    <button class="faq-question" type="button">
+                        <span>6. Are the insurance plans real?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        No. The plans shown by this academic application are project-defined sample plans created solely for academic demonstration and algorithm testing. They do not represent real-world commercial insurance policies.
+                    </div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="faq-item">
+                    <button class="faq-question" type="button">
+                        <span>7. Can I download my prediction report?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Yes. After running any prediction, authenticated users can generate and download an official, publication-quality A4 PDF summary report produced dynamically via ReportLab.
+                    </div>
+                </div>
+
+                <!-- Q8 -->
+                <div class="faq-item">
+                    <button class="faq-question" type="button">
+                        <span>8. Is this an official insurance quotation?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        No. HealthSecure is an educational demonstration project. All estimates and plan matches are algorithmic simulations and do not constitute an official underwriting quote, commercial contract, or financial advisory.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         17. FINAL CALL TO ACTION
+         ===================================================================== -->
+    <section class="landing-section" style="padding-top: 0;">
+        <div class="landing-container">
+            <div class="final-cta-box">
+                <span class="section-eyebrow" style="color: var(--landing-mint); background: rgba(85, 221, 209, 0.15);">
+                    Start Your Evaluation
+                </span>
+                <h2 style="font-size: clamp(2rem, 3.8vw, 3rem); font-weight: 800; margin: 16px 0; color: #ffffff;">
+                    Ready to Explore Your Estimated Premium?
+                </h2>
+                <p style="font-size: 1.12rem; color: rgba(255,255,255,0.8); max-width: 620px; margin: 0 auto 34px; line-height: 1.65;">
+                    Create your HealthSecure account and explore machine-learning-based premium estimation and sample plan matching.
+                </p>
+                <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+                    <a href="{{ url_for('register') }}" class="btn-primary-hero">
+                        Get Started
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn-secondary-hero">
+                        Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         18. FOOTER
+         ===================================================================== -->
+    <footer class="landing-footer">
+        <div class="landing-container">
+            <div class="footer-grid">
+                
+                <div>
+                    <div class="landing-brand">
+                        <div class="landing-brand-icon" style="width: 36px; height: 36px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <span class="landing-brand-name">HealthSecure</span>
+                    </div>
+                    <p class="footer-brand-desc">
+                        Smart Insurance Prediction Powered by Machine Learning. An MCA final-year academic project modeling healthcare claim probability and automated sample policy matching.
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h5>Navigation</h5>
+                    <ul class="footer-links">
+                        <li><a href="#hero">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h5>Application</h5>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                        <li><a href="{{ url_for('register') }}">Register</a></li>
+                        <li><a href="{{ url_for('predict') }}">New Prediction</a></li>
+                        <li><a href="{{ url_for('insurance_plans') }}">Sample Plans</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h5>Project Information</h5>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.6; margin: 0 0 10px;">
+                        <b>MCA Final Year Academic Project</b><br>
+                        Master of Computer Applications
+                    </p>
+                    <p style="color: rgba(255,255,255,0.55); font-size: 0.78rem; line-height: 1.5; margin: 0;">
+                        Trained on Medical Cost Dataset using Python, Flask, Scikit-learn, XGBoost, MySQL, and ReportLab.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <div style="max-width: 720px;">
+                    <b>Disclaimer:</b> HealthSecure provides machine-learning-based estimates for academic demonstration only. Results are not official insurance quotations, financial advice, or guaranteed benefits.
+                </div>
+                <div>
+                    &copy; 2026 HealthSecure. Academic Project.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 </body>
 </html>

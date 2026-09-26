@@ -13,7 +13,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
@@ -108,7 +108,7 @@ Features: age, sex, BMI, number of children, smoker status, region, and salary. 
 
 This is an educational model using a small anonymized dataset. It must not be used for actual insurance underwriting, pricing, eligibility, or any other high-impact decision without fairness testing, validation, governance, and regulatory review.
 """
-    REPORT_PATH.write_text(report, encoding="utf-8")
+    REPORT_PATH.write_text(report.replace("  \n", "\n"), encoding="utf-8")
 
 
 def main() -> None:
@@ -120,6 +120,9 @@ def main() -> None:
         ("Linear Regression", make_pipeline(LinearRegression())),
         ("Random Forest Regressor", make_pipeline(RandomForestRegressor(
             n_estimators=350, min_samples_leaf=2, random_state=RANDOM_STATE, n_jobs=-1
+        ))),
+        ("Gradient Boosting Regressor", make_pipeline(GradientBoostingRegressor(
+            n_estimators=250, learning_rate=0.04, max_depth=3, random_state=RANDOM_STATE
         ))),
     ]
     try:

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | Prediction Details &amp; AI Explainability</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    <span class="welcome">{{ session.get('user_name', 'member') }}</span>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('predict') }}">New Prediction</a>
+    <a href="{{ url_for('history') }}">History</a>
+    <a href="{{ url_for('what_if', prediction_id=prediction.id) }}">What-If Simulator</a>
+    <a href="{{ url_for('ai_insights', prediction_id=prediction.id) }}" style="color: #82e3cf;">AI Insights</a>
+    <a href="{{ url_for('model_performance') }}">Model Performance</a>
+    <a href="{{ url_for('insurance_plans') }}">Plans</a>
+    <a href="{{ url_for('profile') }}">Profile</a>
+    <form method="post" action="{{ url_for('logout') }}">
+        <button class="link-button" type="submit">Log out</button>
+    </form>
+</nav>
+
+<main>
+    <section class="hero compact-hero">
+        <p class="eyebrow">Estimate Review &bull; Record #{{ prediction.id }}</p>
+        <h1>Prediction Details &amp; Explainable AI</h1>
+        <p>Comprehensive actuarial breakdown, financial indicators, and Machine Learning feature attributions for this saved estimate.</p>
+        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+            <a class="primary-btn" href="{{ url_for('download_report', prediction_id=prediction.id) }}">Download Official PDF Report</a>
+            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare Demo Plans</a>
+            <a class="secondary-btn" href="{{ url_for('what_if', prediction_id=prediction.id) }}">Run What-If Scenario with this Profile</a>
+            <a class="secondary-btn" href="{{ url_for('history') }}">Back to History</a>
+        </div>
+    </section>
+
+    <!-- TOP KPI ROW -->
+    <section class="stats" aria-label="Key Estimate Metrics">
+        <div class="stat">
+            <span>Estimated Annual Premium</span>
+            <strong>INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}</strong>
+            <small style="color: var(--muted); font-size: .75rem;">ML regression output</small>
+        </div>
+        <div class="stat">
+            <span>Premium-to-Income Ratio</span>
+            <strong>{{ '{:.2f}'.format(prediction.premium_income_ratio) }}%</strong>
+            <small style="color: var(--muted); font-size: .75rem;">Target sustainable &lt; 10%</small>
+        </div>
+        <div class="stat">
+            <span>Recommended Plan</span>
+            <strong>{{ prediction.plan_category|title }} Plan</strong>
+            <small style="color: var(--muted); font-size: .75rem;">{{ prediction.policy_duration }} Year Duration</small>
+        </div>
+        <div class="stat">
+            <span>Estimated Protective Benefit</span>
+            <strong class="price">INR {{ '{:,.2f}'.format(prediction.estimated_benefit) }}</strong>
+            <small style="color: var(--muted); font-size: .75rem;">{{ prediction.benefit_factor }}x Benefit Multiplier</small>
+        </div>
+    </section>
+
+    <!-- PROFILE & COVERAGE BREAKDOWN GRID -->
+    <section class="layout">
+        <!-- LEFT: APPLICANT PROFILE INFORMATION -->
+        <div class="panel" style="margin-bottom: 0;">
+            <p class="eyebrow">Applicant Profile</p>
+            <h2>Submitted Information</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px; font-size: .9rem;">
+                <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Applicant Name</span>
+                    <strong style="color: var(--navy);">{{ prediction.full_name }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Age &amp; Gender</span>
+                    <strong style="color: var(--navy);">{{ prediction.age }} yrs &bull; {{ prediction.sex|title }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Body Mass Index (BMI)</span>
+                    <strong style="color: var(--navy);">{{ prediction.bmi }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Dependents</span>
+                    <strong style="color: var(--navy);">{{ prediction.children }} child dependent(s)</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Smoking Status</span>
+                    <strong style="color: var(--navy);">{{ 'Yes (Smoker)' if prediction.smoker == 'yes' else 'No (Non-smoker)' }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Geographic Region</span>
+                    <strong style="color: var(--navy);">{{ prediction.region|title }}</strong>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Annual Income</span>
+                    <strong style="color: var(--navy); font-size: 1.05rem;">INR {{ '{:,.2f}'.format(prediction.salary) }}</strong>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Prediction Timestamp</span>
+                    <span style="color: #4a6372;">{{ prediction.created_at.strftime('%d %B %Y at %H:%M:%S UTC') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: COVERAGE SUMMARY -->
+        <aside class="result" style="position: static;">
+            <p class="eyebrow">Coverage Summary</p>
+            <strong style="font-size: 1.7rem; margin: 6px 0 10px;">INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}</strong>
+            <p>{{ prediction.recommendation }}</p>
+            <hr>
+            <p><small>Policy Term</small><b>{{ prediction.policy_duration }} Years</b></p>
+            <p><small>Total Estimated Premium</small><b>INR {{ '{:,.2f}'.format(prediction.total_premium) }}</b></p>
+            <p><small>Benefit Factor</small><b>{{ '{:.2f}'.format(prediction.benefit_factor) }}x</b></p>
+            <p><small>Estimated Total Benefit</small><b class="price" style="font-size: 1.25rem;">INR {{ '{:,.2f}'.format(prediction.estimated_benefit) }}</b></p>
+            
+            <a class="primary-btn" style="width: 100%; text-align: center; margin-top: 10px;" href="{{ url_for('download_report', prediction_id=prediction.id) }}">
+                Download PDF Report
+            </a>
+        </aside>
+    </section>
+
+    {% if matching_plans %}
+    <!-- AUTOMATIC DEMO INSURANCE PLANS MATCHING SECTION -->
+    <section class="panel" style="margin-top: 24px;">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Automatic Recommendation</p>
+                <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0 0 6px;">Recommended Plans Near Your Predicted Premium</h2>
+            </div>
+            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare All 3 Plans Side-by-Side &rarr;</a>
+        </div>
+
+        <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
+            The system searched the available demo insurance plans in MySQL, computed the absolute premium difference <code>|Plan Premium &minus; Predicted Premium|</code>, and ranked the closest 3 plans:
+        </p>
+
+        <!-- 3 PLAN CARDS GRID -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 18px;">
+            {% for plan in matching_plans %}
+            <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: white; border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
+                {% if plan.is_closest %}
+                    <div style="position: absolute; top: -11px; right: 18px; background: var(--mint); color: white; padding: 3px 12px; border-radius: 12px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; box-shadow: 0 4px 10px rgba(13, 155, 136, .3);">
+                        ★ Closest Match
+                    </div>
+                {% endif %}
+
+                <div>
+                    <h3 style="margin: 0 0 8px; font-size: 1.22rem; color: var(--navy); font-family: Georgia, serif; display: flex; align-items: center; gap: 6px;">
+                        🛡️ {{ plan.plan_name }}
+                    </h3>
+
+                    <div style="margin-bottom: 12px;">
+                        <span class="match-badge match-{{ plan.match_badge_class }}">
+                            {{ plan.match_label }}
+                        </span>
+                        <span style="font-size: .78rem; color: var(--muted); margin-left: 6px;">
+                            (Diff: ₹{{ '{:,.0f}'.format(plan.difference) }} / {{ plan.difference_pct }}%)
+                        </span>
+                    </div>
+
+                    <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                            <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600;">Annual Premium</span>
+                            <span style="font-size: 1.3rem; font-weight: 800; color: var(--navy);">INR {{ '{:,.0f}'.format(plan.annual_premium) }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; font-size: .82rem; font-weight: 700; color: {{ 'var(--mint)' if plan.is_closest else '#1677c8' }}; border-top: 1px dashed var(--line); padding-top: 4px;">
+                            <span>Difference from Prediction:</span>
+                            <span>INR {{ '{:,.2f}'.format(plan.difference) }}</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; font-size: .84rem;">
+                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+                            <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Coverage</span>
+                            <strong style="color: var(--navy);">{{ plan.coverage_display }}</strong>
+                        </div>
+                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+                            <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Policy Duration</span>
+                            <strong style="color: var(--navy);">{{ plan.effective_duration }} Years</strong>
+                        </div>
+                    </div>
+
+                    <div style="font-size: .82rem; color: #436274; margin-bottom: 12px; background: #eff8f7; padding: 8px 10px; border-radius: 6px;">
+                        <span>Total Estimated Premium: <b>INR {{ '{:,.0f}'.format(plan.total_estimated_premium) }}</b> ({{ plan.effective_duration }}y)</span>
+                    </div>
+
+                    <p style="color: #4a6372; font-size: .84rem; line-height: 1.45; margin: 0 0 12px;">
+                        {{ plan.plan_description }}
+                    </p>
+
+                    <ul style="margin: 0 0 14px; padding-left: 18px; font-size: .82rem; color: #375364; line-height: 1.6;">
+                        {% for b in plan.benefits_list %}
+                            <li>✓ {{ b }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div style="border-top: 1px solid var(--line); padding-top: 14px; display: flex; gap: 8px;">
+                    <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 8px 10px;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=prediction.id) }}">View Plan Details &rarr;</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 18px; padding: 12px 16px; background: #fff8eb; border-left: 4px solid #f39c12; border-radius: 6px;">
+            <p style="margin: 0; font-size: .82rem; color: #855309; line-height: 1.5;">
+                <b>Academic &amp; Demo Project Notice:</b> Demo plans are mock illustrative insurance packages stored in MySQL for educational demonstration. They do not represent real-world commercial contracts.
+            </p>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- FEATURE 1: DETAILED EXPLAINABLE AI (XAI) SECTION -->
+    <section class="panel" style="margin-top: 24px;">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Explainable AI (XAI)</p>
+                <h2>Factors Influencing Premium Prediction</h2>
+            </div>
+            <span class="tag-pill tag-positive">Tree Ensemble Interpretability</span>
+        </div>
+        
+        <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
+            The chart below displays the global relative feature importances calculated by our regression trees. This clarifies the proportional weight that each demographic and medical indicator exerts on the predicted insurance charges.
+        </p>
+
+        <!-- VISUAL FEATURE IMPORTANCE BARS -->
+        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 8px; padding: 20px; margin: 18px 0;">
+            {% for insight in insights %}
+            <div class="importance-row">
+                <span style="font-weight: 600;">{{ insight.name }}</span>
+                <div class="importance-track">
+                    <i style="width: {{ insight.importance }}%;"></i>
+                </div>
+                <strong>{{ '{:.1f}'.format(insight.importance) }}%</strong>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="background: #f0f7f7; border-left: 4px solid var(--mint); border-radius: 6px; padding: 12px 16px; margin: 16px 0;">
+            <b style="color: var(--navy); font-size: .92rem;">Model Inference Summary:</b>
+            <p style="margin: 4px 0 0; color: #375364; font-size: .88rem;">
+                {{ explanation.simple_explanation }}
+            </p>
+        </div>
+
+        <h3 style="margin: 22px 0 12px; color: var(--navy); font-size: 1.15rem; font-family: Georgia, serif;">
+            How the model interpreted your information
+        </h3>
+
+        <!-- PERSONALIZED INTERPRETATION CARDS -->
+        <div class="interpretation-grid">
+            {% for item in explanation.interpretations %}
+            <div class="interpretation-card">
+                <h4>
+                    <span>{{ item.feature }}</span>
+                    <span class="tag-pill tag-{{ item.status }}">{{ item.impact }}</span>
+                </h4>
+                <div style="font-size: .85rem; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
+                    Value: {{ item.value }}
+                </div>
+                <p>{{ item.explanation }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <p class="disclaimer" style="margin-top: 20px;">
+            <b>IMPORTANT NOTICE:</b> {{ explanation.disclaimer }}
+        </p>
+    </section>
+</main>
+</body>
+</html>

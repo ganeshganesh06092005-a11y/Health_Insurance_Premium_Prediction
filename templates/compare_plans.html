@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | Compare Demo Insurance Plans</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    {% if session.get('user_id') %}
+        <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('predict') }}">New Prediction</a>
+        <a href="{{ url_for('history') }}">History</a>
+        {% if prediction %}
+            <a href="{{ url_for('result', prediction_id=prediction.id) }}">Prediction Result</a>
+        {% endif %}
+        <a href="{{ url_for('compare_plans') }}" style="color: #82e3cf;">Compare Plans</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <form method="post" action="{{ url_for('logout') }}">
+            <button class="link-button" type="submit">Log out</button>
+        </form>
+    {% else %}
+        <a href="{{ url_for('login') }}">Log in</a>
+        <a href="{{ url_for('register') }}">Create Account</a>
+    {% endif %}
+</nav>
+
+<main>
+    <section class="hero compact-hero">
+        <p class="eyebrow">Interactive Decision Matrix</p>
+        <h1>Compare Demo Insurance Plans</h1>
+        <p>Evaluate and benchmark up to three sample health insurance policies side-by-side to understand trade-offs between annual premiums, coverage limits, policy commitments, and total financial outlay.</p>
+        {% if prediction %}
+            <div style="margin-top: 10px;">
+                <a class="secondary-btn" href="{{ url_for('result', prediction_id=prediction.id) }}">&larr; Return to Prediction Result</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- PREDICTION BENCHMARK NOTICE IF ACTIVE -->
+    {% if prediction %}
+    <div style="background: white; border: 1px solid var(--line); border-left: 5px solid var(--mint); border-radius: 8px; padding: 14px 18px; margin-bottom: 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <span style="font-size: .75rem; text-transform: uppercase; font-weight: 700; color: var(--mint);">Active Prediction Benchmark</span>
+            <div style="font-size: 1.15rem; font-weight: 800; color: var(--navy);">
+                INR {{ '{:,.2f}'.format(prediction.estimated_premium) }} / year
+            </div>
+            <small style="color: #4a6372;">Applicant: {{ prediction.full_name }} &bull; {{ prediction.policy_duration }} Year Duration</small>
+        </div>
+        <span class="tag-pill tag-positive">Automatic Difference Calculated</span>
+    </div>
+    {% endif %}
+
+    <!-- PLAN SELECTOR CHECKBOXES/DROPDOWNS -->
+    <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
+        <span style="font-weight: 700; font-size: .85rem; color: var(--navy); display: block; margin-bottom: 8px;">
+            Select up to 3 plans to compare:
+        </span>
+        <form method="get" action="{{ url_for('compare_plans') }}" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+            {% if prediction %}
+                <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+            {% endif %}
+            {% for p in all_active_plans %}
+                <label style="display: flex; align-items: center; gap: 6px; font-size: .85rem; cursor: pointer; color: #3d5a70;">
+                    <input type="checkbox" name="plans" value="{{ p.plan_id }}" {% if p.plan_id in selected_ids %}checked{% endif %} style="width: auto;">
+                    {{ p.plan_name }} (₹{{ '{:,.0f}'.format(p.annual_premium) }})
+                </label>
+            {% endfor %}
+            <button type="submit" style="width: auto; padding: 6px 16px; font-size: .82rem; background: var(--blue); color: white; border: 0; border-radius: 4px; font-weight: 700; cursor: pointer;">
+                Update Comparison
+            </button>
+        </form>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <section class="panel">
+        <div class="table-wrap">
+            <table style="border: 1px solid var(--line); border-collapse: separate; border-spacing: 0; border-radius: 8px; overflow: hidden;">
+                <thead>
+                    <tr style="background: #f4f8f9;">
+                        <th style="width: 220px; font-size: .85rem; color: var(--navy);">Feature / Metric</th>
+                        {% for item in compared_data %}
+                            <th style="font-size: .95rem; color: var(--navy); text-align: center; border-left: 1px solid var(--line); {% if item.get('is_closest') %}background: #eef8f6; border-top: 4px solid var(--mint);{% endif %}">
+                                {% if item.get('is_closest') %}
+                                    <div style="color: var(--mint); font-size: .7rem; text-transform: uppercase; font-weight: 800; letter-spacing: .08em; margin-bottom: 2px;">
+                                        ★ Closest Match
+                                    </div>
+                                {% endif %}
+                                <div style="font-family: Georgia, serif; font-size: 1.1rem;">{{ item.plan.plan_name }}</div>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Annual Premium -->
+                    <tr>
+                        <td style="font-weight: 700; color: #375364;">Annual Premium</td>
+                        {% for item in compared_data %}
+                            <td style="text-align: center; border-left: 1px solid var(--line); font-size: 1.15rem; font-weight: 800; color: var(--navy);">
+                                INR {{ '{:,.0f}'.format(item.plan.annual_premium) }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- Difference if prediction active -->
+                    {% if prediction %}
+                    <tr style="background: #fbfdfd;">
+                        <td style="font-weight: 700; color: #375364;">Difference from Prediction</td>
+                        {% for item in compared_data %}
+                            <td style="text-align: center; border-left: 1px solid var(--line);">
+                                {% if item.difference is not none %}
+                                    <b style="color: {{ 'var(--mint)' if item.get('is_closest') else '#1677c8' }};">
+                                        INR {{ '{:,.2f}'.format(item.difference) }}
+                                    </b><br>
+                                    <span class="match-badge match-{{ item.match_badge_class }}" style="margin-top: 4px; display: inline-block;">
+                                        {{ item.match_label }}
+                                    </span>
+                                {% else %}
+                                    &mdash;
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endif %}
+
+                    <!-- Coverage Amount -->
+                    <tr>
+                        <td style="font-weight: 700; color: #375364;">Coverage Sum Insured</td>
+                        {% for item in compared_data %}
+                            <td style="text-align: center; border-left: 1px solid var(--line); font-weight: 700; color: var(--navy);">
+                                {{ item.coverage_display }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- Policy Duration -->
+                    <tr style="background: #fbfdfd;">
+                        <td style="font-weight: 700; color: #375364;">Policy Duration</td>
+                        {% for item in compared_data %}
+                            <td style="text-align: center; border-left: 1px solid var(--line);">
+                                {{ item.effective_duration }} Years
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- Total Estimated Premium -->
+                    <tr>
+                        <td style="font-weight: 700; color: #375364;">Estimated Total Premium</td>
+                        {% for item in compared_data %}
+                            <td style="text-align: center; border-left: 1px solid var(--line); font-weight: 700; color: var(--navy);">
+                                INR {{ '{:,.0f}'.format(item.total_estimated) }}
+                                <br><small style="color: var(--muted); font-weight: normal;">(over {{ item.effective_duration }} yrs)</small>
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- Short Description -->
+                    <tr style="background: #fbfdfd;">
+                        <td style="font-weight: 700; color: #375364;">Scope &amp; Description</td>
+                        {% for item in compared_data %}
+                            <td style="border-left: 1px solid var(--line); font-size: .83rem; color: #4a6372; text-align: left; padding: 12px 14px; white-space: normal;">
+                                {{ item.plan.plan_description }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- Key Benefits -->
+                    <tr>
+                        <td style="font-weight: 700; color: #375364; vertical-align: top;">Key Benefits</td>
+                        {% for item in compared_data %}
+                            <td style="border-left: 1px solid var(--line); text-align: left; padding: 12px 14px; white-space: normal;">
+                                <ul style="margin: 0; padding-left: 16px; font-size: .82rem; color: #375364; line-height: 1.6;">
+                                    {% for b in item.benefits_list %}
+                                        <li>✓ {{ b }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- Action Link -->
+                    <tr style="background: #fbfdfd;">
+                        <td style="font-weight: 700; color: #375364;">Details</td>
+                        {% for item in compared_data %}
+                            <td style="text-align: center; border-left: 1px solid var(--line);">
+                                <a class="primary-btn" style="padding: 7px 14px; font-size: .8rem;" href="{{ url_for('plan_details', plan_id=item.plan.plan_id, prediction_id=prediction.id if prediction else None) }}">
+                                    View Full Plan &rarr;
+                                </a>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="disclaimer" style="margin-top: 20px;">
+            <b>ACADEMIC DISCLAIMER:</b> These are project-defined sample insurance plans created for academic demonstration. They are not real insurance products, official insurer quotes, or financial recommendations. Premium matching is based only on the project's defined matching logic (|Plan Premium &minus; Predicted Premium| ranking).
+        </p>
+    </section>
+</main>
+</body>
+</html>

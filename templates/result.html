@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | AI Premium Prediction &amp; Matching Plans</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    {% if session.get('user_id') %}
+        <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('predict') }}">New Prediction</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('what_if', prediction_id=prediction.id) }}">What-If Simulator</a>
+        <a href="{{ url_for('ai_insights', prediction_id=prediction.id) }}">AI Insights</a>
+        <a href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare Plans</a>
+        <a href="{{ url_for('model_performance') }}">Model Performance</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <form method="post" action="{{ url_for('logout') }}">
+            <button class="link-button" type="submit">Log out</button>
+        </form>
+    {% else %}
+        <a href="{{ url_for('login') }}">Log in</a>
+        <a href="{{ url_for('register') }}">Create Account</a>
+    {% endif %}
+</nav>
+
+<main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="hero compact-hero">
+        <p class="eyebrow">Prediction Inferred &amp; Plan Matching Complete</p>
+        <h1>AI Premium Prediction &amp; Matching Plans</h1>
+        <p>Your demographic and clinical attributes have been processed by the trained Machine Learning regression model. Below are the closest matching demo insurance plans ranked by minimum annual premium difference.</p>
+        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+            <a class="primary-btn" href="{{ url_for('download_report', prediction_id=prediction.id) }}">Download Official PDF Report</a>
+            <a class="secondary-btn" href="{{ url_for('what_if', prediction_id=prediction.id) }}">Run What-If Scenario</a>
+            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare Matching Plans</a>
+            <a class="secondary-btn" href="{{ url_for('prediction_details', prediction_id=prediction.id) }}">Full XAI Details</a>
+        </div>
+    </section>
+
+    <!-- TOP PREDICTION SUMMARY BANNER -->
+    <div style="background: white; border: 1px solid var(--line); border-left: 6px solid var(--mint); border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); margin-bottom: 28px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <p class="eyebrow" style="color: var(--mint);">AI Premium Prediction</p>
+                <div style="display: flex; align-items: baseline; gap: 10px;">
+                    <h2 style="margin: 4px 0 0; color: var(--navy); font-size: 2.2rem; font-family: Georgia, serif;">
+                        INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}
+                    </h2>
+                    <span style="color: var(--muted); font-size: 1rem;">/ year</span>
+                </div>
+                <p style="margin: 6px 0 0; color: #436274; font-size: .92rem;">
+                    Applicant: <b>{{ prediction.full_name }}</b> &bull; {{ prediction.age }} yrs, {{ prediction.sex|title }} &bull; BMI {{ prediction.bmi }} &bull; {{ 'Smoker' if prediction.smoker == 'yes' else 'Non-smoker' }} &bull; Stated Income: ₹{{ '{:,.0f}'.format(prediction.salary) }}
+                </p>
+            </div>
+            <div style="text-align: right; background: #f4faf9; padding: 12px 18px; border-radius: 8px; border: 1px solid #c9ece6;">
+                <small style="display: block; color: var(--muted); text-transform: uppercase; font-size: .72rem; font-weight: 700;">Affordability Ratio</small>
+                <span style="font-size: 1.35rem; font-weight: 800; color: var(--navy);">{{ '{:.2f}'.format(prediction.premium_income_ratio) }}%</span>
+                <small style="display: block; color: var(--mint); font-size: .75rem; font-weight: 600;">Sustainable (&le; 10%)</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTOMATIC DEMO INSURANCE PLANS MATCHING SECTION -->
+    <section class="panel" style="margin-bottom: 30px;">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Automatic Recommendation</p>
+                <h2>Recommended Plans Near Your Predicted Premium</h2>
+            </div>
+            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare All 3 Plans Side-by-Side &rarr;</a>
+        </div>
+
+        <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
+            The system searched the available demo insurance plans in the database, computed the absolute premium difference <code>|Plan Premium &minus; Predicted Premium|</code>, and ranked the closest 3 plans:
+        </p>
+
+        <!-- 3 PLAN CARDS GRID -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 22px; margin-top: 20px;">
+            {% for plan in matching_plans %}
+            <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: white; border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
+                {% if plan.is_closest %}
+                    <div style="position: absolute; top: -11px; right: 18px; background: var(--mint); color: white; padding: 3px 12px; border-radius: 12px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; box-shadow: 0 4px 10px rgba(13, 155, 136, .3);">
+                        ★ Closest Match
+                    </div>
+                {% endif %}
+
+                <div>
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <h3 style="margin: 0; font-size: 1.25rem; color: var(--navy); font-family: Georgia, serif; display: flex; align-items: center; gap: 6px;">
+                            🛡️ {{ plan.plan_name }}
+                        </h3>
+                    </div>
+
+                    <!-- Matching Indicator Badge -->
+                    <div style="margin-bottom: 14px;">
+                        <span class="match-badge match-{{ plan.match_badge_class }}">
+                            {{ plan.match_label }}
+                        </span>
+                        <span style="font-size: .75rem; color: var(--muted); margin-left: 6px;">
+                            (Diff: ₹{{ '{:,.0f}'.format(plan.difference) }} / {{ plan.difference_pct }}%)
+                        </span>
+                    </div>
+
+                    <!-- Pricing & Difference Box -->
+                    <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                            <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600;">Annual Premium</span>
+                            <span style="font-size: 1.35rem; font-weight: 800; color: var(--navy);">INR {{ '{:,.0f}'.format(plan.annual_premium) }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; font-size: .8rem; color: #436274;">
+                            <span>Your Predicted Premium:</span>
+                            <span>INR {{ '{:,.0f}'.format(prediction.estimated_premium) }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; font-size: .82rem; font-weight: 700; color: {{ 'var(--mint)' if plan.is_closest else '#1677c8' }}; border-top: 1px dashed var(--line); padding-top: 4px;">
+                            <span>Difference:</span>
+                            <span>INR {{ '{:,.2f}'.format(plan.difference) }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Core Policy Attributes -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; font-size: .85rem;">
+                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+                            <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Coverage</span>
+                            <strong style="color: var(--navy);">{{ plan.coverage_display }}</strong>
+                        </div>
+                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+                            <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Policy Duration</span>
+                            <strong style="color: var(--navy);">{{ plan.effective_duration }} Years</strong>
+                        </div>
+                    </div>
+
+                    <div style="font-size: .82rem; color: #436274; margin-bottom: 12px; background: #eff8f7; padding: 8px 10px; border-radius: 6px;">
+                        <span>Estimated Total Premium: <b>INR {{ '{:,.0f}'.format(plan.total_estimated_premium) }}</b> (over {{ plan.effective_duration }}y)</span>
+                    </div>
+
+                    <p style="color: #4a6372; font-size: .84rem; line-height: 1.45; margin: 0 0 12px;">
+                        {{ plan.plan_description }}
+                    </p>
+
+                    <!-- Benefits List -->
+                    <ul style="margin: 0 0 16px; padding-left: 18px; font-size: .82rem; color: #375364; line-height: 1.6;">
+                        {% for b in plan.benefits_list %}
+                            <li>✓ {{ b }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Action Button -->
+                <div>
+                    <a class="primary-btn" style="width: 100%; text-align: center;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=prediction.id) }}">
+                        View Plan Details &rarr;
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Academic Disclaimers -->
+        <div style="margin-top: 24px; padding: 14px 18px; background: #fef7e7; border: 1px solid #e5a63b; border-radius: 8px; font-size: .82rem; color: #5c4813; line-height: 1.5;">
+            <b>IMPORTANT INSURANCE DISCLAIMER:</b>
+            These are project-defined sample insurance plans created for academic demonstration. They are not real insurance products, official insurer quotes, or financial recommendations.
+            <br><br>
+            <b>MATCHING RULE NOTICE:</b>
+            Premium matching is based only on the project's defined matching logic (|Plan Premium &minus; Predicted Premium| ranking) and should not be interpreted as an official insurance eligibility or pricing rule.
+        </div>
+    </section>
+
+    <!-- EXPLAINABLE AI PREDICTION INSIGHTS -->
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Explainable AI (XAI)</p>
+                <h2>Factors Influencing Premium Prediction</h2>
+            </div>
+            <a class="view-link" href="{{ url_for('ai_insights', prediction_id=prediction.id) }}">Open Interactive XAI View &rarr;</a>
+        </div>
+
+        <p class="muted-copy" style="margin-top: 0;">Relative feature contribution computed from the trained tree-based regression model:</p>
+        
+        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 16px 0;">
+            {% for insight in insights %}
+            <div class="importance-row">
+                <span style="font-weight: 600;">{{ insight.name }}</span>
+                <div class="importance-track">
+                    <i style="width: {{ insight.importance }}%;"></i>
+                </div>
+                <strong>{{ '{:.1f}'.format(insight.importance) }}%</strong>
+            </div>
+            {% endfor %}
+        </div>
+
+        <p style="margin: 12px 0 0; font-size: .88rem; color: #375364; background: #f0f7f7; padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--mint);">
+            <b>Key Model Takeaway:</b> {{ explanation.simple_explanation }}
+        </p>
+    </section>
+</main>
+</body>
+</html>

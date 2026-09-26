@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | {{ plan.plan_name }} &ndash; Demo Plan Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    {% if session.get('user_id') %}
+        <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('predict') }}">New Prediction</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('compare_plans') }}">Compare Plans</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <form method="post" action="{{ url_for('logout') }}">
+            <button class="link-button" type="submit">Log out</button>
+        </form>
+    {% else %}
+        <a href="{{ url_for('login') }}">Log in</a>
+        <a href="{{ url_for('register') }}">Create Account</a>
+    {% endif %}
+</nav>
+
+<main>
+    <section class="hero compact-hero">
+        <p class="eyebrow">Demo Insurance Product Specifications</p>
+        <h1>{{ plan.plan_name }}</h1>
+        <p>{{ plan.plan_description }}</p>
+        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+            {% if prediction %}
+                <a class="primary-btn" href="{{ url_for('result', prediction_id=prediction.id) }}">&larr; Back to Prediction Result</a>
+                <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare with Other Matching Plans</a>
+            {% else %}
+                <a class="primary-btn" href="{{ url_for('predict') }}">Calculate Premium For This Plan</a>
+                <a class="secondary-btn" href="{{ url_for('compare_plans') }}">Compare All Demo Plans</a>
+            {% endif %}
+            <a class="secondary-btn" href="{{ url_for('insurance_plans') }}">View All Plans</a>
+        </div>
+    </section>
+
+    <!-- ACTIVE PREDICTION MATCH CARD (IF AVAILABLE) -->
+    {% if prediction and difference is not none %}
+    <div style="background: white; border: 1px solid var(--line); border-left: 5px solid var(--mint); border-radius: 10px; padding: 18px 22px; margin-bottom: 24px; box-shadow: var(--card-shadow); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div>
+            <span class="eyebrow" style="color: var(--mint);">Matching Evaluation for {{ prediction.full_name }}</span>
+            <div style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-top: 2px;">
+                Match Status: <span class="match-badge match-{{ match_badge_class }}">{{ match_label }}</span>
+            </div>
+            <p style="margin: 4px 0 0; color: #556e7e; font-size: .85rem;">
+                Your ML Predicted Premium: <b>INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}</b> &bull; Plan Premium: <b>INR {{ '{:,.2f}'.format(plan.annual_premium) }}</b>
+            </p>
+        </div>
+        <div style="text-align: right; background: #f0f8f7; padding: 10px 16px; border-radius: 8px;">
+            <span style="font-size: .75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Absolute Difference</span>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--navy);">
+                INR {{ '{:,.2f}'.format(difference) }}
+            </div>
+            <small style="color: var(--muted);">({{ difference_pct }}% deviation)</small>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- PLAN SPECIFICATIONS GRID -->
+    <div class="layout">
+        <!-- LEFT: DETAILED METRICS -->
+        <div class="panel">
+            <p class="eyebrow">Plan Parameters</p>
+            <h2>Coverage &amp; Financial Structure</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 18px;">
+                <div style="background: #f8fafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+                    <span style="display: block; color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 700;">Annual Demo Premium</span>
+                    <strong style="display: block; color: var(--navy); font-size: 1.45rem; font-family: Georgia, serif; margin-top: 4px;">
+                        INR {{ '{:,.2f}'.format(plan.annual_premium) }}
+                    </strong>
+                    <small style="color: var(--muted); font-size: .75rem;">Billed per policy year</small>
+                </div>
+
+                <div style="background: #f8fafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+                    <span style="display: block; color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 700;">Total Coverage Amount</span>
+                    <strong style="display: block; color: var(--navy); font-size: 1.45rem; font-family: Georgia, serif; margin-top: 4px;">
+                        ₹{{ '{:g}'.format(plan.coverage_amount/100000) }} Lakhs
+                    </strong>
+                    <small style="color: var(--muted); font-size: .75rem;">INR {{ '{:,.0f}'.format(plan.coverage_amount) }} Sum Insured</small>
+                </div>
+
+                <div style="background: #f8fafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+                    <span style="display: block; color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 700;">Policy Duration</span>
+                    <strong style="display: block; color: var(--navy); font-size: 1.45rem; font-family: Georgia, serif; margin-top: 4px;">
+                        {{ effective_duration }} Years
+                    </strong>
+                    <small style="color: var(--muted); font-size: .75rem;">Long-term commitment tier</small>
+                </div>
+
+                <div style="background: #eff8f7; border: 1px solid #bce6df; border-radius: 8px; padding: 14px;">
+                    <span style="display: block; color: var(--mint); font-size: .75rem; text-transform: uppercase; font-weight: 700;">Estimated Total Premium</span>
+                    <strong style="display: block; color: var(--navy); font-size: 1.45rem; font-family: Georgia, serif; margin-top: 4px;">
+                        INR {{ '{:,.2f}'.format(total_estimated_premium) }}
+                    </strong>
+                    <small style="color: var(--muted); font-size: .75rem;">Annual Premium × {{ effective_duration }} Years</small>
+                </div>
+            </div>
+
+            <!-- Total Formula Box -->
+            <div style="margin-top: 18px; padding: 12px 14px; background: #fdfefe; border: 1px solid var(--line); border-radius: 8px; font-size: .85rem; color: #436274;">
+                <b>Estimated Total Premium Formula:</b>
+                <code>INR {{ '{:,.0f}'.format(plan.annual_premium) }} × {{ effective_duration }} years = INR {{ '{:,.0f}'.format(total_estimated_premium) }}</code>
+                <p style="margin: 4px 0 0; font-size: .78rem; color: var(--muted);">
+                    Project-defined calculation for financial estimation purposes. Does not represent a guaranteed return or official insurer quote.
+                </p>
+            </div>
+
+            <!-- Inclusions & Benefits -->
+            <h3 style="margin: 22px 0 10px; color: var(--navy); font-size: 1.15rem; font-family: Georgia, serif;">Coverage Benefits &amp; Features</h3>
+            <ul style="padding-left: 20px; line-height: 1.8; color: #375364; font-size: .9rem;">
+                {% for b in benefits_list %}
+                    <li><b>✓</b> {{ b }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- RIGHT: OTHER AVAILABLE DEMO PLANS -->
+        <aside class="result" style="position: static;">
+            <p class="eyebrow">Portfolio Navigation</p>
+            <h3 style="margin: 4px 0 14px; color: var(--navy); font-size: 1.2rem; font-family: Georgia, serif;">Other Demo Plans</h3>
+
+            <div style="display: grid; gap: 10px;">
+                {% for other in all_plans %}
+                <div style="background: white; border: 1px solid var(--line); border-radius: 8px; padding: 12px; {% if other.plan_id == plan.plan_id %}border-left: 4px solid var(--mint); background: #f9fdfc;{% endif %}">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <b style="color: var(--navy); font-size: .92rem;">{{ other.plan_name }}</b>
+                        <span style="font-weight: 700; color: var(--mint); font-size: .9rem;">₹{{ '{:,.0f}'.format(other.annual_premium) }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); margin-top: 4px;">
+                        <span>Coverage: ₹{{ '{:g}'.format(other.coverage_amount/100000) }} Lakhs</span>
+                        <span>{{ other.policy_duration }} yrs</span>
+                    </div>
+                    {% if other.plan_id != plan.plan_id %}
+                        <a class="view-link" style="display: inline-block; margin-top: 6px; font-size: .8rem;" href="{{ url_for('plan_details', plan_id=other.plan_id, prediction_id=prediction.id if prediction else None) }}">
+                            View Details &rarr;
+                        </a>
+                    {% else %}
+                        <span style="display: inline-block; margin-top: 6px; font-size: .78rem; color: var(--mint); font-weight: 700;">&bull; Currently Viewing</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <p class="disclaimer" style="margin-top: 20px;">
+                <b>ACADEMIC DISCLAIMER:</b> These are project-defined sample insurance plans created for academic demonstration. They are not real insurance products, official insurer quotes, or financial recommendations.
+            </p>
+        </aside>
+    </div>
+</main>
+</body>
+</html>

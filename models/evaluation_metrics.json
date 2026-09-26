@@ -19,6 +19,13 @@
       "R2": 0.8662
     },
     {
+      "model": "Gradient Boosting Regressor",
+      "MAE": 2511.48,
+      "MSE": 19952762.76,
+      "RMSE": 4466.85,
+      "R2": 0.8715
+    },
+    {
       "model": "XGBoost Regressor",
       "MAE": 2374.08,
       "MSE": 18778544.88,

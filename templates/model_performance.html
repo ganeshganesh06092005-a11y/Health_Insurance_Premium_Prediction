@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | Machine Learning Model Performance &amp; Comparison</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    <span class="welcome">{{ session.get('user_name', 'member') }}</span>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('predict') }}">New Prediction</a>
+    <a href="{{ url_for('history') }}">History</a>
+    <a href="{{ url_for('what_if') }}">What-If Simulator</a>
+    <a href="{{ url_for('ai_insights_latest') }}">AI Insights</a>
+    <a href="{{ url_for('model_performance') }}" style="color: #82e3cf;">Model Performance</a>
+    <a href="{{ url_for('insurance_plans') }}">Plans</a>
+    <a href="{{ url_for('profile') }}">Profile</a>
+    {% if admin_view %}
+        <a href="{{ url_for('admin_dashboard') }}" style="color: #e5a63b;">Admin Dashboard</a>
+    {% endif %}
+    <form method="post" action="{{ url_for('logout') }}">
+        <button class="link-button" type="submit">Log out</button>
+    </form>
+</nav>
+
+<main>
+    <section class="hero compact-hero">
+        <p class="eyebrow">Academic Rigor &amp; Model Benchmarking</p>
+        <h1>ML Model Performance &amp; Evaluation</h1>
+        <p>Comparative empirical results across multiple regression algorithms trained on the Medical Cost Personal Dataset. Model selection is mathematically grounded in minimizing test generalization error.</p>
+    </section>
+
+    <!-- PRODUCTION MODEL HIGHLIGHT BANNER -->
+    <div style="background: white; border: 1px solid var(--line); border-left: 6px solid var(--mint); border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <span class="eyebrow" style="color: var(--mint);">Active Production Algorithm</span>
+                <h2 style="margin: 4px 0 6px; color: var(--navy); font-size: 1.6rem; font-family: Georgia, serif;">{{ metrics.best_model }}</h2>
+            </div>
+            <span class="active-model-tag" style="font-size: .85rem; padding: 6px 14px;">Production Selected</span>
+        </div>
+        <p style="margin: 8px 0 0; color: #436274; font-size: .95rem; line-height: 1.55;">
+            <b>Selection Justification:</b> <b>{{ metrics.best_model }}</b> was selected as the operational model because it achieved the lowest Mean Absolute Error (<b>MAE</b>) and highest Coefficient of Determination (<b>R² Score</b>) on the held-out 20% test partition (268 unseen instances). Mean Absolute Error was chosen as the primary selection criterion because it is directly interpretable in currency units (INR) without disproportionate distortion from extreme medical outlier costs.
+        </p>
+    </div>
+
+    <!-- DATASET & EXPERIMENTAL SETUP CARDS -->
+    <section class="stats" aria-label="Experimental Setup">
+        <div class="stat">
+            <span>Source Dataset</span>
+            <strong>Medical Cost Dataset</strong>
+            <small style="color: var(--muted); font-size: .75rem;">1,338 Total Records</small>
+        </div>
+        <div class="stat">
+            <span>Training Partition (80%)</span>
+            <strong>{{ metrics.training_rows }} Records</strong>
+            <small style="color: var(--muted); font-size: .75rem;">Random State = 42</small>
+        </div>
+        <div class="stat">
+            <span>Testing Partition (20%)</span>
+            <strong>{{ metrics.testing_rows }} Records</strong>
+            <small style="color: var(--muted); font-size: .75rem;">Unseen Validation Split</small>
+        </div>
+    </section>
+
+    <!-- ACTUAL EVALUATION METRICS TABLE -->
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Empirical Results</p>
+                <h2>Regression Models Comparative Evaluation</h2>
+            </div>
+            <span style="font-size: .8rem; color: var(--muted);">Evaluated using Scikit-Learn on test split</span>
+        </div>
+
+        {% if metrics.results %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model Architecture</th>
+                            <th>MAE (INR)</th>
+                            <th>MSE</th>
+                            <th>RMSE (INR)</th>
+                            <th>R² Score</th>
+                            <th>Model Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in metrics.results %}
+                        <tr style="{% if item.model == metrics.best_model %}background: #f3faf8; font-weight: 600;{% endif %}">
+                            <td style="color: var(--navy);">
+                                {{ item.model }}
+                                {% if item.model == metrics.best_model %}
+                                    <span style="color: var(--mint); margin-left: 6px;">★</span>
+                                {% endif %}
+                            </td>
+                            <td class="price">INR {{ '{:,.2f}'.format(item.MAE) }}</td>
+                            <td>{{ '{:,.2f}'.format(item.MSE) }}</td>
+                            <td>INR {{ '{:,.2f}'.format(item.RMSE) }}</td>
+                            <td><b>{{ '{:.4f}'.format(item.R2) }}</b></td>
+                            <td>
+                                {% if item.model == metrics.best_model %}
+                                    <span class="tag-pill tag-positive">Production Selected</span>
+                                {% else %}
+                                    <span class="tag-pill tag-neutral">Benchmark Baseline</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- COMPARATIVE METRIC CHARTS -->
+            <div class="chart-grid" style="margin-top: 24px;">
+                <div style="background: white; border: 1px solid var(--line); border-radius: 8px; padding: 18px;">
+                    <p class="eyebrow">Error Metrics (Lower is Better)</p>
+                    <canvas id="chartErrors" height="190"></canvas>
+                </div>
+                <div style="background: white; border: 1px solid var(--line); border-radius: 8px; padding: 18px;">
+                    <p class="eyebrow">R² Score (Closer to 1.0 is Better)</p>
+                    <canvas id="chartR2" height="190"></canvas>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>No Evaluation Metrics Found</h3>
+                <p>Run <code>python train.py</code> to execute the full model evaluation suite.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- DATASET TRANSPARENCY & SALARY DISCLOSURE NOTE -->
+    <section class="panel" style="border-left: 4px solid var(--blue);">
+        <p class="eyebrow" style="color: var(--blue);">Dataset Transparency &amp; Academic Integrity</p>
+        <h3 style="margin: 4px 0 8px; color: var(--navy); font-size: 1.15rem; font-family: Georgia, serif;">Handling of the Salary Attribute</h3>
+        <p style="margin: 0 0 10px; color: #436274; font-size: .9rem; line-height: 1.55;">
+            The publicly available <b>Medical Cost Personal Dataset</b> (Kaggle) originally contains 7 columns: <code>age, sex, bmi, children, smoker, region, charges</code>. It does <i>not</i> natively include an individual income or salary field.
+        </p>
+        <p style="margin: 0; color: #436274; font-size: .9rem; line-height: 1.55;">
+            To support insurance affordability analysis, premium-to-income ratios, and financial suitability scoring within this MCA final-year project, a documented academic proxy is generated deterministically (<code>180000 + age*6500 + bmi*2500 + children*12000</code>). Crucially, <b>the training pipeline and production inference pipeline use the exact same feature schema</b> (7 features) to prevent covariate mismatch or untrained feature leakage.
+        </p>
+    </section>
+
+    <!-- ACADEMIC VIVA & METRIC DEFINITIONS GUIDE -->
+    <section class="panel">
+        <p class="eyebrow">Viva Presentation Guide</p>
+        <h3 style="margin: 4px 0 14px; color: var(--navy); font-size: 1.25rem; font-family: Georgia, serif;">Why Accuracy Percentage is Not Used for Regression</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 16px;">
+            <div style="background: #f9fbfc; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+                <b style="color: var(--navy); font-size: .95rem;">MAE (Mean Absolute Error)</b>
+                <p style="margin: 6px 0 0; color: #556e7e; font-size: .83rem; line-height: 1.45;">
+                    The average absolute magnitude of errors between predicted and actual charges. Preserves original INR currency units and provides direct financial interpretability.
+                </p>
+            </div>
+            <div style="background: #f9fbfc; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+                <b style="color: var(--navy); font-size: .95rem;">RMSE (Root Mean Squared Error)</b>
+                <p style="margin: 6px 0 0; color: #556e7e; font-size: .83rem; line-height: 1.45;">
+                    Square root of mean squared deviations. Penalizes large prediction errors more severely than MAE, ensuring no extreme catastrophic mispredictions.
+                </p>
+            </div>
+            <div style="background: #f9fbfc; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+                <b style="color: var(--navy); font-size: .95rem;">R² Score (Variance Explained)</b>
+                <p style="margin: 6px 0 0; color: #556e7e; font-size: .83rem; line-height: 1.45;">
+                    Quantifies the proportion of total variance in medical charges explained by the model's independent variables. A score of ~0.87 means 87% of cost variation is captured.
+                </p>
+            </div>
+        </div>
+
+        <p class="disclaimer">
+            <b>Note on unsupported accuracy claims:</b> In statistical machine learning, continuous regression tasks cannot claim a single percentage "accuracy" (e.g. "95% accuracy") because predictions are real-valued numbers, not discrete binary classes. Performance is rigorously evaluated via MAE, RMSE, and R² Score.
+        </p>
+    </section>
+</main>
+
+{% if metrics.results %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const results = {{ metrics.results|tojson }};
+    const labels = results.map(r => r.model.replace(' Regressor', ''));
+
+    // Chart 1: MAE vs RMSE
+    new Chart(document.getElementById('chartErrors').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'MAE (INR)',
+                    data: results.map(r => r.MAE),
+                    backgroundColor: '#0d9b88',
+                    borderRadius: 4
+                },
+                {
+                    label: 'RMSE (INR)',
+                    data: results.map(r => r.RMSE),
+                    backgroundColor: '#1677c8',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: function(val) { return '₹' + (val / 1000) + 'k'; } }
+                }
+            }
+        }
+    });
+
+    // Chart 2: R² Score
+    new Chart(document.getElementById('chartR2').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'R² Score (Test)',
+                data: results.map(r => r.R2),
+                backgroundColor: ['#1677c8', '#1677c8', '#1677c8', '#0d9b88'],
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    min: 0.5,
+                    max: 1.0,
+                    ticks: { stepSize: 0.1 }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+{% endif %}
+</body>
+</html>

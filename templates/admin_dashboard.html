@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | Admin Control Center</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') }}">HealthSecure</a>
+    <div class="nav-spacer"></div>
+    <span class="welcome">Admin Workspace</span>
+    <a href="{{ url_for('admin_dashboard') }}" style="color: #82e3cf;">Admin Dashboard</a>
+    <a href="{{ url_for('admin_analytics') }}">Analytics</a>
+    <a href="{{ url_for('admin_model_performance') }}">Model Performance</a>
+    <a href="{{ url_for('dashboard') }}">Member Portal</a>
+    <form method="post" action="{{ url_for('logout') }}">
+        <button class="link-button" type="submit">Log out</button>
+    </form>
+</nav>
+
+<main>
+    <section class="hero compact-hero">
+        <p class="eyebrow" style="color: #e5a63b;">Restricted Management Portal</p>
+        <h1>Administrator Control Center</h1>
+        <p>Operational health overview, registered users, and recent insurance evaluations stored in the MySQL database.</p>
+        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+            <a class="primary-btn" href="{{ url_for('admin_analytics') }}">View System Analytics</a>
+            <a class="secondary-btn" href="{{ url_for('admin_model_performance') }}">Inspect Model Performance</a>
+            <a class="secondary-btn" href="{{ url_for('predict') }}">Test New Prediction</a>
+        </div>
+    </section>
+
+    <!-- ADMIN SUMMARY CARDS -->
+    <section class="stats" aria-label="System Metrics">
+        <div class="stat">
+            <span>Registered Accounts</span>
+            <strong>{{ user_count }}</strong>
+            <small style="color: var(--muted); font-size: .75rem;">Verified database users</small>
+        </div>
+        <div class="stat">
+            <span>Total Evaluations</span>
+            <strong>{{ prediction_count }}</strong>
+            <small style="color: var(--muted); font-size: .75rem;">Completed predictions</small>
+        </div>
+        <div class="stat">
+            <span>Stored Recommendations</span>
+            <strong>{{ recommendation_count }}</strong>
+            <small style="color: var(--muted); font-size: .75rem;">Policy matches generated</small>
+        </div>
+    </section>
+
+    <!-- RECENT USERS -->
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">User Directory</p>
+                <h2>Registered Accounts</h2>
+            </div>
+            <span style="font-size: .8rem; color: var(--muted);">Password hashes are securely encrypted</span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Full Name</th>
+                        <th>Email Address</th>
+                        <th>Account Role</th>
+                        <th>Joined Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for u in users %}
+                    <tr>
+                        <td>#{{ u.id }}</td>
+                        <td style="color: var(--navy); font-weight: 600;">{{ u.name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            <span class="tag-pill {{ 'tag-positive' if u.role == 'admin' else 'tag-neutral' }}">
+                                {{ u.role|title }}
+                            </span>
+                        </td>
+                        <td>{{ u.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5">No registered users in database.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- RECENT PREDICTIONS -->
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Audit Log</p>
+                <h2>Recent System Predictions</h2>
+            </div>
+            <a class="view-link" href="{{ url_for('admin_analytics') }}">View Aggregated Charts &rarr;</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prediction ID</th>
+                        <th>Date &amp; Time</th>
+                        <th>Applicant</th>
+                        <th>Plan Category</th>
+                        <th>Annual Premium</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for pred in predictions %}
+                    <tr>
+                        <td><b>#{{ pred.id }}</b></td>
+                        <td>{{ pred.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+                        <td style="color: var(--navy); font-weight: 600;">{{ pred.full_name }}</td>
+                        <td>{{ pred.plan_category|title }} Plan ({{ pred.policy_duration }}y)</td>
+                        <td class="price">INR {{ '{:,.2f}'.format(pred.estimated_premium) }}</td>
+                        <td>
+                            <a class="view-link" href="{{ url_for('prediction_details', prediction_id=pred.id) }}">Details</a> &bull;
+                            <a class="view-link" href="{{ url_for('download_report', prediction_id=pred.id) }}">PDF Report</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6">No predictions stored in database.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
