@@ -8,16 +8,15 @@
 
 **HealthSecure** is an enterprise-grade web application built to predict health insurance premiums using machine learning regression algorithms, recommend tailored health insurance plans, and provide explainability (XAI) and decision simulation for applicants and underwriters.
 
-The project is built on the **Medical Cost Personal Dataset**, augmented with financial affordability indicators, and features:
-1. **Explainable AI (XAI)**: Dynamic relative feature importances and personalized natural language factor interpretation.
-2. **What-If Scenario Simulator**: Interactive risk factor simulation with side-by-side comparison and visual bar charts.
-3. **ML Model Comparison & Benchmark**: Comparative analysis of Linear Regression, Random Forest Regressor, Gradient Boosting Regressor, and XGBoost Regressor with actual measured test metrics (MAE, MSE, RMSE, R²).
-4. **Advanced Analytics Dashboard**: Comprehensive portfolio monitoring featuring 4 KPI summary cards, interactive filters (Plan, Smoker, Gender, Region), and 6 interactive Chart.js visualizations.
-5. **Professional PDF Prediction Report**: Publication-grade A4 document generation using ReportLab containing applicant demographics, financial ratios, policy calculation, feature importances, and academic disclaimers.
-
----
-
-## 2. Technology Stack
+The project is built on the **Medical Cost Personal Dataset**, augmented with realistic actuarial liquor consumption indicators and financial affordability benchmarks, evaluating 8 core features:
+1. **Age**: Chronological age (18 to 100).
+2. **Gender**: Binary demographic indicator (Female / Male).
+3. **Height & Weight (Dynamic BMI)**: Height in cm and Weight in kg used to compute Body Mass Index ($\text{BMI} = \text{Weight} / (\text{Height}/100)^2$) in real time.
+4. **Smoking Status**: Tobacco usage status (Smoker / Non-smoker).
+5. **Liquor / Alcohol Consumption**: Alcohol drinking status (Yes / No) with learned actuarial medical surcharge.
+6. **Children / Dependents**: Number of dependents (0 to 10).
+7. **Geographic Region**: 4-class regional classification (Northeast, Northwest, Southeast, Southwest).
+8. **Annual Stated Salary**: Financial indicator used for affordability benchmarking.
 
 - **Backend:** Python 3.10+, Flask 3.1, Flask-SQLAlchemy 3.1, PyMySQL
 - **Database:** MySQL 8.0+ / MariaDB (InnoDB, utf8mb4)

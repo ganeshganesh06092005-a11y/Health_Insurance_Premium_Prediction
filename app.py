@@ -78,9 +78,12 @@ class Prediction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     age = db.Column(db.Integer, nullable=False)
     sex = db.Column(db.String(10), nullable=False)
+    height = db.Column(db.Float, nullable=True)
+    weight = db.Column(db.Float, nullable=True)
     bmi = db.Column(db.Float, nullable=False)
     children = db.Column(db.Integer, nullable=False)
     smoker = db.Column(db.String(5), nullable=False)
+    liquor = db.Column(db.String(5), nullable=False, default="no")
     region = db.Column(db.String(20), nullable=False)
     full_name = db.Column(db.String(100), nullable=False, default="")
     salary = db.Column(db.Float, nullable=False, default=0)
@@ -96,6 +99,7 @@ class Prediction(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     recommended_demo_plan = db.relationship("InsurancePlan", foreign_keys=[recommended_plan_id], lazy=True)
+    recommendations = db.relationship("Recommendation", backref="prediction", cascade="all, delete-orphan", lazy=True)
 
 
 class User(db.Model):
@@ -134,6 +138,9 @@ with app.app_context():
     migrations = {
         "user_id": "INTEGER NULL",
         "full_name": "VARCHAR(100) NOT NULL DEFAULT ''",
+        "height": "FLOAT NULL",
+        "weight": "FLOAT NULL",
+        "liquor": "VARCHAR(5) NOT NULL DEFAULT 'no'",
         "salary": "FLOAT NOT NULL DEFAULT 0",
         "policy_duration": "INTEGER NOT NULL DEFAULT 5",
         "plan_category": "VARCHAR(20) NOT NULL DEFAULT 'silver'",
@@ -313,17 +320,47 @@ def get_matching_plans(
 def parse_form(form):
     """Validate and parse inputs from web forms."""
     try:
+        age = int(form["age"])
+        sex = str(form["sex"]).strip().lower()
+        smoker = str(form["smoker"]).strip().lower()
+        liquor = str(form.get("liquor", "no")).strip().lower()
+        region = str(form["region"]).strip().lower()
+        full_name = form.get("full_name", "").strip()
+        salary = float(form["salary"])
+
+        # Dynamic BMI calculation from Height (cm) and Weight (kg)
+        height_raw = form.get("height")
+        weight_raw = form.get("weight")
+        height = float(height_raw) if (height_raw is not None and str(height_raw).strip() != "") else None
+        weight = float(weight_raw) if (weight_raw is not None and str(weight_raw).strip() != "") else None
+
+        if height is not None and weight is not None:
+            if not 50 <= height <= 250:
+                raise ValueError("Height must be between 50 cm and 250 cm.")
+            if not 20 <= weight <= 250:
+                raise ValueError("Weight must be between 20 kg and 250 kg.")
+            bmi = round(weight / ((height / 100) ** 2), 2)
+        elif form.get("bmi"):
+            bmi = round(float(form["bmi"]), 2)
+        else:
+            raise ValueError("Please provide height (in cm) and weight (in kg) to calculate BMI.")
+
         values = {
-            "age": int(form["age"]),
-            "sex": form["sex"],
-            "bmi": float(form["bmi"]),
+            "age": age,
+            "sex": sex,
+            "height": height,
+            "weight": weight,
+            "bmi": bmi,
             "children": int(form["children"]),
-            "smoker": form["smoker"],
-            "region": form["region"],
-            "full_name": form.get("full_name", "").strip(),
-            "salary": float(form["salary"]),
+            "smoker": smoker,
+            "liquor": liquor,
+            "region": region,
+            "full_name": full_name,
+            "salary": salary,
         }
-    except (KeyError, TypeError, ValueError):
+    except (KeyError, TypeError, ValueError) as err:
+        if isinstance(err, ValueError) and str(err):
+            raise
         raise ValueError("Complete all prediction fields with valid values.")
 
     if not values["full_name"]:
@@ -331,13 +368,17 @@ def parse_form(form):
     if not FEATURE_RANGES["age"][0] <= values["age"] <= FEATURE_RANGES["age"][1]:
         raise ValueError("Age must be between 18 and 100.")
     if not FEATURE_RANGES["bmi"][0] <= values["bmi"] <= FEATURE_RANGES["bmi"][1]:
-        raise ValueError("BMI must be between 10 and 60.")
+        raise ValueError("Calculated BMI must be between 10 and 60. Please check height and weight.")
     if not FEATURE_RANGES["children"][0] <= values["children"] <= FEATURE_RANGES["children"][1]:
         raise ValueError("Dependents must be between 0 and 10.")
     if not FEATURE_RANGES["salary"][0] <= values["salary"] <= FEATURE_RANGES["salary"][1]:
         raise ValueError("Annual salary must be between ₹1,00,000 and ₹1,00,00,000.")
-    if values["sex"] not in {"female", "male"} or values["smoker"] not in {"yes", "no"}:
-        raise ValueError("Choose valid gender and smoking values.")
+    if values["sex"] not in {"female", "male"}:
+        raise ValueError("Choose a valid gender.")
+    if values["smoker"] not in {"yes", "no"}:
+        raise ValueError("Choose valid smoking status (yes or no).")
+    if values["liquor"] not in {"yes", "no"}:
+        raise ValueError("Choose valid liquor drinking status (yes or no).")
     if values["region"] not in {"northeast", "northwest", "southeast", "southwest"}:
         raise ValueError("Choose a valid region.")
     return values
@@ -401,9 +442,12 @@ def analytics_payload(records: list[Prediction]) -> dict:
             "id": record.id,
             "age": record.age,
             "sex": record.sex,
+            "height": record.height,
+            "weight": record.weight,
             "bmi": float(record.bmi),
             "children": record.children,
             "smoker": record.smoker,
+            "liquor": getattr(record, "liquor", "no"),
             "region": record.region,
             "plan": record.plan_category,
             "salary": float(record.salary),
@@ -630,9 +674,12 @@ def predict():
             prediction = Prediction()
             prediction.age = values["age"]
             prediction.sex = values["sex"]
+            prediction.height = values.get("height")
+            prediction.weight = values.get("weight")
             prediction.bmi = values["bmi"]
             prediction.children = values["children"]
             prediction.smoker = values["smoker"]
+            prediction.liquor = values.get("liquor", "no")
             prediction.region = values["region"]
             prediction.full_name = values["full_name"]
             prediction.salary = values["salary"]
@@ -666,6 +713,9 @@ def predict():
 
             result = {
                 **recommendation,
+                "height": values.get("height"),
+                "weight": values.get("weight"),
+                "liquor": values.get("liquor", "no"),
                 "premium": predicted_charge,
                 "duration": duration,
                 "ratio": ratio,
@@ -713,9 +763,12 @@ def result(prediction_id=None):
     pred_dict = {
         "age": prediction.age,
         "sex": prediction.sex,
+        "height": prediction.height,
+        "weight": prediction.weight,
         "bmi": prediction.bmi,
         "children": prediction.children,
         "smoker": prediction.smoker,
+        "liquor": getattr(prediction, "liquor", "no"),
         "region": prediction.region,
         "salary": prediction.salary,
         "full_name": prediction.full_name,
@@ -913,9 +966,12 @@ def prediction_details(prediction_id):
     pred_dict = {
         "age": prediction.age,
         "sex": prediction.sex,
+        "height": prediction.height,
+        "weight": prediction.weight,
         "bmi": prediction.bmi,
         "children": prediction.children,
         "smoker": prediction.smoker,
+        "liquor": getattr(prediction, "liquor", "no"),
         "region": prediction.region,
         "salary": prediction.salary,
         "full_name": prediction.full_name,
@@ -1018,12 +1074,16 @@ def what_if_predict():
             changes.append(f"Age: {prediction.age} → {values['age']} yrs")
         if values["sex"] != prediction.sex:
             changes.append(f"Gender: {prediction.sex.title()} → {values['sex'].title()}")
+        if values.get("height") and values.get("weight") and (values["height"] != getattr(prediction, "height", None) or values["weight"] != getattr(prediction, "weight", None)):
+            changes.append(f"Height/Weight: {getattr(prediction, 'height', 'N/A')} cm / {getattr(prediction, 'weight', 'N/A')} kg → {values['height']} cm / {values['weight']} kg")
         if round(values["bmi"], 1) != round(prediction.bmi, 1):
             changes.append(f"BMI: {prediction.bmi:.1f} → {values['bmi']:.1f}")
         if values["children"] != prediction.children:
             changes.append(f"Children: {prediction.children} → {values['children']}")
         if values["smoker"] != prediction.smoker:
             changes.append(f"Smoker: {prediction.smoker.title()} → {values['smoker'].title()}")
+        if values.get("liquor") and values["liquor"] != getattr(prediction, "liquor", "no"):
+            changes.append(f"Liquor: {'Yes (Drinker)' if getattr(prediction, 'liquor', 'no') == 'yes' else 'No (Non-drinker)'} → {'Yes (Drinker)' if values['liquor'] == 'yes' else 'No (Non-drinker)'}")
         if values["region"] != prediction.region:
             changes.append(f"Region: {prediction.region.title()} → {values['region'].title()}")
         if values["salary"] != prediction.salary:
@@ -1136,9 +1196,12 @@ def download_report(prediction_id):
     pred_dict = {
         "age": prediction.age,
         "sex": prediction.sex,
+        "height": prediction.height,
+        "weight": prediction.weight,
         "bmi": prediction.bmi,
         "children": prediction.children,
         "smoker": prediction.smoker,
+        "liquor": getattr(prediction, "liquor", "no"),
         "region": prediction.region,
         "salary": prediction.salary,
         "full_name": prediction.full_name,

@@ -75,12 +75,20 @@
                         <strong>{{ prediction.sex|title }}</strong>
                     </div>
                     <div class="profile-param-item">
+                        <span>Height &amp; Weight</span>
+                        <strong>{% if prediction.height and prediction.weight %}{{ prediction.height|int }} cm / {{ prediction.weight }} kg{% else %}N/A{% endif %}</strong>
+                    </div>
+                    <div class="profile-param-item">
                         <span>Body Mass Index (BMI)</span>
                         <strong>{{ prediction.bmi }}</strong>
                     </div>
                     <div class="profile-param-item">
                         <span>Smoking Status</span>
                         <strong>{{ 'Yes (Smoker)' if prediction.smoker == 'yes' else 'No (Non-smoker)' }}</strong>
+                    </div>
+                    <div class="profile-param-item">
+                        <span>Liquor / Alcohol</span>
+                        <strong>{{ 'Yes (Consumes Alcohol)' if prediction.liquor == 'yes' else 'No (Non-drinker)' }}</strong>
                     </div>
                     <div class="profile-param-item">
                         <span>Number of Children</span>
@@ -116,9 +124,22 @@
                         <option value="male" {% if form_data.get('sex', prediction.sex) == 'male' %}selected{% endif %}>Male</option>
                     </select>
                 </label>
-                <label>Body Mass Index (BMI)
-                    <input type="number" name="bmi" min="10" max="60" step="0.1" value="{{ form_data.get('bmi', prediction.bmi) }}" required>
+                <label>Height (cm)
+                    <input type="number" id="whatifHeight" name="height" min="50" max="250" step="1" value="{{ form_data.get('height', prediction.height or 170) }}" required>
                 </label>
+                <label>Weight (kg)
+                    <input type="number" id="whatifWeight" name="weight" min="20" max="250" step="0.5" value="{{ form_data.get('weight', prediction.weight or (prediction.bmi * (1.7 * 1.7))|round(1)) }}" required>
+                </label>
+                <div style="grid-column: 1 / -1; background: #f3f8fa; border: 1px solid #d5e5ec; border-radius: 8px; padding: 10px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: .8rem; font-weight: 700; color: #5a7384;">Dynamically Calculated BMI</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span id="whatifBmiDisplay" style="font-size: 1.3rem; font-weight: 800; color: var(--navy);">{{ form_data.get('bmi', prediction.bmi) }}</span>
+                            <span id="whatifBmiBadge" class="tag-pill tag-neutral" style="font-size: .75rem;">Calculated</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="whatifBmiInput" name="bmi" value="{{ form_data.get('bmi', prediction.bmi) }}">
+                </div>
                 <label>Number of Children
                     <input type="number" name="children" min="0" max="10" value="{{ form_data.get('children', prediction.children) }}" required>
                 </label>
@@ -126,6 +147,12 @@
                     <select name="smoker" required>
                         <option value="no" {% if form_data.get('smoker', prediction.smoker) == 'no' %}selected{% endif %}>Non-smoker</option>
                         <option value="yes" {% if form_data.get('smoker', prediction.smoker) == 'yes' %}selected{% endif %}>Smoker</option>
+                    </select>
+                </label>
+                <label>Liquor / Alcohol Consumption
+                    <select name="liquor" required>
+                        <option value="no" {% if form_data.get('liquor', prediction.liquor) == 'no' %}selected{% endif %}>No (Non-drinker)</option>
+                        <option value="yes" {% if form_data.get('liquor', prediction.liquor) == 'yes' %}selected{% endif %}>Yes (Consumes Alcohol)</option>
                     </select>
                 </label>
                 <label>Geographic Region
@@ -139,7 +166,7 @@
                     <input type="number" name="salary" min="100000" max="10000000" step="1000" value="{{ form_data.get('salary', prediction.salary) }}" required>
                 </label>
 
-                <button type="submit">Calculate What-If Prediction</button>
+                <button type="submit" style="grid-column: 1 / -1;">Calculate What-If Prediction</button>
             </form>
         </div>
 
@@ -243,5 +270,52 @@
     });
 </script>
 {% endif %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const heightInput = document.getElementById("whatifHeight");
+    const weightInput = document.getElementById("whatifWeight");
+    const bmiDisplay = document.getElementById("whatifBmiDisplay");
+    const bmiBadge = document.getElementById("whatifBmiBadge");
+    const bmiInput = document.getElementById("whatifBmiInput");
+
+    function calculateBMI() {
+        const height = parseFloat(heightInput.value);
+        const weight = parseFloat(weightInput.value);
+
+        if (height >= 50 && height <= 250 && weight >= 20 && weight <= 250) {
+            const heightInMeters = height / 100;
+            const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(2);
+            if (bmiDisplay) bmiDisplay.textContent = bmi;
+            if (bmiInput) bmiInput.value = bmi;
+
+            if (bmiBadge) {
+                if (bmi < 18.5) {
+                    bmiBadge.textContent = "Underweight (< 18.5)";
+                    bmiBadge.style.backgroundColor = "#e0f2fe";
+                    bmiBadge.style.color = "#0369a1";
+                } else if (bmi <= 24.9) {
+                    bmiBadge.textContent = "Normal (18.5–24.9)";
+                    bmiBadge.style.backgroundColor = "#dcfce7";
+                    bmiBadge.style.color = "#15803d";
+                } else if (bmi <= 29.9) {
+                    bmiBadge.textContent = "Overweight (25–29.9)";
+                    bmiBadge.style.backgroundColor = "#fef3c7";
+                    bmiBadge.style.color = "#b45309";
+                } else {
+                    bmiBadge.textContent = "Obese (≥ 30.0)";
+                    bmiBadge.style.backgroundColor = "#fee2e2";
+                    bmiBadge.style.color = "#b91c1c";
+                }
+            }
+        }
+    }
+
+    if (heightInput && weightInput) {
+        heightInput.addEventListener("input", calculateBMI);
+        weightInput.addEventListener("input", calculateBMI);
+        calculateBMI();
+    }
+});
+</script>
 </body>
 </html>

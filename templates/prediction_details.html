@@ -78,16 +78,24 @@
                     <strong style="color: var(--navy);">{{ prediction.age }} yrs &bull; {{ prediction.sex|title }}</strong>
                 </div>
                 <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Height &amp; Weight</span>
+                    <strong style="color: var(--navy);">{% if prediction.height and prediction.weight %}{{ prediction.height|int }} cm / {{ prediction.weight }} kg{% else %}Calculated directly{% endif %}</strong>
+                </div>
+                <div>
                     <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Body Mass Index (BMI)</span>
                     <strong style="color: var(--navy);">{{ prediction.bmi }}</strong>
                 </div>
                 <div>
-                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Dependents</span>
-                    <strong style="color: var(--navy);">{{ prediction.children }} child dependent(s)</strong>
-                </div>
-                <div>
                     <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Smoking Status</span>
                     <strong style="color: var(--navy);">{{ 'Yes (Smoker)' if prediction.smoker == 'yes' else 'No (Non-smoker)' }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Liquor / Alcohol</span>
+                    <strong style="color: var(--navy);">{{ 'Yes (Consumes Alcohol)' if prediction.liquor == 'yes' else 'No (Non-drinker)' }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Dependents</span>
+                    <strong style="color: var(--navy);">{{ prediction.children }} child dependent(s)</strong>
                 </div>
                 <div>
                     <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600; display: block;">Geographic Region</span>

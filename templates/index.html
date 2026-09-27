@@ -264,14 +264,15 @@
                         HealthSecure is a machine-learning-based academic application designed to estimate health insurance premium amounts using personal and health-related information.
                     </p>
                     <p>
-                        Traditional underwriting relies on manual actuarial tables that lack transparency. HealthSecure demonstrates how modern tree-based regression algorithms evaluate nonlinear relationships across seven core risk factors to predict annual medical claim charges accurately.
+                        Traditional underwriting relies on manual actuarial tables that lack transparency. HealthSecure demonstrates how modern tree-based regression algorithms evaluate nonlinear relationships across eight core risk factors to predict annual medical claim charges accurately.
                     </p>
 
                     <div class="factors-pill-group">
                         <span class="factor-pill">🎂 Age (18-100)</span>
                         <span class="factor-pill">⚧ Gender</span>
-                        <span class="factor-pill">⚖️ Body Mass Index (BMI)</span>
+                        <span class="factor-pill">⚖️ Height &amp; Weight (Dynamic BMI)</span>
                         <span class="factor-pill">🚬 Smoking Status</span>
+                        <span class="factor-pill">🍷 Liquor / Alcohol Status</span>
                         <span class="factor-pill">👨‍👩‍👧 Dependents / Children</span>
                         <span class="factor-pill">📍 Geographic Region</span>
                         <span class="factor-pill">💼 Annual Stated Salary</span>
@@ -422,8 +423,8 @@
 
                 <div class="feature-box">
                     <div class="feature-box-icon">⚖️</div>
-                    <h4>3. Body Mass Index (BMI)</h4>
-                    <p>Body Mass Index (10 to 60 kg/m²) information used as one of the primary quantitative clinical risk features.</p>
+                    <h4>3. Height &amp; Weight (Dynamic BMI)</h4>
+                    <p>Body Mass Index calculated dynamically from Height (cm) and Weight (kg) as a primary clinical risk indicator.</p>
                     <span class="feature-domain">Continuous Numerical</span>
                 </div>
 
@@ -435,22 +436,29 @@
                 </div>
 
                 <div class="feature-box">
+                    <div class="feature-box-icon">🍷</div>
+                    <h4>5. Liquor / Alcohol Drinking</h4>
+                    <p>Alcohol consumption status (Yes / No) capturing actuarial morbidity and elevated clinical hospitalization risk.</p>
+                    <span class="feature-domain">Categorical (Binary)</span>
+                </div>
+
+                <div class="feature-box">
                     <div class="feature-box-icon">👨‍👩‍👧</div>
-                    <h4>5. Children / Dependents</h4>
+                    <h4>6. Children / Dependents</h4>
                     <p>Number of dependents (0 to 10) covered under the policy, impacting family medical coverage requirements.</p>
                     <span class="feature-domain">Discrete Integer</span>
                 </div>
 
                 <div class="feature-box">
                     <div class="feature-box-icon">📍</div>
-                    <h4>6. Geographic Region</h4>
+                    <h4>7. Geographic Region</h4>
                     <p>Geographical territory (Northeast, Northwest, Southeast, Southwest) capturing regional healthcare provider cost variations.</p>
                     <span class="feature-domain">Categorical (4-Class)</span>
                 </div>
 
                 <div class="feature-box">
                     <div class="feature-box-icon">💼</div>
-                    <h4>7. Annual Salary / Income</h4>
+                    <h4>8. Annual Salary / Income</h4>
                     <p>Annual stated earnings benchmark used to calculate the Premium-to-Income affordability ratio (&le; 10% target).</p>
                     <span class="feature-domain">Financial Metric</span>
                 </div>
@@ -657,6 +665,13 @@
                         </select>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
+                        <label for="previewLiquor" style="font-weight: 600; font-size: 0.9rem;">Liquor / Alcohol:</label>
+                        <select id="previewLiquor" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--landing-border); font-family: inherit; font-size: 0.9rem;">
+                            <option value="yes" selected>Consumes Alcohol</option>
+                            <option value="no">Non-Drinker</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
                         <label for="previewAge" style="font-weight: 600; font-size: 0.9rem;">Age:</label>
                         <input type="number" id="previewAge" value="35" min="18" max="75" style="width: 70px; padding: 8px; border-radius: 8px; border: 1px solid var(--landing-border); font-family: inherit;">
                     </div>
@@ -672,7 +687,7 @@
                         <span class="sim-label">Original Baseline Prediction</span>
                         <div class="sim-price">INR 28,500 <span>/ year</span></div>
                         <div style="font-size: 0.85rem; color: var(--landing-text-muted); margin-top: 8px;">
-                            Baseline profile: 35 yrs, Smoker, BMI 28.5
+                            Baseline profile: 35 yrs, Smoker, Drinker, BMI 28.5
                         </div>
                     </div>
 

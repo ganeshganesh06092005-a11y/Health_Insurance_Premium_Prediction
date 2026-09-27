@@ -63,7 +63,7 @@
                         <td style="color: var(--navy); font-weight: 600;">{{ record.full_name }}</td>
                         <td>
                             {{ record.age }} yrs &bull; BMI {{ record.bmi }}<br>
-                            <small>{{ 'Smoker' if record.smoker == 'yes' else 'Non-smoker' }} &bull; {{ record.children }} child</small>
+                            <small>{{ 'Smoker' if record.smoker == 'yes' else 'Non-smoker' }} &bull; {{ 'Drinker' if record.liquor == 'yes' else 'Non-drinker' }} &bull; {{ record.children }} child</small>
                         </td>
                         <td>
                             {{ record.plan_category|title }} Plan<br>

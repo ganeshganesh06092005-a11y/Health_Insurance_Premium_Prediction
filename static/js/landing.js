@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Interactive Scenario Simulation Preview Toggle
     const previewSmokerSelect = document.getElementById('previewSmoker');
+    const previewLiquorSelect = document.getElementById('previewLiquor');
     const previewAgeInput = document.getElementById('previewAge');
     const previewBmiInput = document.getElementById('previewBmi');
     const previewScenarioPrice = document.getElementById('previewScenarioPrice');
@@ -69,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!previewScenarioPrice || !previewDeltaBadge) return;
         const base = 28500;
         const isSmoker = previewSmokerSelect ? previewSmokerSelect.value === 'yes' : true;
+        const isLiquor = previewLiquorSelect ? previewLiquorSelect.value === 'yes' : true;
         const age = previewAgeInput ? parseInt(previewAgeInput.value) || 35 : 35;
         const bmi = previewBmiInput ? parseFloat(previewBmiInput.value) || 28.5 : 28.5;
 
@@ -76,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isSmoker) {
             estimated += 17500 + (age * 130);
             if (bmi >= 30) estimated += 2400;
+        }
+        if (isLiquor) {
+            estimated += 2200 + (age * 20);
         }
 
         estimated = Math.round(estimated);
@@ -93,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (previewSmokerSelect) previewSmokerSelect.addEventListener('change', updatePreviewCalc);
+    if (previewLiquorSelect) previewLiquorSelect.addEventListener('change', updatePreviewCalc);
     if (previewAgeInput) previewAgeInput.addEventListener('input', updatePreviewCalc);
     if (previewBmiInput) previewBmiInput.addEventListener('input', updatePreviewCalc);
 

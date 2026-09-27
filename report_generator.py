@@ -191,6 +191,17 @@ def generate_pdf_report(
     user_email = user.email if user else "member@healthsecure.local"
     user_name = prediction.full_name or (user.name if user else "Applicant")
 
+    height_weight_str = (
+        f"{prediction.height:.0f} cm / {prediction.weight:.1f} kg"
+        if (getattr(prediction, "height", None) and getattr(prediction, "weight", None))
+        else "N/A"
+    )
+    liquor_status_str = (
+        "Yes (Drinker)"
+        if getattr(prediction, "liquor", "no") == "yes"
+        else "No (Non-drinker)"
+    )
+
     profile_data = [
         [
             Paragraph("<b>Full Name:</b>", body_style),
@@ -201,18 +212,24 @@ def generate_pdf_report(
         [
             Paragraph("<b>Account Email:</b>", body_style),
             Paragraph(user_email, body_style),
-            Paragraph("<b>Smoking Status:</b>", body_style),
-            Paragraph(f"{prediction.smoker.title()}", body_style),
+            Paragraph("<b>Height / Weight:</b>", body_style),
+            Paragraph(height_weight_str, body_style),
         ],
         [
             Paragraph("<b>Age:</b>", body_style),
             Paragraph(f"{prediction.age} years", body_style),
-            Paragraph("<b>Number of Children:</b>", body_style),
-            Paragraph(f"{prediction.children} dependent(s)", body_style),
+            Paragraph("<b>Smoking Status:</b>", body_style),
+            Paragraph(f"{prediction.smoker.title()}", body_style),
         ],
         [
             Paragraph("<b>Gender:</b>", body_style),
             Paragraph(f"{prediction.sex.title()}", body_style),
+            Paragraph("<b>Liquor / Alcohol:</b>", body_style),
+            Paragraph(liquor_status_str, body_style),
+        ],
+        [
+            Paragraph("<b>Number of Children:</b>", body_style),
+            Paragraph(f"{prediction.children} dependent(s)", body_style),
             Paragraph("<b>Geographic Region:</b>", body_style),
             Paragraph(f"{prediction.region.title()}", body_style),
         ],

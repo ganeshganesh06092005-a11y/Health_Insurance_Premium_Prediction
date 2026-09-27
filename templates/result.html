@@ -61,7 +61,7 @@
                     <span style="color: var(--muted); font-size: 1rem;">/ year</span>
                 </div>
                 <p style="margin: 6px 0 0; color: #436274; font-size: .92rem;">
-                    Applicant: <b>{{ prediction.full_name }}</b> &bull; {{ prediction.age }} yrs, {{ prediction.sex|title }} &bull; BMI {{ prediction.bmi }} &bull; {{ 'Smoker' if prediction.smoker == 'yes' else 'Non-smoker' }} &bull; Stated Income: ₹{{ '{:,.0f}'.format(prediction.salary) }}
+                    Applicant: <b>{{ prediction.full_name }}</b> &bull; {{ prediction.age }} yrs, {{ prediction.sex|title }}{% if prediction.height and prediction.weight %} &bull; {{ prediction.height|int }} cm / {{ prediction.weight }} kg{% endif %} &bull; BMI {{ prediction.bmi }} &bull; {{ 'Smoker' if prediction.smoker == 'yes' else 'Non-smoker' }} &bull; {{ 'Consumes Alcohol' if prediction.liquor == 'yes' else 'Non-drinker' }} &bull; Stated Income: ₹{{ '{:,.0f}'.format(prediction.salary) }}
                 </p>
             </div>
             <div style="text-align: right; background: #f4faf9; padding: 12px 18px; border-radius: 8px; border: 1px solid #c9ece6;">

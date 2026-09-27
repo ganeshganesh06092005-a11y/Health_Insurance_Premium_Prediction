@@ -32,7 +32,7 @@ METRICS_PATH = Path("models") / "evaluation_metrics.json"
 def make_pipeline(regressor) -> Pipeline:
     """Use identical preprocessing across candidates for a fair comparison."""
     preprocessor = ColumnTransformer([
-        ("categorical", OneHotEncoder(handle_unknown="ignore"), ["sex", "smoker", "region"]),
+        ("categorical", OneHotEncoder(handle_unknown="ignore"), ["sex", "smoker", "region", "liquor"]),
         ("numeric", "passthrough", ["age", "bmi", "children", "salary"]),
     ])
     return Pipeline([("preprocessor", preprocessor), ("regressor", regressor)])
@@ -83,7 +83,7 @@ def write_report(dataset_rows, train_rows, test_rows, results, best_result, samp
 | Test ratio | {int(TEST_SIZE * 100)}% |
 | Random state | {RANDOM_STATE} |
 
-Features: age, sex, BMI, number of children, smoker status, region, and salary. The public source dataset does not include salary, so this educational project derives a documented academic proxy. It is not an actual salary measure.
+Features: age, sex, BMI, number of children, smoker status, region, liquor drinking, and salary. The public source dataset does not include salary, so this educational project derives a documented academic proxy. It is not an actual salary measure.
 
 ## Models tested
 

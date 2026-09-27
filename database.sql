@@ -50,9 +50,12 @@ CREATE TABLE IF NOT EXISTS prediction (
     user_id INT NULL,
     age INT NOT NULL,
     sex VARCHAR(10) NOT NULL,
+    height DECIMAL(5,2) NULL,
+    weight DECIMAL(5,2) NULL,
     bmi DECIMAL(5,2) NOT NULL,
     children INT NOT NULL,
     smoker VARCHAR(5) NOT NULL,
+    liquor VARCHAR(5) NOT NULL DEFAULT 'no',
     region VARCHAR(20) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     salary DECIMAL(12,2) NOT NULL,
@@ -72,6 +75,7 @@ CREATE TABLE IF NOT EXISTS prediction (
     INDEX idx_prediction_created_at (created_at),
     INDEX idx_prediction_plan (plan_category),
     INDEX idx_prediction_smoker (smoker),
+    INDEX idx_prediction_liquor (liquor),
     INDEX idx_prediction_region (region),
     INDEX idx_prediction_rec_plan (recommended_plan_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

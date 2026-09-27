@@ -14,9 +14,11 @@ from sklearn.preprocessing import OneHotEncoder
 BASE_DIR = Path(__file__).resolve().parent
 DATA_PATH = BASE_DIR / "data" / "insurance.csv"
 MODEL_PATH = BASE_DIR / "models" / "premium_model.joblib"
-FEATURES = ["age", "sex", "bmi", "children", "smoker", "region", "salary"]
+FEATURES = ["age", "sex", "bmi", "children", "smoker", "region", "liquor", "salary"]
 FEATURE_RANGES = {
     "age": (18, 100),
+    "height": (50, 250),
+    "weight": (20, 250),
     "bmi": (10, 60),
     "children": (0, 10),
     "salary": (100000, 10000000),
@@ -31,13 +33,15 @@ def create_demo_data(rows: int = 2500) -> pd.DataFrame:
     children = rng.integers(0, 6, rows)
     sex = rng.choice(["female", "male"], rows)
     smoker = rng.choice(["no", "yes"], rows, p=[0.8, 0.2])
+    liquor = rng.choice(["no", "yes"], rows, p=[0.72, 0.28])
     region = rng.choice(["northeast", "northwest", "southeast", "southwest"], rows)
     salary = np.clip(180000 + age * 6500 + rng.normal(0, 90000, rows), 100000, 10000000)
     charges = (1200 + age * 250 + bmi * 110 + children * 350
                + (smoker == "yes") * (17000 + age * 140)
+               + (liquor == "yes") * (2200 + age * 20)
                + (bmi >= 30) * 1200 + rng.normal(0, 1800, rows))
     return pd.DataFrame({"age": age, "sex": sex, "bmi": bmi, "children": children,
-                         "smoker": smoker, "region": region, "salary": salary.round(0),
+                         "smoker": smoker, "region": region, "liquor": liquor, "salary": salary.round(0),
                          "charges": np.maximum(charges, 1000)})
 
 
@@ -63,7 +67,7 @@ def read_data() -> pd.DataFrame:
 def train_model() -> Pipeline:
     data = read_data()
     preprocessor = ColumnTransformer([
-        ("categories", OneHotEncoder(handle_unknown="ignore"), ["sex", "smoker", "region"]),
+        ("categories", OneHotEncoder(handle_unknown="ignore"), ["sex", "smoker", "region", "liquor"]),
         ("numbers", "passthrough", ["age", "bmi", "children", "salary"]),
     ])
     pipeline = Pipeline([
@@ -89,7 +93,7 @@ def predict_premium(values: dict) -> float:
     return round(float(model.predict(frame)[0]), 2)
 
 
-def feature_insights(limit: int = 7) -> list[dict]:
+def feature_insights(limit: int = 8) -> list[dict]:
     """Return aggregated tree-model importances for Explainable AI."""
     model = load_or_train_model()
     regressor = model.named_steps.get("regressor")
@@ -103,13 +107,14 @@ def feature_insights(limit: int = 7) -> list[dict]:
         "bmi": "Body Mass Index (BMI)",
         "age": "Age",
         "region": "Geographic Region",
+        "liquor": "Liquor / Alcohol Consumption",
         "children": "Number of Children",
         "sex": "Gender",
         "salary": "Annual Salary (Proxy)",
     }
     for name, importance in zip(preprocessor.get_feature_names_out(), regressor.feature_importances_):
         feature_name = name.split("__", 1)[-1]
-        if feature_name.startswith(("sex_", "smoker_", "region_")):
+        if feature_name.startswith(("sex_", "smoker_", "region_", "liquor_")):
             feature_name = feature_name.split("_", 1)[0]
         grouped[feature_name] = grouped.get(feature_name, 0.0) + float(importance)
 
@@ -258,9 +263,28 @@ def explain_prediction(values: dict, estimated_premium: float | None = None) -> 
             "explanation": f"Annual salary is used for financial affordability benchmarking. The estimated premium represents {ratio:.2f}% of stated annual income."
         })
 
+    # 8. Liquor / Alcohol Consumption
+    liquor = str(values.get("liquor", "no")).lower()
+    if liquor == "yes":
+        interpretations.append({
+            "feature": "Liquor / Alcohol Consumption",
+            "value": "Consumes Alcohol",
+            "impact": "Lifestyle Risk Surcharge",
+            "status": "warning",
+            "explanation": "Alcohol consumption increases projected clinical claim risk (hepatic metabolism, cardiovascular strain, and elevated hospitalization risk), causing the ML model to apply an actuarial surcharge."
+        })
+    else:
+        interpretations.append({
+            "feature": "Liquor / Alcohol Consumption",
+            "value": "Non-drinker",
+            "impact": "Favorable Health Factor",
+            "status": "positive",
+            "explanation": "Abstaining from liquor/alcohol avoids lifestyle-associated health surcharges, maintaining a lower risk tier in the ML regression assessment."
+        })
+
     simple_explanation = (
         f"{top_feature} had relatively high feature importance in this trained model. "
-        "Inputs like smoking status, BMI, and age form the primary drivers of predicted premiums."
+        "Inputs like smoking status, BMI, liquor consumption, and age form the primary drivers of predicted premiums."
     )
 
     return {
