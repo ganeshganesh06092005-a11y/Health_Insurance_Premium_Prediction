@@ -76,13 +76,12 @@
             </select>
         </div>
         <div class="filter-item">
-            <span>Region:</span>
+            <span>State / Region:</span>
             <select id="filterRegion">
-                <option value="all">All Regions</option>
-                <option value="northeast">Northeast</option>
-                <option value="northwest">Northwest</option>
-                <option value="southeast">Southeast</option>
-                <option value="southwest">Southwest</option>
+                <option value="all">All States</option>
+                {% for state in ['Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Haryana', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Odisha', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'West Bengal'] %}
+                    <option value="{{ state.lower() }}">{{ state }}</option>
+                {% endfor %}
             </select>
         </div>
         <button id="btnResetFilters" class="reset-btn" type="button">Reset Filters</button>

@@ -155,10 +155,10 @@
                         <option value="yes" {% if form_data.get('liquor', prediction.liquor) == 'yes' %}selected{% endif %}>Yes (Consumes Alcohol)</option>
                     </select>
                 </label>
-                <label>Geographic Region
+                <label>Indian State / Region
                     <select name="region" required>
-                        {% for reg in ['northeast', 'northwest', 'southeast', 'southwest'] %}
-                            <option value="{{ reg }}" {% if form_data.get('region', prediction.region) == reg %}selected{% endif %}>{{ reg|title }}</option>
+                        {% for reg in ['Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Haryana', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Odisha', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'West Bengal'] %}
+                            <option value="{{ reg }}" {% if form_data.get('region', prediction.region) == reg %}selected{% endif %}>{{ reg }}</option>
                         {% endfor %}
                     </select>
                 </label>

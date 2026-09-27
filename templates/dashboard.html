@@ -101,13 +101,12 @@
             </select>
         </div>
         <div class="filter-item">
-            <span>Region:</span>
+            <span>State / Region:</span>
             <select id="filterRegion">
-                <option value="all">All Regions</option>
-                <option value="northeast">Northeast</option>
-                <option value="northwest">Northwest</option>
-                <option value="southeast">Southeast</option>
-                <option value="southwest">Southwest</option>
+                <option value="all">All States</option>
+                {% for state in ['Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Haryana', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Odisha', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'West Bengal'] %}
+                    <option value="{{ state.lower() }}">{{ state }}</option>
+                {% endfor %}
             </select>
         </div>
         <button id="btnResetFilters" class="reset-btn" type="button">Reset Filters</button>
@@ -269,9 +268,20 @@
                             <td class="price">INR {{ '{:,.2f}'.format(record.estimated_premium) }}</td>
                             <td>{{ record.policy_duration }} yrs &bull; <small>{{ '{:.2f}'.format(record.premium_income_ratio) }}%</small></td>
                             <td>
-                                <a class="view-link" href="{{ url_for('prediction_details', prediction_id=record.id) }}">Details</a> &bull;
-                                <a class="view-link" href="{{ url_for('what_if', prediction_id=record.id) }}">What-If</a> &bull;
-                                <a class="view-link" href="{{ url_for('download_report', prediction_id=record.id) }}">PDF</a>
+                                <div class="action-btn-group">
+                                    <a class="btn-action btn-action-details" href="{{ url_for('prediction_details', prediction_id=record.id) }}" title="View Full Details">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                        Details
+                                    </a>
+                                    <a class="btn-action btn-action-whatif" href="{{ url_for('what_if', prediction_id=record.id) }}" title="What-If Scenario Simulation">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/></svg>
+                                        What-If
+                                    </a>
+                                    <a class="btn-action btn-action-pdf" href="{{ url_for('download_report', prediction_id=record.id) }}" title="Download PDF Report">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        PDF
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}

@@ -34,7 +34,11 @@ def create_demo_data(rows: int = 2500) -> pd.DataFrame:
     sex = rng.choice(["female", "male"], rows)
     smoker = rng.choice(["no", "yes"], rows, p=[0.8, 0.2])
     liquor = rng.choice(["no", "yes"], rows, p=[0.72, 0.28])
-    region = rng.choice(["northeast", "northwest", "southeast", "southwest"], rows)
+    region = rng.choice([
+        "Maharashtra", "Tamil Nadu", "Karnataka", "Delhi", "Uttar Pradesh",
+        "Gujarat", "West Bengal", "Kerala", "Telangana", "Rajasthan",
+        "Andhra Pradesh", "Madhya Pradesh", "Punjab", "Haryana", "Bihar", "Odisha"
+    ], rows)
     salary = np.clip(180000 + age * 6500 + rng.normal(0, 90000, rows), 100000, 10000000)
     charges = (1200 + age * 250 + bmi * 110 + children * 350
                + (smoker == "yes") * (17000 + age * 140)
@@ -231,14 +235,14 @@ def explain_prediction(values: dict, estimated_premium: float | None = None) -> 
         "explanation": f"Household of {children} dependent(s) contributes moderately to cumulative family health risk and coverage scope."
     })
 
-    # 5. Geographic Region
-    region = str(values.get("region", "northeast"))
+    # 5. Geographic Region / Indian State
+    region = str(values.get("region", "Maharashtra"))
     interpretations.append({
-        "feature": "Geographic Region",
+        "feature": "Indian State / Region",
         "value": region.title(),
-        "impact": "Regional Cost Adjustment",
+        "impact": "State Healthcare Index",
         "status": "neutral",
-        "explanation": f"The {region.title()} regional coefficient accounts for geographic variations in healthcare infrastructure, hospital billing, and state healthcare delivery costs."
+        "explanation": f"Healthcare infrastructure, provider pricing index, and tertiary hospital network density in {region.title()} adjust actuarial baseline costs."
     })
 
     # 6. Gender

@@ -230,7 +230,7 @@ def generate_pdf_report(
         [
             Paragraph("<b>Number of Children:</b>", body_style),
             Paragraph(f"{prediction.children} dependent(s)", body_style),
-            Paragraph("<b>Geographic Region:</b>", body_style),
+            Paragraph("<b>Indian State / Region:</b>", body_style),
             Paragraph(f"{prediction.region.title()}", body_style),
         ],
     ]

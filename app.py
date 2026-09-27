@@ -166,57 +166,125 @@ with app.app_context():
             db.session.execute(text(f"ALTER TABLE users ADD COLUMN {column} {definition}"))
     db.session.commit()
 
-    # Seed 5 Standard Demo Insurance Plans if table is empty
-    if not InsurancePlan.query.first():
-        demo_plans = [
-            InsurancePlan(
-                plan_name="HealthSecure Basic",
-                annual_premium=19999.00,
-                coverage_amount=300000.00,
-                policy_duration=5,
-                plan_description="Essential sample coverage plan designed for cost-conscious protection against acute hospitalization.",
-                benefits="Hospitalization support, basic benefits, standard ambulance cover, daycare procedures",
-                status="active",
-            ),
-            InsurancePlan(
-                plan_name="HealthSecure Standard",
-                annual_premium=27999.00,
-                coverage_amount=500000.00,
-                policy_duration=10,
-                plan_description="Standard balanced protection plan providing comprehensive inpatient and outpatient support.",
-                benefits="Inpatient treatment, daycare treatments, ambulance support, annual health checkup, pre/post hospitalization",
-                status="active",
-            ),
-            InsurancePlan(
-                plan_name="HealthSecure Plus",
-                annual_premium=30500.00,
-                coverage_amount=750000.00,
-                policy_duration=10,
-                plan_description="Enhanced health protection tier offering higher sum insured and critical illness cover.",
-                benefits="Extended inpatient care, pre & post hospitalization (60/90 days), critical illness rider, restorative sum insured",
-                status="active",
-            ),
-            InsurancePlan(
-                plan_name="HealthSecure Family",
-                annual_premium=31999.00,
-                coverage_amount=1000000.00,
-                policy_duration=15,
-                plan_description="Family floater health protection offering extended duration and comprehensive pediatric/maternity coverage.",
-                benefits="Maternity benefits, pediatric care, ICU cover, zero room-rent capping, family floater support",
-                status="active",
-            ),
-            InsurancePlan(
-                plan_name="HealthSecure Premium",
-                annual_premium=49999.00,
-                coverage_amount=1500000.00,
-                policy_duration=20,
-                plan_description="Comprehensive high-tier executive protection with worldwide emergency assistance and zero copays.",
-                benefits="Zero copay nationwide, worldwide emergency evacuation, unlimited restoration, AYUSH cover, executive wellness suite",
-                status="active",
-            ),
-        ]
-        db.session.add_all(demo_plans)
-        db.session.commit()
+    # Seed / Synchronize 12 Comprehensive Demo Insurance Plans
+    comprehensive_demo_plans = [
+        {
+            "plan_name": "HealthSecure Starter Shield",
+            "annual_premium": 11999.00,
+            "coverage_amount": 200000.00,
+            "policy_duration": 3,
+            "plan_description": "Pocket-friendly starter health protection plan for young adults and students.",
+            "benefits": "Emergency hospitalization, basic OPD consultations, accident cover, 24/7 tele-health helpline",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Basic",
+            "annual_premium": 19999.00,
+            "coverage_amount": 300000.00,
+            "policy_duration": 5,
+            "plan_description": "Essential sample coverage plan designed for cost-conscious protection against acute hospitalization.",
+            "benefits": "Hospitalization support, basic benefits, standard ambulance cover, daycare procedures",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure SmartCare",
+            "annual_premium": 23499.00,
+            "coverage_amount": 400000.00,
+            "policy_duration": 5,
+            "plan_description": "Balanced health protection tier tailored for young professionals and early-career individuals.",
+            "benefits": "Hospitalization, annual preventive wellness checkups, pharmacy vouchers, daycare treatment",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Standard",
+            "annual_premium": 27999.00,
+            "coverage_amount": 500000.00,
+            "policy_duration": 10,
+            "plan_description": "Standard balanced protection plan providing comprehensive inpatient and outpatient support.",
+            "benefits": "Inpatient treatment, daycare treatments, ambulance support, annual health checkup, pre/post hospitalization",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Plus",
+            "annual_premium": 30500.00,
+            "coverage_amount": 750000.00,
+            "policy_duration": 10,
+            "plan_description": "Enhanced health protection tier offering higher sum insured and critical illness cover.",
+            "benefits": "Extended inpatient care, pre & post hospitalization (60/90 days), critical illness rider, restorative sum insured",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Family",
+            "annual_premium": 31999.00,
+            "coverage_amount": 1000000.00,
+            "policy_duration": 15,
+            "plan_description": "Family floater health protection offering extended duration and comprehensive pediatric/maternity coverage.",
+            "benefits": "Maternity benefits, pediatric care, ICU cover, zero room-rent capping, family floater support",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure CriticalCare Rider",
+            "annual_premium": 36500.00,
+            "coverage_amount": 1200000.00,
+            "policy_duration": 10,
+            "plan_description": "Specialized high-severity coverage protecting against 36 major critical illnesses with lump-sum recovery payouts.",
+            "benefits": "36 critical illnesses covered, lump-sum recovery grant, advanced oncology care, cardiac surgery cover",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Diabetes Care",
+            "annual_premium": 41000.00,
+            "coverage_amount": 1000000.00,
+            "policy_duration": 10,
+            "plan_description": "Specialized disease management plan covering Type 1 & 2 Diabetes, hypertension, and cardiac care from Day 1.",
+            "benefits": "Day-1 pre-existing coverage for diabetes, HbA1c monitoring allowance, dialysis support, cardiovascular cover",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Senior Protect",
+            "annual_premium": 44500.00,
+            "coverage_amount": 1000000.00,
+            "policy_duration": 15,
+            "plan_description": "Tailored eldercare health protection with reduced waiting periods and comprehensive home hospitalization.",
+            "benefits": "Zero pre-policy medical checkup up to age 65, domiciliary hospitalization, AYUSH therapy, companion caregiver allowance",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Premium",
+            "annual_premium": 49999.00,
+            "coverage_amount": 1500000.00,
+            "policy_duration": 20,
+            "plan_description": "Comprehensive high-tier executive protection with worldwide emergency assistance and zero copays.",
+            "benefits": "Zero copay nationwide, worldwide emergency evacuation, unlimited restoration, AYUSH cover, executive wellness suite",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Super Elite",
+            "annual_premium": 62000.00,
+            "coverage_amount": 2500000.00,
+            "policy_duration": 20,
+            "plan_description": "High-sum insured elite health shield providing premier private suite accommodations and international second opinions.",
+            "benefits": "Private deluxe suite room rent, global medical second opinions, robotic surgery cover, organ donor expenses",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Imperial Global",
+            "annual_premium": 84999.00,
+            "coverage_amount": 5000000.00,
+            "policy_duration": 25,
+            "plan_description": "Ultra-comprehensive worldwide healthcare protection with unrestricted international hospital access and air ambulance.",
+            "benefits": "Global treatment coverage including US/UK/Singapore, international air ambulance, 100% restoration, dedicated medical concierge",
+            "status": "active",
+        },
+    ]
+    for plan_dict in comprehensive_demo_plans:
+        existing_plan = InsurancePlan.query.filter_by(plan_name=plan_dict["plan_name"]).first()
+        if not existing_plan:
+            db.session.add(InsurancePlan(**plan_dict))
+        else:
+            for k, v in plan_dict.items():
+                setattr(existing_plan, k, v)
+    db.session.commit()
 
     # Seed default administrator if not present (Admin@123)
     admin_email = "admin@healthsecure.com"
@@ -379,8 +447,32 @@ def parse_form(form):
         raise ValueError("Choose valid smoking status (yes or no).")
     if values["liquor"] not in {"yes", "no"}:
         raise ValueError("Choose valid liquor drinking status (yes or no).")
-    if values["region"] not in {"northeast", "northwest", "southeast", "southwest"}:
-        raise ValueError("Choose a valid region.")
+    valid_states_map = {
+        "andhra pradesh": "Andhra Pradesh",
+        "bihar": "Bihar",
+        "delhi": "Delhi",
+        "gujarat": "Gujarat",
+        "haryana": "Haryana",
+        "karnataka": "Karnataka",
+        "kerala": "Kerala",
+        "madhya pradesh": "Madhya Pradesh",
+        "maharashtra": "Maharashtra",
+        "odisha": "Odisha",
+        "punjab": "Punjab",
+        "rajasthan": "Rajasthan",
+        "tamil nadu": "Tamil Nadu",
+        "telangana": "Telangana",
+        "uttar pradesh": "Uttar Pradesh",
+        "west bengal": "West Bengal",
+        "northeast": "Delhi",
+        "northwest": "Rajasthan",
+        "southeast": "Tamil Nadu",
+        "southwest": "Maharashtra",
+    }
+    region_key = str(values["region"]).strip().lower()
+    if region_key not in valid_states_map:
+        raise ValueError("Please select a valid Indian State.")
+    values["region"] = valid_states_map[region_key]
     return values
 
 

@@ -53,7 +53,7 @@
             <!-- Auth CTAs -->
             <div class="nav-cta-group">
                 {% if session.get('user_id') %}
-                    <span style="color: rgba(255,255,255,0.8); font-size: 0.88rem; font-weight: 600;">
+                    <span style="color: var(--landing-navy); font-size: 0.88rem; font-weight: 600;">
                         Hi, {{ session.get('user_name', 'Member') }}
                     </span>
                     <a href="{{ url_for('dashboard') }}" class="btn-nav-login">Dashboard</a>
@@ -167,7 +167,7 @@
                             </div>
                             <div class="hero-estimate-chip">Actuarial Risk Prediction</div>
                             <div class="hero-estimate-price">INR 27,999 <span>/ yr</span></div>
-                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 4px;">
+                            <div style="font-size: 0.82rem; color: #55707d; margin-top: 4px; font-weight: 500;">
                                 Healthy Non-Smoker Profile &bull; BMI 24.2 &bull; Age 32
                             </div>
                         </div>
@@ -241,7 +241,7 @@
                 </div>
 
                 <div class="stat-item">
-                    <div class="stat-number">5 <span class="stat-accent">Plans</span></div>
+                    <div class="stat-number">12 <span class="stat-accent">Plans</span></div>
                     <div class="stat-label">Configurable Demo Policies</div>
                     <div class="stat-sublabel">Stored in relational MySQL database</div>
                 </div>
@@ -451,9 +451,9 @@
 
                 <div class="feature-box">
                     <div class="feature-box-icon">📍</div>
-                    <h4>7. Geographic Region</h4>
-                    <p>Geographical territory (Northeast, Northwest, Southeast, Southwest) capturing regional healthcare provider cost variations.</p>
-                    <span class="feature-domain">Categorical (4-Class)</span>
+                    <h4>7. Indian State / Region</h4>
+                    <p>Geographical location across 16 major Indian states (Maharashtra, Karnataka, Tamil Nadu, Delhi, Uttar Pradesh, etc.) capturing healthcare provider cost variations.</p>
+                    <span class="feature-domain">Categorical (16 Indian States)</span>
                 </div>
 
                 <div class="feature-box">

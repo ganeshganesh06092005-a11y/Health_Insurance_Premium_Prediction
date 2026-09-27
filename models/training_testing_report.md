@@ -1,6 +1,6 @@
 # ML Training and Testing Report
 
-**Generated:** 27 September 2026, 17:27 UTC
+**Generated:** 27 September 2026, 18:00 UTC
 **Dataset:** Medical Cost Personal Dataset (`data/insurance.csv`)
 **Target variable:** `charges`
 
@@ -20,29 +20,29 @@ Features: age, sex, BMI, number of children, smoker status, region, liquor drink
 
 | model | MAE | MSE | RMSE | R2 |
 |---|---|---|---|---|
-| Linear Regression | 4178.66 | 33442558.88 | 5782.95 | 0.7963 |
-| Random Forest Regressor | 2570.43 | 20892424.78 | 4570.82 | 0.8727 |
-| Gradient Boosting Regressor | 2570.57 | 20094013.22 | 4482.63 | 0.8776 |
-| XGBoost Regressor | 2476.26 | 19414850.55 | 4406.23 | 0.8817 |
+| Linear Regression | 4195.37 | 33382061.37 | 5777.72 | 0.7966 |
+| Random Forest Regressor | 2499.4 | 20678901.62 | 4547.41 | 0.874 |
+| Gradient Boosting Regressor | 2552.66 | 19980332.24 | 4469.94 | 0.8783 |
+| XGBoost Regressor | 2422.94 | 18251536.24 | 4272.18 | 0.8888 |
 
 ## Selected model
 
-**XGBoost Regressor** was selected because it had the lowest test MAE: **2,476.26**. Its test R² score is **0.8817**. The selected model is saved as `models/premium_model.joblib`.
+**XGBoost Regressor** was selected because it had the lowest test MAE: **2,422.94**. Its test R² score is **0.8888**. The selected model is saved as `models/premium_model.joblib`.
 
 ## Example test predictions
 
 | actual_charge | predicted_charge | absolute_error |
 |---|---|---|
-| 9095.07 | 12238.8203125 | 3143.75 |
-| 8021.91 | 9142.1103515625 | 1120.2 |
-| 32819.9 | 34330.76171875 | 1510.87 |
-| 9301.89 | 11073.1396484375 | 1771.26 |
-| 33750.29 | 33163.30078125 | 586.99 |
-| 4536.26 | 5195.14990234375 | 658.89 |
-| 2117.34 | 2051.4599609375 | 65.88 |
-| 14210.54 | 15611.08984375 | 1400.55 |
-| 3732.63 | 3878.840087890625 | 146.21 |
-| 10264.44 | 10782.2099609375 | 517.77 |
+| 9095.07 | 11831.169921875 | 2736.1 |
+| 8021.91 | 9850.8095703125 | 1828.9 |
+| 32819.9 | 34210.44140625 | 1390.54 |
+| 9301.89 | 11010.509765625 | 1708.62 |
+| 33750.29 | 34549.76953125 | 799.48 |
+| 4536.26 | 5512.7998046875 | 976.54 |
+| 2117.34 | 1471.8399658203125 | 645.5 |
+| 14210.54 | 14906.1103515625 | 695.57 |
+| 3732.63 | 3466.340087890625 | 266.29 |
+| 10264.44 | 10460.4599609375 | 196.02 |
 
 ## Metric definitions
 

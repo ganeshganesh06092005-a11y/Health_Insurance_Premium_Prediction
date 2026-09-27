@@ -98,15 +98,22 @@ CREATE TABLE IF NOT EXISTS recommendations (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------------------
--- Seed 5 Standard Demo Insurance Plans (Configurable from Database)
+-- Seed 12 Comprehensive Demo Insurance Plans (Configurable from Database)
 -- ---------------------------------------------------------------------
 INSERT INTO insurance_plans (plan_id, plan_name, annual_premium, coverage_amount, policy_duration, plan_description, benefits, status)
 VALUES
-(1, 'HealthSecure Basic', 19999.00, 300000.00, 5, 'Essential sample coverage plan designed for cost-conscious protection against acute hospitalization.', 'Hospitalization support, basic benefits, standard ambulance cover, daycare procedures', 'active'),
-(2, 'HealthSecure Standard', 27999.00, 500000.00, 10, 'Standard balanced protection plan providing comprehensive inpatient and outpatient support.', 'Inpatient treatment, daycare treatments, ambulance support, annual health checkup, pre/post hospitalization', 'active'),
-(3, 'HealthSecure Plus', 30500.00, 750000.00, 10, 'Enhanced health protection tier offering higher sum insured and critical illness cover.', 'Extended inpatient care, pre & post hospitalization (60/90 days), critical illness rider, restorative sum insured', 'active'),
-(4, 'HealthSecure Family', 31999.00, 1000000.00, 15, 'Family floater health protection offering extended duration and comprehensive pediatric/maternity coverage.', 'Maternity benefits, pediatric care, ICU cover, zero room-rent capping, family floater support', 'active'),
-(5, 'HealthSecure Premium', 49999.00, 1500000.00, 20, 'Comprehensive high-tier executive protection with worldwide emergency assistance and zero copays.', 'Zero copay nationwide, worldwide emergency evacuation, unlimited restoration, AYUSH cover, executive wellness suite', 'active')
+(1, 'HealthSecure Starter Shield', 11999.00, 200000.00, 3, 'Pocket-friendly starter health protection plan for young adults and students.', 'Emergency hospitalization, basic OPD consultations, accident cover, 24/7 tele-health helpline', 'active'),
+(2, 'HealthSecure Basic', 19999.00, 300000.00, 5, 'Essential sample coverage plan designed for cost-conscious protection against acute hospitalization.', 'Hospitalization support, basic benefits, standard ambulance cover, daycare procedures', 'active'),
+(3, 'HealthSecure SmartCare', 23499.00, 400000.00, 5, 'Balanced health protection tier tailored for young professionals and early-career individuals.', 'Hospitalization, annual preventive wellness checkups, pharmacy vouchers, daycare treatment', 'active'),
+(4, 'HealthSecure Standard', 27999.00, 500000.00, 10, 'Standard balanced protection plan providing comprehensive inpatient and outpatient support.', 'Inpatient treatment, daycare treatments, ambulance support, annual health checkup, pre/post hospitalization', 'active'),
+(5, 'HealthSecure Plus', 30500.00, 750000.00, 10, 'Enhanced health protection tier offering higher sum insured and critical illness cover.', 'Extended inpatient care, pre & post hospitalization (60/90 days), critical illness rider, restorative sum insured', 'active'),
+(6, 'HealthSecure Family', 31999.00, 1000000.00, 15, 'Family floater health protection offering extended duration and comprehensive pediatric/maternity coverage.', 'Maternity benefits, pediatric care, ICU cover, zero room-rent capping, family floater support', 'active'),
+(7, 'HealthSecure CriticalCare Rider', 36500.00, 1200000.00, 10, 'Specialized high-severity coverage protecting against 36 major critical illnesses with lump-sum recovery payouts.', '36 critical illnesses covered, lump-sum recovery grant, advanced oncology care, cardiac surgery cover', 'active'),
+(8, 'HealthSecure Diabetes Care', 41000.00, 1000000.00, 10, 'Specialized disease management plan covering Type 1 & 2 Diabetes, hypertension, and cardiac care from Day 1.', 'Day-1 pre-existing coverage for diabetes, HbA1c monitoring allowance, dialysis support, cardiovascular cover', 'active'),
+(9, 'HealthSecure Senior Protect', 44500.00, 1000000.00, 15, 'Tailored eldercare health protection with reduced waiting periods and comprehensive home hospitalization.', 'Zero pre-policy medical checkup up to age 65, domiciliary hospitalization, AYUSH therapy, companion caregiver allowance', 'active'),
+(10, 'HealthSecure Premium', 49999.00, 1500000.00, 20, 'Comprehensive high-tier executive protection with worldwide emergency assistance and zero copays.', 'Zero copay nationwide, worldwide emergency evacuation, unlimited restoration, AYUSH cover, executive wellness suite', 'active'),
+(11, 'HealthSecure Super Elite', 62000.00, 2500000.00, 20, 'High-sum insured elite health shield providing premier private suite accommodations and international second opinions.', 'Private deluxe suite room rent, global medical second opinions, robotic surgery cover, organ donor expenses', 'active'),
+(12, 'HealthSecure Imperial Global', 84999.00, 5000000.00, 25, 'Ultra-comprehensive worldwide healthcare protection with unrestricted international hospital access and air ambulance.', 'Global treatment coverage including US/UK/Singapore, international air ambulance, 100% restoration, dedicated medical concierge', 'active')
 ON DUPLICATE KEY UPDATE
     plan_name = VALUES(plan_name),
     annual_premium = VALUES(annual_premium),
