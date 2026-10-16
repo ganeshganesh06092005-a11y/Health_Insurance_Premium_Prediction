@@ -134,51 +134,69 @@
     <section class="panel" style="margin-top: 24px;">
         <div class="panel-header">
             <div>
-                <p class="eyebrow">Automatic Recommendation</p>
+                <p class="eyebrow">Personalized AI Recommendation</p>
                 <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0 0 6px;">Recommended Plans Near Your Predicted Premium</h2>
             </div>
-            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare All 3 Plans Side-by-Side &rarr;</a>
+            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare Plans Side-by-Side &rarr;</a>
         </div>
 
         <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
-            The system searched the available demo insurance plans in MySQL, computed the absolute premium difference <code>|Plan Premium &minus; Predicted Premium|</code>, and ranked the closest 3 plans:
+            Our AI recommendation engine evaluated active demo policies in MySQL against your predicted annual premium of <b>INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}</b> and applicant health profile:
         </p>
 
-        <!-- 3 PLAN CARDS GRID -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 18px;">
+        <!-- 4 CURATED PLAN CARDS GRID -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 18px;">
             {% for plan in matching_plans %}
             <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: white; border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
-                {% if plan.is_closest %}
-                    <div style="position: absolute; top: -11px; right: 18px; background: var(--mint); color: white; padding: 3px 12px; border-radius: 12px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; box-shadow: 0 4px 10px rgba(13, 155, 136, .3);">
-                        ★ Closest Match
-                    </div>
-                {% endif %}
+                
+                <!-- TOP ROLE BADGE -->
+                <div style="position: absolute; top: -11px; left: 16px;">
+                    <span class="role-badge {{ plan.role_badge_class }}">
+                        {{ plan.role_title }}
+                    </span>
+                </div>
 
                 <div>
-                    <h3 style="margin: 0 0 8px; font-size: 1.22rem; color: var(--navy); font-family: Georgia, serif; display: flex; align-items: center; gap: 6px;">
-                        🛡️ {{ plan.plan_name }}
-                    </h3>
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 6px; margin-bottom: 8px;">
+                        <h3 style="margin: 0; font-size: 1.2rem; color: var(--navy); font-family: Georgia, serif;">
+                            🛡️ {{ plan.plan_name }}
+                        </h3>
+                    </div>
 
-                    <div style="margin-bottom: 12px;">
+                    <!-- Compatibility Match Score & Proximity Badge -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <span class="match-score-pill">
+                            ★ {{ plan.match_score }}% Match Score
+                        </span>
                         <span class="match-badge match-{{ plan.match_badge_class }}">
                             {{ plan.match_label }}
                         </span>
-                        <span style="font-size: .78rem; color: var(--muted); margin-left: 6px;">
-                            (Diff: ₹{{ '{:,.0f}'.format(plan.difference) }} / {{ plan.difference_pct }}%)
-                        </span>
                     </div>
 
+                    <p style="font-size: .78rem; color: #526f84; font-style: italic; margin: 0 0 12px; line-height: 1.35;">
+                        {{ plan.role_description }}
+                    </p>
+
+                    <!-- Pricing & Delta Box -->
                     <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
                         <div style="display: flex; justify-content: space-between; align-items: baseline;">
                             <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600;">Annual Premium</span>
                             <span style="font-size: 1.3rem; font-weight: 800; color: var(--navy);">INR {{ '{:,.0f}'.format(plan.annual_premium) }}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; font-size: .82rem; font-weight: 700; color: {{ 'var(--mint)' if plan.is_closest else '#1677c8' }}; border-top: 1px dashed var(--line); padding-top: 4px;">
-                            <span>Difference from Prediction:</span>
-                            <span>INR {{ '{:,.2f}'.format(plan.difference) }}</span>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; font-size: .8rem; color: #436274;">
+                            <span>Your Predicted Premium:</span>
+                            <span>INR {{ '{:,.0f}'.format(prediction.estimated_premium) }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line);">
+                            <span style="font-size: .76rem; font-weight: 600; color: var(--muted);">Price Relation:</span>
+                            <span class="savings-indicator {% if plan.is_savings %}savings{% elif plan.is_savings is false %}upgrade{% else %}exact{% endif %}">
+                                {{ plan.delta_label }}
+                            </span>
                         </div>
                     </div>
 
+                    <!-- Core Policy Attributes -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; font-size: .84rem;">
                         <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
                             <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Coverage</span>
@@ -190,15 +208,15 @@
                         </div>
                     </div>
 
-                    <div style="font-size: .82rem; color: #436274; margin-bottom: 12px; background: #eff8f7; padding: 8px 10px; border-radius: 6px;">
+                    <div style="font-size: .8rem; color: #436274; margin-bottom: 12px; background: #eff8f7; padding: 8px 10px; border-radius: 6px;">
                         <span>Total Estimated Premium: <b>INR {{ '{:,.0f}'.format(plan.total_estimated_premium) }}</b> ({{ plan.effective_duration }}y)</span>
                     </div>
 
-                    <p style="color: #4a6372; font-size: .84rem; line-height: 1.45; margin: 0 0 12px;">
+                    <p style="color: #4a6372; font-size: .82rem; line-height: 1.45; margin: 0 0 12px;">
                         {{ plan.plan_description }}
                     </p>
 
-                    <ul style="margin: 0 0 14px; padding-left: 18px; font-size: .82rem; color: #375364; line-height: 1.6;">
+                    <ul style="margin: 0 0 14px; padding-left: 18px; font-size: .8rem; color: #375364; line-height: 1.55;">
                         {% for b in plan.benefits_list %}
                             <li>✓ {{ b }}</li>
                         {% endfor %}
@@ -206,7 +224,7 @@
                 </div>
 
                 <div style="border-top: 1px solid var(--line); padding-top: 14px; display: flex; gap: 8px;">
-                    <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 8px 10px;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=prediction.id) }}">View Plan Details &rarr;</a>
+                    <a class="primary-btn" style="flex: 1; text-align: center; font-size: .84rem; padding: 8px 10px;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=prediction.id) }}">View Plan Details &rarr;</a>
                 </div>
             </div>
             {% endfor %}

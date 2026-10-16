@@ -166,39 +166,21 @@ with app.app_context():
             db.session.execute(text(f"ALTER TABLE users ADD COLUMN {column} {definition}"))
     db.session.commit()
 
-    # Seed / Synchronize 12 Comprehensive Demo Insurance Plans
+    # Seed / Synchronize 24 Comprehensive Demo Insurance Plans
     comprehensive_demo_plans = [
-        {
-            "plan_name": "HealthSecure Starter Shield",
-            "annual_premium": 11999.00,
-            "coverage_amount": 200000.00,
-            "policy_duration": 3,
-            "plan_description": "Pocket-friendly starter health protection plan for young adults and students.",
-            "benefits": "Emergency hospitalization, basic OPD consultations, accident cover, 24/7 tele-health helpline",
-            "status": "active",
-        },
         {
             "plan_name": "HealthSecure Basic",
             "annual_premium": 19999.00,
-            "coverage_amount": 300000.00,
+            "coverage_amount": 450000.00,
             "policy_duration": 5,
             "plan_description": "Essential sample coverage plan designed for cost-conscious protection against acute hospitalization.",
             "benefits": "Hospitalization support, basic benefits, standard ambulance cover, daycare procedures",
             "status": "active",
         },
         {
-            "plan_name": "HealthSecure SmartCare",
-            "annual_premium": 23499.00,
-            "coverage_amount": 400000.00,
-            "policy_duration": 5,
-            "plan_description": "Balanced health protection tier tailored for young professionals and early-career individuals.",
-            "benefits": "Hospitalization, annual preventive wellness checkups, pharmacy vouchers, daycare treatment",
-            "status": "active",
-        },
-        {
             "plan_name": "HealthSecure Standard",
             "annual_premium": 27999.00,
-            "coverage_amount": 500000.00,
+            "coverage_amount": 700000.00,
             "policy_duration": 10,
             "plan_description": "Standard balanced protection plan providing comprehensive inpatient and outpatient support.",
             "benefits": "Inpatient treatment, daycare treatments, ambulance support, annual health checkup, pre/post hospitalization",
@@ -223,6 +205,33 @@ with app.app_context():
             "status": "active",
         },
         {
+            "plan_name": "HealthSecure Premium",
+            "annual_premium": 49999.00,
+            "coverage_amount": 2000000.00,
+            "policy_duration": 20,
+            "plan_description": "Comprehensive high-tier executive protection with worldwide emergency assistance and zero copays.",
+            "benefits": "Zero copay nationwide, worldwide emergency evacuation, unlimited restoration, AYUSH cover, executive wellness suite",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Starter Shield",
+            "annual_premium": 11999.00,
+            "coverage_amount": 300000.00,
+            "policy_duration": 3,
+            "plan_description": "Pocket-friendly starter health protection plan for young adults and students.",
+            "benefits": "Emergency hospitalization, basic OPD consultations, accident cover, 24/7 tele-health helpline",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure SmartCare",
+            "annual_premium": 22499.00,
+            "coverage_amount": 500000.00,
+            "policy_duration": 5,
+            "plan_description": "Balanced health protection tier tailored for young professionals and early-career individuals.",
+            "benefits": "Hospitalization, annual preventive wellness checkups, pharmacy vouchers, daycare treatment",
+            "status": "active",
+        },
+        {
             "plan_name": "HealthSecure CriticalCare Rider",
             "annual_premium": 36500.00,
             "coverage_amount": 1200000.00,
@@ -234,7 +243,7 @@ with app.app_context():
         {
             "plan_name": "HealthSecure Diabetes Care",
             "annual_premium": 41000.00,
-            "coverage_amount": 1000000.00,
+            "coverage_amount": 1250000.00,
             "policy_duration": 10,
             "plan_description": "Specialized disease management plan covering Type 1 & 2 Diabetes, hypertension, and cardiac care from Day 1.",
             "benefits": "Day-1 pre-existing coverage for diabetes, HbA1c monitoring allowance, dialysis support, cardiovascular cover",
@@ -243,24 +252,15 @@ with app.app_context():
         {
             "plan_name": "HealthSecure Senior Protect",
             "annual_premium": 44500.00,
-            "coverage_amount": 1000000.00,
+            "coverage_amount": 1500000.00,
             "policy_duration": 15,
             "plan_description": "Tailored eldercare health protection with reduced waiting periods and comprehensive home hospitalization.",
             "benefits": "Zero pre-policy medical checkup up to age 65, domiciliary hospitalization, AYUSH therapy, companion caregiver allowance",
             "status": "active",
         },
         {
-            "plan_name": "HealthSecure Premium",
-            "annual_premium": 49999.00,
-            "coverage_amount": 1500000.00,
-            "policy_duration": 20,
-            "plan_description": "Comprehensive high-tier executive protection with worldwide emergency assistance and zero copays.",
-            "benefits": "Zero copay nationwide, worldwide emergency evacuation, unlimited restoration, AYUSH cover, executive wellness suite",
-            "status": "active",
-        },
-        {
             "plan_name": "HealthSecure Super Elite",
-            "annual_premium": 62000.00,
+            "annual_premium": 58000.00,
             "coverage_amount": 2500000.00,
             "policy_duration": 20,
             "plan_description": "High-sum insured elite health shield providing premier private suite accommodations and international second opinions.",
@@ -270,10 +270,118 @@ with app.app_context():
         {
             "plan_name": "HealthSecure Imperial Global",
             "annual_premium": 84999.00,
-            "coverage_amount": 5000000.00,
+            "coverage_amount": 7500000.00,
             "policy_duration": 25,
             "plan_description": "Ultra-comprehensive worldwide healthcare protection with unrestricted international hospital access and air ambulance.",
             "benefits": "Global treatment coverage including US/UK/Singapore, international air ambulance, 100% restoration, dedicated medical concierge",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Student Micro-Shield",
+            "annual_premium": 3499.00,
+            "coverage_amount": 100000.00,
+            "policy_duration": 2,
+            "plan_description": "Ultra-low-cost micro-health protection designed for college students, young gig workers, and first-time policyholders.",
+            "benefits": "Accident hospitalization, basic trauma care, 24/7 tele-consultations, emergency ambulance subsidy",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Arogya Sanjeevani Essential",
+            "annual_premium": 5999.00,
+            "coverage_amount": 200000.00,
+            "policy_duration": 3,
+            "plan_description": "IRDAI-benchmarked standard essential health policy offering clean, capped basic inpatient protection.",
+            "benefits": "ICU room cover, basic daycare surgeries, generic pharmacy coverage, zero copay on network hospitals",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Digital Health OPD Pass",
+            "annual_premium": 8499.00,
+            "coverage_amount": 250000.00,
+            "policy_duration": 3,
+            "plan_description": "Digitally-integrated health policy featuring extensive outpatient (OPD) care, diagnostic allowances, and acute medical cover.",
+            "benefits": "Unlimited digital doctor consultations, annual diagnostic tests allowance, dental/vision vouchers, inpatient cover",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Young Professional Care",
+            "annual_premium": 14499.00,
+            "coverage_amount": 350000.00,
+            "policy_duration": 5,
+            "plan_description": "Dynamic early-career health coverage for young corporate professionals with mental wellness and fitness cashbacks.",
+            "benefits": "Stress counseling sessions, preventive annual diagnostics, zero room rent capping on shared rooms, accident cover",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Bronze Comfort",
+            "annual_premium": 16999.00,
+            "coverage_amount": 400000.00,
+            "policy_duration": 5,
+            "plan_description": "Value-oriented hospitalization plan providing dependable tier-2/3 hospital coverage with low copays.",
+            "benefits": "Daycare medical treatments, pre & post hospitalization (30/60 days), road ambulance, restorative sum insured",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Fit & Active Shield",
+            "annual_premium": 24999.00,
+            "coverage_amount": 600000.00,
+            "policy_duration": 7,
+            "plan_description": "Incentivized wellness coverage rewarding healthy lifestyle habits with premium discounts and gym subscriptions.",
+            "benefits": "Fitness tracking rebates, 10% no-claim bonus escalator, complete inpatient care, alternative medicine (AYUSH)",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Optimum Health Guard",
+            "annual_premium": 34200.00,
+            "coverage_amount": 1000000.00,
+            "policy_duration": 10,
+            "plan_description": "Comprehensive mid-tier shield offering generous room-rent options, modern robot-assisted surgeries, and no copays.",
+            "benefits": "Single private AC room, modern robotic treatments, organ donor coverage, emergency road & air assistance",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Cardio-Pulmonary Care",
+            "annual_premium": 38999.00,
+            "coverage_amount": 1200000.00,
+            "policy_duration": 10,
+            "plan_description": "Tailored health cover designed for individuals with cardiovascular risk, respiratory history, or lifestyle exposures.",
+            "benefits": "Heart stent & bypass coverage, pulmonary rehabilitation, specialized angiography vouchers, smoking cessation support",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Silver Executive",
+            "annual_premium": 47000.00,
+            "coverage_amount": 1500000.00,
+            "policy_duration": 15,
+            "plan_description": "High-grade executive protection plan featuring private suite room entitlements and fast-track cashless claims.",
+            "benefits": "Deluxe single room entitlement, priority cashless processing within 30 minutes, executive annual full-body health scan",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Diamond Global Guard",
+            "annual_premium": 67500.00,
+            "coverage_amount": 3500000.00,
+            "policy_duration": 20,
+            "plan_description": "Ultra-premium international inpatient shield covering major planned surgeries abroad with zero domestic deductible.",
+            "benefits": "Planned medical treatments in Europe and Asia-Pacific, international air ambulance, zero copay, personal medical navigator",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Platinum Pinnacle",
+            "annual_premium": 76000.00,
+            "coverage_amount": 5000000.00,
+            "policy_duration": 25,
+            "plan_description": "High-net-worth comprehensive global medical policy offering top-tier multi-crore sum insured with concierge care.",
+            "benefits": "₹50 Lakhs sum insured, global second opinion from top US hospitals, air ambulance repatriation, stem cell therapy",
+            "status": "active",
+        },
+        {
+            "plan_name": "HealthSecure Ultimate Crore Pati Shield",
+            "annual_premium": 96000.00,
+            "coverage_amount": 10000000.00,
+            "policy_duration": 25,
+            "plan_description": "Flagship ₹1 Crore worldwide health umbrella with zero sub-limits, unlimited sum restoration, and VIP hospital suites.",
+            "benefits": "₹1 Crore lifetime coverage, unrestricted worldwide hospitals, emergency medical evacuation, zero deductibles globally",
             "status": "active",
         },
     ]
@@ -317,31 +425,77 @@ with app.app_context():
     load_or_train_model()
 
 
+def format_coverage_amount(coverage_amount: float) -> str:
+    """Format sum insured in Indian Lakhs or Crores."""
+    if coverage_amount >= 10000000:
+        cr = coverage_amount / 10000000
+        return f"₹{cr:g} Crore"
+    lakhs = coverage_amount / 100000
+    return f"₹{lakhs:g} Lakhs"
+
+
 def get_matching_plans(
     predicted_premium: float,
-    limit: int = 3,
+    limit: int = 4,
     selected_duration: int | None = None,
+    user_profile: dict | None = None,
 ) -> list[dict]:
-    """Retrieve active demo plans from MySQL and rank by smallest absolute premium difference.
+    """Retrieve active demo plans from MySQL and optimize recommendations based on ML predicted premium and profile.
     
-    Formula:
-        Difference = ABS(Demo Plan Annual Premium - Predicted Annual Premium)
-    Sorted by:
-        Difference ASC
-    Matching indicators:
-        <= 5% of predicted premium: "Very Close Match"
-        <= 15% of predicted premium: "Close Match"
-        Otherwise: "Alternative"
+    Strategic Multi-Role Recommendation Architecture:
+      - Role 1 (Top AI Match): Plan with the minimal absolute difference from predicted premium.
+      - Role 2 (Budget Saver): Best value plan with annual_premium <= predicted_premium.
+      - Role 3 (Recommended Upgrade): Enhanced plan with annual_premium > predicted_premium offering higher coverage.
+      - Role 4 (Risk-Profile Tailored): Plan tailored to applicant health/lifestyle factors (smoker, liquor, age, BMI, children).
+      
+    Also calculates:
+      - Match Score (55.0% - 99.4%)
+      - Price Delta Label & is_savings flag
+      - Effective Total Premium across duration
     """
     plans = InsurancePlan.query.filter_by(status="active").all()
-    results = []
+    if not plans:
+        return []
+
+    profile = user_profile or {}
+    try:
+        age = float(profile.get("age", 30))
+    except (ValueError, TypeError):
+        age = 30.0
+    try:
+        bmi = float(profile.get("bmi", 24))
+    except (ValueError, TypeError):
+        bmi = 24.0
+    smoker = str(profile.get("smoker", "no")).strip().lower()
+    liquor = str(profile.get("liquor", "no")).strip().lower()
+    try:
+        children = int(profile.get("children", 0))
+    except (ValueError, TypeError):
+        children = 0
+
+    enriched_plans = []
     for plan in plans:
         diff = round(abs(plan.annual_premium - predicted_premium), 2)
         diff_pct = (
             round(diff / predicted_premium * 100, 2)
-            if predicted_premium
+            if predicted_premium > 0
             else 0.0
         )
+
+        # High precision match score (55.0% - 99.4%)
+        raw_score = 100.0 - (diff / max(predicted_premium, 1.0)) * 50.0
+        match_score = round(max(55.0, min(99.4, raw_score)), 1)
+
+        diff_amount = round(plan.annual_premium - predicted_premium, 2)
+        if diff_amount < -50:
+            is_savings = True
+            delta_label = f"₹{abs(diff_amount):,.0f} lower than predicted"
+        elif diff_amount > 50:
+            is_savings = False
+            delta_label = f"₹{diff_amount:,.0f} upgrade over predicted"
+        else:
+            is_savings = None
+            delta_label = "Exact AI target match"
 
         if diff_pct <= 5.0:
             match_label = "Very Close Match"
@@ -355,11 +509,10 @@ def get_matching_plans(
 
         effective_duration = selected_duration if selected_duration else plan.policy_duration
         total_estimated = round(plan.annual_premium * effective_duration, 2)
-        coverage_lakhs = plan.coverage_amount / 100000
-        coverage_display = f"₹{coverage_lakhs:g} Lakhs"
+        coverage_display = format_coverage_amount(plan.coverage_amount)
         benefits_list = [b.strip() for b in plan.benefits.split(",") if b.strip()]
 
-        results.append({
+        enriched_plans.append({
             "plan_id": plan.plan_id,
             "plan_name": plan.plan_name,
             "annual_premium": plan.annual_premium,
@@ -372,17 +525,108 @@ def get_matching_plans(
             "benefits": plan.benefits,
             "benefits_list": benefits_list,
             "difference": diff,
+            "diff_amount": diff_amount,
             "difference_pct": diff_pct,
+            "match_score": match_score,
             "match_label": match_label,
             "match_badge_class": match_badge_class,
+            "is_savings": is_savings,
+            "delta_label": delta_label,
             "is_closest": False,
+            "role_title": "Alternative Option",
+            "role_badge_class": "badge-alternative",
+            "role_description": "Curated healthcare protection alternative",
         })
 
-    results.sort(key=lambda x: x["difference"])
-    if results:
-        results[0]["is_closest"] = True
+    # Proximity sort
+    by_diff = sorted(enriched_plans, key=lambda x: x["difference"])
 
-    return results[:limit]
+    selected_plans = []
+    used_ids = set()
+
+    # 1. TOP AI MATCH (Closest mathematical match)
+    top_match = by_diff[0]
+    top_match["is_closest"] = True
+    top_match["role_title"] = "Top AI Match"
+    top_match["role_badge_class"] = "badge-best"
+    top_match["role_description"] = "Closest mathematical alignment with your predicted premium"
+    selected_plans.append(top_match)
+    used_ids.add(top_match["plan_id"])
+
+    # 2. BUDGET-SAVER OPTION (annual_premium <= predicted_premium)
+    budget_candidates = [p for p in by_diff if p["annual_premium"] <= predicted_premium and p["plan_id"] not in used_ids]
+    if budget_candidates:
+        budget_plan = budget_candidates[0]
+    else:
+        cheapest = sorted([p for p in by_diff if p["plan_id"] not in used_ids], key=lambda x: x["annual_premium"])
+        budget_plan = cheapest[0] if cheapest else None
+
+    if budget_plan and budget_plan["plan_id"] not in used_ids:
+        budget_plan["role_title"] = "Budget-Saver Choice"
+        budget_plan["role_badge_class"] = "badge-budget"
+        budget_plan["role_description"] = "Maximum protection while staying under your predicted cost"
+        selected_plans.append(budget_plan)
+        used_ids.add(budget_plan["plan_id"])
+
+    # 3. RECOMMENDED UPGRADE (annual_premium > predicted_premium)
+    upgrade_candidates = [p for p in by_diff if p["annual_premium"] > predicted_premium and p["plan_id"] not in used_ids]
+    if upgrade_candidates:
+        upgrade_plan = upgrade_candidates[0]
+    else:
+        highest_cov = sorted([p for p in by_diff if p["plan_id"] not in used_ids], key=lambda x: x["coverage_amount"], reverse=True)
+        upgrade_plan = highest_cov[0] if highest_cov else None
+
+    if upgrade_plan and upgrade_plan["plan_id"] not in used_ids:
+        upgrade_plan["role_title"] = "Recommended Upgrade"
+        upgrade_plan["role_badge_class"] = "badge-upgrade"
+        upgrade_plan["role_description"] = "Enhanced sum insured and benefits with modest addition"
+        selected_plans.append(upgrade_plan)
+        used_ids.add(upgrade_plan["plan_id"])
+
+    # 4. PROFILE RISK-TAILORED MATCH
+    profile_plan = None
+    target_keywords = []
+    if smoker == "yes" or liquor == "yes":
+        target_keywords = ["cardio", "criticalcare", "shield"]
+    elif age >= 50:
+        target_keywords = ["senior", "criticalcare", "plus"]
+    elif bmi >= 28:
+        target_keywords = ["diabetes", "fit & active", "comfort"]
+    elif children >= 2:
+        target_keywords = ["family", "plus", "standard"]
+    elif age <= 28:
+        target_keywords = ["young professional", "starter", "student", "digital"]
+    else:
+        target_keywords = ["optimum", "smartcare", "standard"]
+
+    for kw in target_keywords:
+        match_candidate = next((p for p in by_diff if kw in p["plan_name"].lower() and p["plan_id"] not in used_ids), None)
+        if match_candidate:
+            profile_plan = match_candidate
+            break
+
+    if not profile_plan:
+        remaining = [p for p in by_diff if p["plan_id"] not in used_ids]
+        if remaining:
+            profile_plan = remaining[0]
+
+    if profile_plan and profile_plan["plan_id"] not in used_ids:
+        profile_plan["role_title"] = "Profile-Tailored Protection"
+        profile_plan["role_badge_class"] = "badge-profile"
+        profile_plan["role_description"] = "Calibrated specifically to your age, lifestyle, and health profile"
+        selected_plans.append(profile_plan)
+        used_ids.add(profile_plan["plan_id"])
+
+    # Pad with closest remaining if requested limit is higher
+    if len(selected_plans) < limit:
+        for p in by_diff:
+            if p["plan_id"] not in used_ids:
+                selected_plans.append(p)
+                used_ids.add(p["plan_id"])
+            if len(selected_plans) >= limit:
+                break
+
+    return selected_plans[:limit]
 
 
 def parse_form(form):
@@ -760,7 +1004,24 @@ def predict():
             benefit_factor = recommendation["benefit_factor"]
 
             # AUTOMATIC DEMO PLAN MATCHING ALGORITHM
-            matching_plans = get_matching_plans(predicted_charge, limit=3, selected_duration=duration)
+            user_prof = {
+                "age": values["age"],
+                "sex": values["sex"],
+                "height": values.get("height"),
+                "weight": values.get("weight"),
+                "bmi": values["bmi"],
+                "children": values["children"],
+                "smoker": values["smoker"],
+                "liquor": values.get("liquor", "no"),
+                "region": values["region"],
+                "salary": values["salary"],
+            }
+            matching_plans = get_matching_plans(
+                predicted_charge,
+                limit=4,
+                selected_duration=duration,
+                user_profile=user_prof,
+            )
             closest_plan = matching_plans[0] if matching_plans else None
 
             prediction = Prediction()
@@ -845,13 +1106,6 @@ def result(prediction_id=None):
     else:
         prediction = owned_prediction(prediction_id)
 
-    matching_plans = get_matching_plans(
-        prediction.estimated_premium,
-        limit=3,
-        selected_duration=prediction.policy_duration,
-    )
-    closest_plan = matching_plans[0] if matching_plans else None
-
     pred_dict = {
         "age": prediction.age,
         "sex": prediction.sex,
@@ -865,6 +1119,14 @@ def result(prediction_id=None):
         "salary": prediction.salary,
         "full_name": prediction.full_name,
     }
+
+    matching_plans = get_matching_plans(
+        prediction.estimated_premium,
+        limit=4,
+        selected_duration=prediction.policy_duration,
+        user_profile=pred_dict,
+    )
+    closest_plan = matching_plans[0] if matching_plans else None
     explanation = explain_prediction(pred_dict, prediction.estimated_premium)
 
     return render_template(
@@ -980,10 +1242,23 @@ def compare_plans():
 
     if not selected_ids:
         if prediction:
+            pred_prof = {
+                "age": prediction.age,
+                "sex": prediction.sex,
+                "height": prediction.height,
+                "weight": prediction.weight,
+                "bmi": prediction.bmi,
+                "children": prediction.children,
+                "smoker": prediction.smoker,
+                "liquor": getattr(prediction, "liquor", "no"),
+                "region": prediction.region,
+                "salary": prediction.salary,
+            }
             ranked = get_matching_plans(
                 prediction.estimated_premium,
                 limit=3,
                 selected_duration=prediction.policy_duration,
+                user_profile=pred_prof,
             )
             selected_ids = [p["plan_id"] for p in ranked]
         else:
@@ -1023,7 +1298,7 @@ def compare_plans():
 
         compared_data.append({
             "plan": plan,
-            "coverage_display": f"₹{plan.coverage_amount / 100000:g} Lakhs",
+            "coverage_display": format_coverage_amount(plan.coverage_amount),
             "effective_duration": effective_duration,
             "total_estimated": total_estimated,
             "difference": diff,
@@ -1071,8 +1346,9 @@ def prediction_details(prediction_id):
     explanation = explain_prediction(pred_dict, prediction.estimated_premium)
     matching_plans = get_matching_plans(
         prediction.estimated_premium,
-        limit=3,
+        limit=4,
         selected_duration=prediction.policy_duration,
+        user_profile=pred_dict,
     )
     return render_template(
         "prediction_details.html",
@@ -1247,10 +1523,23 @@ def dashboard():
 
     latest_matching_plans = []
     if latest:
+        latest_prof = {
+            "age": latest.age,
+            "sex": latest.sex,
+            "height": latest.height,
+            "weight": latest.weight,
+            "bmi": latest.bmi,
+            "children": latest.children,
+            "smoker": latest.smoker,
+            "liquor": getattr(latest, "liquor", "no"),
+            "region": latest.region,
+            "salary": latest.salary,
+        }
         latest_matching_plans = get_matching_plans(
             latest.estimated_premium,
-            limit=3,
+            limit=4,
             selected_duration=latest.policy_duration,
+            user_profile=latest_prof,
         )
 
     return render_template(
@@ -1302,8 +1591,9 @@ def download_report(prediction_id):
     insights = explanation["insights"]
     matching_plans = get_matching_plans(
         prediction.estimated_premium,
-        limit=3,
+        limit=4,
         selected_duration=prediction.policy_duration,
+        user_profile=pred_dict,
     )
     pdf_buffer = generate_pdf_report(
         prediction,

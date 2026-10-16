@@ -311,42 +311,52 @@ def generate_pdf_report(
 
     # AUTOMATIC DEMO INSURANCE PLANS MATCHING SECTION
     if matching_plans:
-        story.append(Paragraph("Recommended Demo Insurance Plans (Automatic Matching)", section_heading))
+        story.append(Paragraph("7. Strategic Policy Recommendations (AI Curated)", section_heading))
         story.append(Paragraph(
-            "The system automatically searched the available demo plans in the MySQL database and matched "
-            "plans whose annual premium is closest to your ML predicted premium (sorted by smallest absolute difference):",
+            "HealthSecure's AI matching algorithm evaluated active demo policies in MySQL against your predicted "
+            "premium and health risk factors, curating strategic coverage options tailored to your profile:",
             body_style,
         ))
         story.append(Spacer(1, 3))
 
         plan_table_data = [
             [
-                Paragraph("<b>Demo Plan Name</b>", body_bold),
+                Paragraph("<b>Strategic Role &amp; Plan</b>", body_bold),
                 Paragraph("<b>Annual Premium</b>", body_bold),
-                Paragraph("<b>Coverage Amount</b>", body_bold),
-                Paragraph("<b>Difference</b>", body_bold),
-                Paragraph("<b>Match Evaluation</b>", body_bold),
+                Paragraph("<b>Coverage</b>", body_bold),
+                Paragraph("<b>Price Relation</b>", body_bold),
+                Paragraph("<b>Match Score</b>", body_bold),
             ]
         ]
         for p in matching_plans:
             closest_star = " ★" if p.get("is_closest") else ""
+            delta_color = "#065f46" if p.get("is_savings") else ("#1e40af" if p.get("is_savings") is False else "#334155")
+            delta_text = p.get("delta_label") or f"INR {p.get('difference', 0):,.0f}"
+            cov_text = p.get("coverage_display") or f"INR {p.get('coverage_amount', 0):,.0f}"
+            role_text = p.get("role_title", "Match")
+            score_val = p.get("match_score", 95.0)
             plan_table_data.append([
-                Paragraph(f"<b>{p['plan_name']}{closest_star}</b>", body_style),
-                Paragraph(f"INR {p['annual_premium']:,.2f}", body_style),
-                Paragraph(p.get("coverage_display", f"INR {p['coverage_amount']:,.0f}"), body_style),
-                Paragraph(f"INR {p['difference']:,.2f}", body_style),
-                Paragraph(f"<b>{p['match_label']}</b>", ParagraphStyle("MatchTag", parent=body_style, textColor=TEAL_MINT if p.get("is_closest") else PRIMARY_NAVY)),
+                Paragraph(
+                    f"<b>{role_text}</b><br/>"
+                    f"<font color='#375364' size='7'>{p['plan_name']}{closest_star}</font>",
+                    body_style,
+                ),
+                Paragraph(f"INR {p['annual_premium']:,.0f}", body_style),
+                Paragraph(cov_text, body_style),
+                Paragraph(f"<font color='{delta_color}' size='7'><b>{delta_text}</b></font>", body_style),
+                Paragraph(f"<b>{score_val}%</b><br/><font color='#546e7a' size='6.5'>{p['match_label']}</font>", ParagraphStyle("ScoreCell", parent=body_style, alignment=1)),
             ])
 
-        plans_table = Table(plan_table_data, colWidths=[140, 100, 100, 83, 100])
+        plans_table = Table(plan_table_data, colWidths=[170, 85, 78, 105, 85])
         plans_table.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), BG_LIGHT),
             ("BOX", (0, 0), (-1, -1), 0.75, BORDER_LINE),
             ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#edf2f5")),
-            ("TOPPADDING", (0, 0), (-1, -1), 2.5),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 2.5),
-            ("LEFTPADDING", (0, 0), (-1, -1), 6),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+            ("TOPPADDING", (0, 0), (-1, -1), 3),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ("LEFTPADDING", (0, 0), (-1, -1), 5),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ]))
         story.append(plans_table)
         story.append(Spacer(1, 6))

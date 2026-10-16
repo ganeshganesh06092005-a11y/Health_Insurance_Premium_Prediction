@@ -491,6 +491,80 @@ td { color: #415c6b; }
     border: 1px solid #cfd8dc;
 }
 
+/* STRATEGIC RECOMMENDATION ROLE BADGES & METRICS */
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+}
+.badge-best {
+    background: #0d9b88;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(13, 155, 136, .3);
+}
+.badge-budget {
+    background: #107c41;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(16, 124, 65, .25);
+}
+.badge-upgrade {
+    background: #1a6cb0;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(26, 108, 176, .25);
+}
+.badge-profile {
+    background: #7b4397;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(123, 67, 151, .25);
+}
+.badge-alternative {
+    background: #546e7a;
+    color: #ffffff;
+}
+.match-score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #eefbf7;
+    color: #0b7365;
+    border: 1px solid #a6e9dc;
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: .75rem;
+    font-weight: 700;
+}
+.savings-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+.savings-indicator.savings {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+.savings-indicator.upgrade {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+.savings-indicator.exact {
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
 /* EMPTY STATE */
 .empty-state { padding: 42px 16px; text-align: center; color: var(--muted); }
 .empty-state h2, .empty-state h3 { margin-top: 0; color: var(--navy); font-family: Georgia, serif; }
@@ -569,6 +643,29 @@ td { color: #415c6b; }
     border-color: #c53030;
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(197, 48, 48, 0.25);
+}
+
+/* PLAN FILTER BUTTONS */
+.plan-filter-btn {
+    padding: 6px 14px;
+    font-size: .8rem;
+    font-weight: 600;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: #ffffff;
+    color: #4a6372;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.plan-filter-btn:hover {
+    border-color: var(--mint);
+    color: var(--mint);
+}
+.plan-filter-btn.active {
+    background: var(--mint);
+    color: #ffffff;
+    border-color: var(--mint);
+    box-shadow: 0 2px 6px rgba(13, 155, 136, .25);
 }
 
 /* RESPONSIVE QUERIES */
