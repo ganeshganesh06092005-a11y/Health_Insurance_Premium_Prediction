@@ -335,8 +335,10 @@ def generate_pdf_report(
             cov_text = p.get("coverage_display") or f"INR {p.get('coverage_amount', 0):,.0f}"
             role_text = p.get("role_title", "Match")
             score_val = p.get("match_score", 95.0)
+            comp_name = p.get("company_short") or p.get("company_name", "HealthSecure")
             plan_table_data.append([
                 Paragraph(
+                    f"<font color='#0d9b88' size='6.5'><b>{comp_name}</b></font><br/>"
                     f"<b>{role_text}</b><br/>"
                     f"<font color='#375364' size='7'>{p['plan_name']}{closest_star}</font>",
                     body_style,

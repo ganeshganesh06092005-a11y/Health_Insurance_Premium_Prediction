@@ -121,40 +121,76 @@
     <section class="panel" style="margin-bottom: 30px;">
         <div class="panel-header">
             <div>
-                <p class="eyebrow">Database Catalog &bull; {{ demo_plans|length }} Active Policies</p>
-                <h2 style="margin: 0; color: var(--navy); font-family: Georgia, serif;">Complete Insurance Plans Catalog</h2>
+                <p class="eyebrow">Database Catalog &bull; {{ demo_plans|length }} Active Policies Across 8 Leading Insurers</p>
+                <h2 style="margin: 0; color: var(--navy); font-family: Georgia, serif;">Complete Multi-Insurer Plans Catalog</h2>
             </div>
             <a class="secondary-btn" href="{{ url_for('compare_plans') }}">Compare Demo Plans Side-by-Side &rarr;</a>
         </div>
         <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
-            These 24 demo insurance packages are stored in the MySQL database spanning entry-level micro-protection (₹3,499) to worldwide high-sum cover (₹1 Crore). They are matched dynamically against your Machine Learning predicted premium.
+            Explore over 100+ demo insurance plans stored in the MySQL database across 8 premier Indian insurers. These policies span entry-level micro-protection (₹2,850/yr) to worldwide ₹1 Crore high-sum covers, calibrated to dynamically match your Machine Learning predicted premium.
         </p>
 
-        <!-- CATEGORY FILTER BUTTONS -->
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 8px;">
-            <button type="button" class="plan-filter-btn active" onclick="filterPlans('all', this)">All ({{ demo_plans|length }})</button>
-            <button type="button" class="plan-filter-btn" onclick="filterPlans('micro', this)">Micro &amp; Essential (&le; ₹10k)</button>
-            <button type="button" class="plan-filter-btn" onclick="filterPlans('standard', this)">Standard &amp; Family (₹10k - ₹35k)</button>
-            <button type="button" class="plan-filter-btn" onclick="filterPlans('executive', this)">Executive &amp; Critical (₹35k - ₹60k)</button>
-            <button type="button" class="plan-filter-btn" onclick="filterPlans('global', this)">Global &amp; Crore Tiers (&gt; ₹60k)</button>
+        <!-- MULTI-INSURER COMPANY FILTER PILLS -->
+        <div style="margin: 16px 0 10px;">
+            <span style="font-size: .78rem; text-transform: uppercase; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px;">Filter by Insurance Company:</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="plan-filter-btn company-filter-btn active" onclick="setCompanyFilter('all', this)">All Insurers ({{ demo_plans|length }})</button>
+                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Star Health and Allied Insurance', this)">Star Health</button>
+                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Care Health Insurance', this)">Care Health</button>
+                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('HDFC ERGO General Insurance', this)">HDFC ERGO</button>
+                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('ICICI Lombard General Insurance', this)">ICICI Lombard</button>
+                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Bajaj Allianz General Insurance', this)">Bajaj Allianz</button>
+                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('The New India Assurance Co. Ltd.', this)">New India (PSU)</button>
+                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('United India Insurance Co. Ltd.', this)">United India (PSU)</button>
+                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('HealthSecure', this)">HealthSecure AI</button>
+            </div>
+        </div>
+
+        <!-- PRICE BRACKET FILTER PILLS -->
+        <div style="margin: 10px 0 18px;">
+            <span style="font-size: .78rem; text-transform: uppercase; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px;">Filter by Annual Price Tier:</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="plan-filter-btn tier-filter-btn active" onclick="setTierFilter('all', this)">All Price Tiers</button>
+                <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('micro', this)">Micro &amp; Essential (&le; ₹10k)</button>
+                <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('standard', this)">Standard &amp; Family (₹10k - ₹35k)</button>
+                <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('executive', this)">Executive &amp; Critical (₹35k - ₹60k)</button>
+                <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('global', this)">Global &amp; 1 Crore Tiers (&gt; ₹60k)</button>
+            </div>
         </div>
 
         <div id="catalogPlansGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 18px;">
             {% for dp in demo_plans %}
             {% set tier = 'micro' if dp.annual_premium <= 10000 else ('standard' if dp.annual_premium <= 35000 else ('executive' if dp.annual_premium <= 60000 else 'global')) %}
-            <div class="plan-catalog-item" data-tier="{{ tier }}" style="background: white; border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow);">
+            <div class="plan-catalog-item" data-company="{{ dp.company_name }}" data-tier="{{ tier }}" style="background: white; border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow);">
                 <div>
+                    <!-- Company Badge & Insurer Meta Strip -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span class="company-badge {{ dp.company_badge_class }}">
+                            {{ dp.company_short }}
+                        </span>
+                        <span style="font-size: .7rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 4px;">
+                            {{ dp.company_csr }} CSR
+                        </span>
+                    </div>
+
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
                         <h3 style="margin: 0; font-size: 1.15rem; color: var(--navy); font-family: Georgia, serif;">🛡️ {{ dp.plan_name }}</h3>
                     </div>
+
+                    <div class="company-meta-strip">
+                        <span class="company-meta-tag">{{ dp.company_hospitals }} Hospitals</span>
+                        <span class="company-meta-tag" style="max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ dp.company_tag }}</span>
+                    </div>
+
                     <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px;">
                         <span style="color: var(--muted); font-size: .72rem; text-transform: uppercase; font-weight: 600; display: block;">Annual Premium</span>
                         <strong style="font-size: 1.25rem; color: var(--navy);">INR {{ '{:,.0f}'.format(dp.annual_premium) }}</strong>
                     </div>
+
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; font-size: .8rem;">
                         <div style="background: #fcfcfc; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px;">
                             <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase;">Sum Insured</span>
-                            <strong>{% if dp.coverage_amount >= 10000000 %}₹{{ '{:g}'.format(dp.coverage_amount / 10000000) }} Crore{% else %}₹{{ '{:g}'.format(dp.coverage_amount / 100000) }} Lakhs{% endif %}</strong>
+                            <strong>{{ dp.coverage_display }}</strong>
                         </div>
                         <div style="background: #fcfcfc; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px;">
                             <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase;">Duration</span>
@@ -163,21 +199,41 @@
                     </div>
                     <p style="color: #4a6372; font-size: .82rem; line-height: 1.4; margin: 0 0 10px;">{{ dp.plan_description }}</p>
                 </div>
-                <div style="border-top: 1px solid var(--line); padding-top: 10px; margin-top: 8px;">
-                    <a class="secondary-btn" style="width: 100%; text-align: center; font-size: .8rem; padding: 6px 8px;" href="{{ url_for('plan_details', plan_id=dp.plan_id) }}">Inspect Details &rarr;</a>
+                <div style="border-top: 1px solid var(--line); padding-top: 10px; margin-top: 8px; display: flex; gap: 6px;">
+                    <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .8rem; padding: 6px 8px;" href="{{ url_for('plan_details', plan_id=dp.plan_id) }}">Inspect Details &rarr;</a>
+                    <a class="secondary-btn" style="text-align: center; font-size: .8rem; padding: 6px 8px; width: auto;" href="{{ url_for('compare_plans', plans=dp.plan_id) }}" title="Compare this plan">Compare</a>
                 </div>
             </div>
             {% endfor %}
         </div>
 
         <script>
-        function filterPlans(tier, btn) {
-            document.querySelectorAll('.plan-filter-btn').forEach(b => b.classList.remove('active'));
+        let currentCompany = 'all';
+        let currentTier = 'all';
+
+        function setCompanyFilter(company, btn) {
+            document.querySelectorAll('.company-filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            currentCompany = company;
+            applyCombinedFilter();
+        }
+
+        function setTierFilter(tier, btn) {
+            document.querySelectorAll('.tier-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTier = tier;
+            applyCombinedFilter();
+        }
+
+        function applyCombinedFilter() {
             const items = document.querySelectorAll('.plan-catalog-item');
+            let visibleCount = 0;
             items.forEach(item => {
-                if (tier === 'all' || item.dataset.tier === tier) {
+                const matchCompany = (currentCompany === 'all' || item.dataset.company === currentCompany);
+                const matchTier = (currentTier === 'all' || item.dataset.tier === currentTier);
+                if (matchCompany && matchTier) {
                     item.style.display = 'flex';
+                    visibleCount++;
                 } else {
                     item.style.display = 'none';
                 }

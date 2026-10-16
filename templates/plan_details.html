@@ -30,6 +30,13 @@
 <main>
     <section class="hero compact-hero">
         <p class="eyebrow">Demo Insurance Product Specifications</p>
+        {% if company_info %}
+        <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0 8px; flex-wrap: wrap;">
+            <span class="company-badge {{ company_info.company_badge_class }}">{{ company_info.company_name }}</span>
+            <span style="font-size: .75rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 8px; border-radius: 4px;">{{ company_info.company_csr }} Claim Settlement Ratio</span>
+            <span style="font-size: .75rem; color: #526f84; font-weight: 600;">{{ company_info.company_hospitals }} Cashless Hospitals</span>
+        </div>
+        {% endif %}
         <h1>{{ plan.plan_name }}</h1>
         <p>{{ plan.plan_description }}</p>
         <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
@@ -85,7 +92,7 @@
                 <div style="background: #f8fafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
                     <span style="display: block; color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 700;">Total Coverage Amount</span>
                     <strong style="display: block; color: var(--navy); font-size: 1.45rem; font-family: Georgia, serif; margin-top: 4px;">
-                        ₹{{ '{:g}'.format(plan.coverage_amount/100000) }} Lakhs
+                        {% if plan.coverage_amount >= 10000000 %}₹{{ '{:g}'.format(plan.coverage_amount/10000000) }} Crore{% else %}₹{{ '{:g}'.format(plan.coverage_amount/100000) }} Lakhs{% endif %}
                     </strong>
                     <small style="color: var(--muted); font-size: .75rem;">INR {{ '{:,.0f}'.format(plan.coverage_amount) }} Sum Insured</small>
                 </div>

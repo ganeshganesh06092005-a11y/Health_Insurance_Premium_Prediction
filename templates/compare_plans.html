@@ -56,23 +56,69 @@
     </div>
     {% endif %}
 
-    <!-- PLAN SELECTOR CHECKBOXES/DROPDOWNS -->
-    <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
-        <span style="font-weight: 700; font-size: .85rem; color: var(--navy); display: block; margin-bottom: 8px;">
-            Select up to 3 plans to compare:
-        </span>
-        <form method="get" action="{{ url_for('compare_plans') }}" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+    <!-- PLAN SELECTOR DROPDOWNS -->
+    <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; margin-bottom: 24px; box-shadow: var(--card-shadow);">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <span style="font-weight: 700; font-size: .95rem; color: var(--navy);">
+                Select up to 3 plans to compare side-by-side (from 100+ policies):
+            </span>
+            <a class="view-link" href="{{ url_for('insurance_plans') }}" style="font-size: .82rem;">Browse All Plans Catalog &rarr;</a>
+        </div>
+        <form method="get" action="{{ url_for('compare_plans') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) auto; gap: 12px; align-items: flex-end;">
             {% if prediction %}
                 <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
             {% endif %}
-            {% for p in all_active_plans %}
-                <label style="display: flex; align-items: center; gap: 6px; font-size: .85rem; cursor: pointer; color: #3d5a70;">
-                    <input type="checkbox" name="plans" value="{{ p.plan_id }}" {% if p.plan_id in selected_ids %}checked{% endif %} style="width: auto;">
-                    {{ p.plan_name }} (₹{{ '{:,.0f}'.format(p.annual_premium) }})
-                </label>
-            {% endfor %}
-            <button type="submit" style="width: auto; padding: 6px 16px; font-size: .82rem; background: var(--blue); color: white; border: 0; border-radius: 4px; font-weight: 700; cursor: pointer;">
-                Update Comparison
+
+            <!-- Dropdown 1 -->
+            <div>
+                <label style="font-size: .75rem; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-bottom: 4px; display: block;">Plan 1:</label>
+                <select name="plans" style="font-size: .82rem; padding: 8px 10px;">
+                    {% for insurer_name in insurers %}
+                        <optgroup label="{{ insurer_name }}">
+                            {% for p in all_active_plans if p.company_name == insurer_name %}
+                                <option value="{{ p.plan_id }}" {% if selected_ids|length > 0 and selected_ids[0] == p.plan_id %}selected{% endif %}>
+                                    {{ p.plan_name }} (₹{{ '{:,.0f}'.format(p.annual_premium) }})
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Dropdown 2 -->
+            <div>
+                <label style="font-size: .75rem; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-bottom: 4px; display: block;">Plan 2:</label>
+                <select name="plans" style="font-size: .82rem; padding: 8px 10px;">
+                    {% for insurer_name in insurers %}
+                        <optgroup label="{{ insurer_name }}">
+                            {% for p in all_active_plans if p.company_name == insurer_name %}
+                                <option value="{{ p.plan_id }}" {% if selected_ids|length > 1 and selected_ids[1] == p.plan_id %}selected{% endif %}>
+                                    {{ p.plan_name }} (₹{{ '{:,.0f}'.format(p.annual_premium) }})
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Dropdown 3 -->
+            <div>
+                <label style="font-size: .75rem; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-bottom: 4px; display: block;">Plan 3:</label>
+                <select name="plans" style="font-size: .82rem; padding: 8px 10px;">
+                    {% for insurer_name in insurers %}
+                        <optgroup label="{{ insurer_name }}">
+                            {% for p in all_active_plans if p.company_name == insurer_name %}
+                                <option value="{{ p.plan_id }}" {% if selected_ids|length > 2 and selected_ids[2] == p.plan_id %}selected{% endif %}>
+                                    {{ p.plan_name }} (₹{{ '{:,.0f}'.format(p.annual_premium) }})
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" style="width: auto; height: 38px; padding: 0 20px; font-size: .85rem; background: var(--blue); color: white; border: 0; border-radius: 6px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                Compare Plans
             </button>
         </form>
     </div>
@@ -87,18 +133,44 @@
                         {% for item in compared_data %}
                             <th style="font-size: .95rem; color: var(--navy); text-align: center; border-left: 1px solid var(--line); {% if item.get('is_closest') %}background: #eef8f6; border-top: 4px solid var(--mint);{% endif %}">
                                 {% if item.get('is_closest') %}
-                                    <div style="color: var(--mint); font-size: .7rem; text-transform: uppercase; font-weight: 800; letter-spacing: .08em; margin-bottom: 2px;">
+                                    <div style="color: var(--mint); font-size: .7rem; text-transform: uppercase; font-weight: 800; letter-spacing: .08em; margin-bottom: 4px;">
                                         ★ Closest Match
                                     </div>
                                 {% endif %}
-                                <div style="font-family: Georgia, serif; font-size: 1.1rem;">{{ item.plan.plan_name }}</div>
+                                <div style="margin-bottom: 4px;">
+                                    <span class="company-badge {{ item.company_badge_class }}">
+                                        {{ item.company_short }}
+                                    </span>
+                                </div>
+                                <div style="font-family: Georgia, serif; font-size: 1.05rem;">{{ item.plan.plan_name }}</div>
+                                <div style="font-size: .72rem; color: #047857; font-weight: 700; margin-top: 3px;">{{ item.company_csr }} CSR</div>
                             </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Annual Premium -->
+                    <!-- Insurer Provider -->
+                    <tr style="background: #fbfdfd;">
+                        <td style="font-weight: 700; color: #375364;">Insurance Company</td>
+                        {% for item in compared_data %}
+                            <td style="text-align: center; border-left: 1px solid var(--line); font-size: .85rem; font-weight: 600; color: var(--navy);">
+                                {{ item.company_name }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- Network Hospitals -->
                     <tr>
+                        <td style="font-weight: 700; color: #375364;">Network Hospitals</td>
+                        {% for item in compared_data %}
+                            <td style="text-align: center; border-left: 1px solid var(--line); font-size: .85rem; color: #4a6372;">
+                                <b>{{ item.company_hospitals }}</b> Cashless Hospitals
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- Annual Premium -->
+                    <tr style="background: #fbfdfd;">
                         <td style="font-weight: 700; color: #375364;">Annual Premium</td>
                         {% for item in compared_data %}
                             <td style="text-align: center; border-left: 1px solid var(--line); font-size: 1.15rem; font-weight: 800; color: var(--navy);">
@@ -109,7 +181,7 @@
 
                     <!-- Difference if prediction active -->
                     {% if prediction %}
-                    <tr style="background: #fbfdfd;">
+                    <tr>
                         <td style="font-weight: 700; color: #375364;">Difference from Prediction</td>
                         {% for item in compared_data %}
                             <td style="text-align: center; border-left: 1px solid var(--line);">

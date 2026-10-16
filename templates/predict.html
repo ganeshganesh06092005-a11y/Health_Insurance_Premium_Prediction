@@ -241,6 +241,16 @@
                 {% endif %}
 
                 <div>
+                    <!-- Company Badge & CSR Rating -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span class="company-badge {{ plan.company_badge_class }}">
+                            {{ plan.company_short }}
+                        </span>
+                        <span style="font-size: .7rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 4px;">
+                            {{ plan.company_csr }} CSR
+                        </span>
+                    </div>
+
                     <h3 style="margin: 0 0 8px; font-size: 1.22rem; color: var(--navy); font-family: Georgia, serif; display: flex; align-items: center; gap: 6px;">
                         🛡️ {{ plan.plan_name }}
                     </h3>
@@ -291,6 +301,7 @@
 
                 <div style="border-top: 1px solid var(--line); padding-top: 14px; display: flex; gap: 8px;">
                     <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 8px 10px;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=result.prediction_id) }}">View Plan Details &rarr;</a>
+                    <a class="secondary-btn" style="text-align: center; font-size: .82rem; padding: 8px 12px; width: auto;" href="{{ url_for('compare_plans', plans=plan.plan_id, prediction_id=result.prediction_id) }}">Compare</a>
                 </div>
             </div>
             {% endfor %}
