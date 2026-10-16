@@ -11,15 +11,17 @@
 <nav>
     <a href="{{ url_for('dashboard') }}">HealthSecure</a>
     <div class="nav-spacer"></div>
-    <span class="welcome">{{ session.get('user_name', 'member') }}</span>
+    <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
     <a href="{{ url_for('dashboard') }}">Dashboard</a>
-    <a href="{{ url_for('predict') }}">New Prediction</a>
+    <a href="{{ url_for('predict') }}">Calculate Premium</a>
     <a href="{{ url_for('history') }}">History</a>
     <a href="{{ url_for('what_if', prediction_id=prediction.id) }}">What-If Simulator</a>
-    <a href="{{ url_for('ai_insights', prediction_id=prediction.id) }}" style="color: #82e3cf;">AI Insights</a>
-    <a href="{{ url_for('model_performance') }}">Model Performance</a>
+    <a href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare Plans</a>
     <a href="{{ url_for('insurance_plans') }}">Plans</a>
     <a href="{{ url_for('profile') }}">Profile</a>
+    {% if session.get('user_role') == 'admin' %}
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
+    {% endif %}
     <form method="post" action="{{ url_for('logout') }}">
         <button class="link-button" type="submit">Log out</button>
     </form>
@@ -319,17 +321,18 @@
     </section>
     {% endif %}
 
-    <!-- FEATURE 1: DETAILED EXPLAINABLE AI (XAI) SECTION -->
-    <section class="panel" style="margin-top: 24px;">
+    {% if session.get('user_role') == 'admin' %}
+    <!-- FEATURE 1: DETAILED EXPLAINABLE AI (XAI) SECTION (ADMIN TELEMETRY) -->
+    <section class="panel" style="margin-top: 24px; border-left: 5px solid #d97706;">
         <div class="panel-header">
             <div>
-                <p class="eyebrow">Explainable AI (XAI)</p>
-                <h2>Factors Influencing Premium Prediction</h2>
+                <p class="eyebrow" style="color: #b45309;">👑 Administrator Actuarial Telemetry &bull; Explainable AI (XAI)</p>
+                <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0;">Tree Ensemble Global Feature Importances</h2>
             </div>
-            <span class="tag-pill tag-positive">Tree Ensemble Interpretability</span>
+            <span class="tag-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">Admin Telemetry</span>
         </div>
         
-        <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
+        <p style="color: #4a6372; font-size: .92rem; margin-top: 6px; line-height: 1.55;">
             The chart below displays the global relative feature importances calculated by our regression trees. This clarifies the proportional weight that each demographic and medical indicator exerts on the predicted insurance charges.
         </p>
 
@@ -345,16 +348,28 @@
             </div>
             {% endfor %}
         </div>
+    </section>
+    {% endif %}
 
-        <div style="background: #f0f7f7; border-left: 4px solid var(--mint); border-radius: 6px; padding: 12px 16px; margin: 16px 0;">
-            <b style="color: var(--navy); font-size: .92rem;">Model Inference Summary:</b>
-            <p style="margin: 4px 0 0; color: #375364; font-size: .88rem;">
+    <!-- CONSUMER SUMMARY & RATING FACTORS SECTION -->
+    <section class="panel" style="margin-top: 24px;">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Personalized Rating Factors</p>
+                <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0;">What Influenced Your Estimated Premium</h2>
+            </div>
+            <span class="tag-pill tag-positive">Member Review</span>
+        </div>
+
+        <div style="background: #f0f7f7; border-left: 4px solid var(--mint); border-radius: 6px; padding: 14px 18px; margin: 16px 0;">
+            <b style="color: var(--navy); font-size: .95rem;">Rating Summary for {{ prediction.full_name }}:</b>
+            <p style="margin: 4px 0 0; color: #375364; font-size: .9rem;">
                 {{ explanation.simple_explanation }}
             </p>
         </div>
 
         <h3 style="margin: 22px 0 12px; color: var(--navy); font-size: 1.15rem; font-family: Georgia, serif;">
-            How the model interpreted your information
+            Health &amp; Demographic Profile Breakdown
         </h3>
 
         <!-- PERSONALIZED INTERPRETATION CARDS -->

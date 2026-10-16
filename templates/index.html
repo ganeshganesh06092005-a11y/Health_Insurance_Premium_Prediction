@@ -56,6 +56,9 @@
                     <span style="color: var(--landing-navy); font-size: 0.88rem; font-weight: 600;">
                         Hi, {{ session.get('user_name', 'Member') }}
                     </span>
+                    {% if session.get('user_role') == 'admin' %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn-nav-login" style="background: #fef3c7; color: #b45309; border-color: #fde68a; font-weight: 700;">👑 Admin Portal</a>
+                    {% endif %}
                     <a href="{{ url_for('dashboard') }}" class="btn-nav-login">Dashboard</a>
                     <a href="{{ url_for('predict') }}" class="btn-nav-primary">
                         Calculate Premium
@@ -93,6 +96,9 @@
             </ul>
             <div class="nav-cta-group">
                 {% if session.get('user_id') %}
+                    {% if session.get('user_role') == 'admin' %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn-nav-login" style="background: #fef3c7; color: #b45309; border-color: #fde68a; font-weight: 700; text-align: center;">👑 Admin Portal</a>
+                    {% endif %}
                     <a href="{{ url_for('dashboard') }}" class="btn-nav-login" style="text-align: center;">Go to Dashboard</a>
                     <a href="{{ url_for('predict') }}" class="btn-nav-primary" style="justify-content: center;">Start Prediction</a>
                 {% else %}

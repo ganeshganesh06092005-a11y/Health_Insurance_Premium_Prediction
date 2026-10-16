@@ -1094,6 +1094,200 @@ td { color: #415c6b; }
     color: #047857;
 }
 
+/* ADMIN PORTAL BADGE IN NAVBAR */
+.admin-portal-link {
+    background: linear-gradient(135deg, #d97706, #f59e0b) !important;
+    color: #ffffff !important;
+    padding: 5px 12px !important;
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+}
+
+.admin-portal-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.45);
+    color: #ffffff !important;
+}
+
+/* ADMIN DASHBOARD HEADER & NAV */
+.admin-navbar {
+    background: #0d233a !important;
+    border-bottom: 2px solid #e5a63b;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.admin-nav-link {
+    color: #e2e8f0 !important;
+    text-decoration: none;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.admin-nav-link:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f6ad55 !important;
+}
+
+/* MEMBER BADGE */
+.member-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: 1px solid #bae6fd;
+    margin-bottom: 8px;
+}
+
+/* CONSUMER KPI CARDS */
+.consumer-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+    margin: 22px 0 30px;
+}
+
+.consumer-kpi-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.consumer-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(21, 59, 89, 0.1);
+}
+
+.consumer-kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.consumer-kpi-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+}
+
+.consumer-kpi-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.consumer-kpi-val {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--navy);
+    font-family: Georgia, serif;
+    margin: 4px 0 2px;
+}
+
+.consumer-kpi-sub {
+    font-size: 0.78rem;
+    color: #526f84;
+    font-weight: 500;
+}
+
+/* HEALTH & FINANCIAL PLANNING HUB */
+.consumer-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin: 24px 0 32px;
+}
+
+.hub-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.hub-card:hover {
+    border-color: #0d9b88;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(13, 155, 136, 0.12);
+}
+
+.hub-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+    background: #effaf8;
+    color: #0d9b88;
+    border: 1px solid #cceee8;
+}
+
+.hub-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.15rem;
+    color: var(--navy);
+    font-family: Georgia, serif;
+}
+
+.hub-card p {
+    font-size: 0.85rem;
+    color: #526f84;
+    line-height: 1.5;
+    margin: 0 0 16px;
+}
+
+.hub-card-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #0d9b88;
+    text-decoration: none;
+    transition: gap 0.2s ease;
+}
+
+.hub-card-action:hover {
+    gap: 10px;
+    color: #065f46;
+}
+
+
 /* RESPONSIVE QUERIES */
 @media (max-width: 900px) {
     .whatif-container { grid-template-columns: 1fr; }

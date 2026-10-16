@@ -191,7 +191,7 @@ with app.app_context():
                 setattr(existing_plan, k, v)
     db.session.commit()
 
-    # Seed default administrator if not present (Admin@123)
+    # Seed default administrator if not present or verify role/password (Admin@123)
     admin_email = "admin@healthsecure.com"
     existing_admin = User.query.filter_by(email=admin_email).first()
     if not existing_admin:
@@ -203,6 +203,53 @@ with app.app_context():
             role="admin",
         )
         db.session.add(admin_user)
+    else:
+        existing_admin.role = "admin"
+        existing_admin.password_hash = generate_password_hash("Admin@123")
+
+    # Seed default member demo user (User@123)
+    user_email = "user@healthsecure.com"
+    existing_user = User.query.filter_by(email=user_email).first()
+    if not existing_user:
+        demo_user = User(
+            name="Rahul Sharma",
+            email=user_email,
+            password_hash=generate_password_hash("User@123"),
+            phone="+91 9876500001",
+            role="user",
+        )
+        db.session.add(demo_user)
+    else:
+        existing_user.role = "user"
+        existing_user.password_hash = generate_password_hash("User@123")
+    db.session.commit()
+
+    # Seed an initial baseline prediction for demo user if none exists
+    target_demo_user = existing_user or User.query.filter_by(email=user_email).first()
+    if target_demo_user and not Prediction.query.filter_by(user_id=target_demo_user.id).first():
+        sample_pred = Prediction()
+        sample_pred.age = 32
+        sample_pred.sex = "male"
+        sample_pred.height = 175.0
+        sample_pred.weight = 72.0
+        sample_pred.bmi = 23.5
+        sample_pred.children = 1
+        sample_pred.smoker = "no"
+        sample_pred.liquor = "no"
+        sample_pred.region = "maharashtra"
+        sample_pred.full_name = "Rahul Sharma"
+        sample_pred.salary = 850000.0
+        sample_pred.policy_duration = 5
+        sample_pred.plan_category = "silver"
+        sample_pred.recommendation = "Silver Health Plan for young active professionals"
+        sample_pred.premium_income_ratio = 2.94
+        sample_pred.total_premium = 124975.0
+        sample_pred.benefit_factor = 1.25
+        sample_pred.estimated_benefit = 156218.75
+        sample_pred.estimated_premium = 24995.0
+        sample_pred.user_id = target_demo_user.id
+        sample_pred.recommended_plan_id = 1
+        db.session.add(sample_pred)
         db.session.commit()
 
     # Backfill recommendations if table empty
@@ -1316,7 +1363,10 @@ def prediction_details(prediction_id):
 @app.route("/ai-insights")
 @login_required
 def ai_insights_latest():
-    """Redirect to the AI insights for the user's latest prediction."""
+    """Technical Explainable AI (XAI) feature attribution - restricted to Admin."""
+    if session.get("user_role") != "admin":
+        flash("Technical AI/ML model explanations and weight attributions are restricted to administrators.", "warning")
+        return redirect(url_for("dashboard"))
     latest = (
         Prediction.query.filter_by(user_id=session["user_id"])
         .order_by(Prediction.created_at.desc())
@@ -1324,7 +1374,7 @@ def ai_insights_latest():
     )
     if not latest:
         flash("Create a prediction first to view AI insights.", "error")
-        return redirect(url_for("index"))
+        return redirect(url_for("predict"))
     return redirect(url_for("ai_insights", prediction_id=latest.id))
 
 
@@ -1349,8 +1399,8 @@ def what_if():
         .all()
     )
     if not user_predictions:
-        flash("Create an initial prediction before opening the scenario simulator.", "error")
-        return redirect(url_for("index"))
+        flash("Calculate your baseline insurance estimate before opening the scenario simulator.", "warning")
+        return redirect(url_for("predict"))
 
     prediction = (
         owned_prediction(prediction_id)
@@ -1436,12 +1486,10 @@ def what_if_predict():
 @app.route("/model-performance")
 @login_required
 def model_performance():
-    return render_template(
-        "model_performance.html",
-        metrics=load_metrics(),
-        model_meta=get_model_meta(),
-        admin_view=False,
-    )
+    if session.get("user_role") != "admin":
+        flash("Technical AI/ML model architecture & regression benchmarks are restricted to system administrators.", "warning")
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("admin_model_performance"))
 
 
 @app.route("/admin/model-performance")
@@ -1676,17 +1724,64 @@ def change_password():
 @login_required
 @admin_required
 def admin_dashboard():
-    predictions = Prediction.query.order_by(Prediction.created_at.desc()).limit(15).all()
+    all_users = User.query.order_by(User.id.desc()).all()
     all_predictions = Prediction.query.order_by(Prediction.created_at.desc()).all()
+    recent_predictions = all_predictions[:25]
+
+    # Map user evaluation counts
+    user_counts = {}
+    for p in all_predictions:
+        if p.user_id:
+            user_counts[p.user_id] = user_counts.get(p.user_id, 0) + 1
+
+    enriched_users = []
+    for u in all_users:
+        enriched_users.append({
+            "id": u.id,
+            "name": u.name,
+            "email": u.email,
+            "phone": u.phone or "—",
+            "role": u.role,
+            "created_at": u.created_at,
+            "prediction_count": user_counts.get(u.id, 0),
+        })
+
+    metrics = load_metrics()
+    model_meta = get_model_meta()
+    analytics = analytics_payload(all_predictions)
+    insights = feature_insights()
+
     return render_template(
         "admin_dashboard.html",
-        users=User.query.order_by(User.id.desc()).limit(15).all(),
-        predictions=predictions,
-        user_count=User.query.count(),
-        prediction_count=Prediction.query.count(),
+        users=enriched_users,
+        predictions=recent_predictions,
+        all_predictions=all_predictions,
+        user_count=len(all_users),
+        prediction_count=len(all_predictions),
         recommendation_count=Recommendation.query.count(),
-        analytics=analytics_payload(all_predictions),
+        analytics=analytics,
+        metrics=metrics,
+        model_meta=model_meta,
+        insights=insights,
     )
+
+
+@app.route("/admin/toggle-role/<int:user_id>", methods=["POST"])
+@login_required
+@admin_required
+def admin_toggle_role(user_id):
+    target_user = db.session.get(User, user_id)
+    if not target_user:
+        flash("User not found.", "error")
+        return redirect(url_for("admin_dashboard"))
+    if target_user.id == session["user_id"]:
+        flash("You cannot alter your own administrative role.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    target_user.role = "admin" if target_user.role == "user" else "user"
+    db.session.commit()
+    flash(f"Updated role for {target_user.name} ({target_user.email}) to {target_user.role.title()}.", "success")
+    return redirect(url_for("admin_dashboard"))
 
 
 @app.route("/health")
