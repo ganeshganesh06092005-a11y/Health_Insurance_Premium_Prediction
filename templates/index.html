@@ -40,11 +40,11 @@
             <!-- Desktop Nav Links -->
             <ul class="nav-links">
                 <li><a href="#hero" class="nav-link active">Home</a></li>
-                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#coverage" class="nav-link">Coverage</a></li>
+                <li><a href="#claims" class="nav-link">Claims</a></li>
+                <li><a href="#insurers" class="nav-link">Insurers</a></li>
                 <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
-                <li><a href="#features" class="nav-link">Features</a></li>
                 <li><a href="#ml-models" class="nav-link">ML Models</a></li>
-                <li><a href="#xai" class="nav-link">Explainable AI</a></li>
                 <li><a href="#simulator" class="nav-link">Simulator</a></li>
                 <li><a href="#plans" class="nav-link">Plans</a></li>
                 <li><a href="#faq" class="nav-link">FAQ</a></li>
@@ -82,11 +82,11 @@
         <div class="nav-mobile-menu" id="navMobileMenu">
             <ul class="nav-links">
                 <li><a href="#hero" class="nav-link">Home</a></li>
-                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#coverage" class="nav-link">Coverage</a></li>
+                <li><a href="#claims" class="nav-link">Claims</a></li>
+                <li><a href="#insurers" class="nav-link">Insurers</a></li>
                 <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
-                <li><a href="#features" class="nav-link">Features</a></li>
                 <li><a href="#ml-models" class="nav-link">ML Models</a></li>
-                <li><a href="#xai" class="nav-link">Explainable AI</a></li>
                 <li><a href="#simulator" class="nav-link">Simulator</a></li>
                 <li><a href="#plans" class="nav-link">Plans</a></li>
                 <li><a href="#faq" class="nav-link">FAQ</a></li>
@@ -114,7 +114,7 @@
                 <div class="hero-content-col">
                     <div class="hero-badge">
                         <span class="live-dot"></span>
-                        Smart Insurance Prediction Powered by Machine Learning
+                        India's Smartest ML Health Insurance Predictor
                     </div>
 
                     <h1 class="hero-heading">
@@ -122,12 +122,12 @@
                     </h1>
 
                     <p class="hero-description">
-                        HealthSecure uses machine learning to estimate your health insurance premium based on personal, health and lifestyle information, and helps you explore suitable sample insurance plans.
+                        HealthSecure uses advanced Machine Learning regression to evaluate actuarial risk across personal and lifestyle factors, estimating your true insurance premium and matching optimal plans across 8 top Indian insurers.
                     </p>
 
                     <div class="hero-cta-group">
-                        <a href="{{ url_for('register') }}" class="btn-primary-hero">
-                            Get Started
+                        <a href="{{ url_for('predict') }}" class="btn-primary-hero">
+                            Calculate Premium Now
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </a>
                         <a href="#how-it-works" class="btn-secondary-hero">
@@ -136,78 +136,158 @@
                         </a>
                     </div>
 
-                    <div class="hero-meta-strip">
-                        <div class="hero-meta-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span>Trained on 1,338 Verified Records</span>
+                    <!-- Commercial USPs (Star Health & Care Health Style) -->
+                    <div class="hero-usp-grid">
+                        <div class="hero-usp-item">
+                            <span class="usp-check">✓</span>
+                            <span>Starts <b>@ ₹15 / day</b> (₹450/mo)</span>
                         </div>
-                        <div class="hero-meta-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span>XGBoost &amp; Random Forest Ensembles</span>
+                        <div class="hero-usp-item">
+                            <span class="usp-check">✓</span>
+                            <span><b>21,000+</b> Cashless Hospitals</span>
                         </div>
-                        <div class="hero-meta-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span>Explainable AI (XAI) Attribution</span>
+                        <div class="hero-usp-item">
+                            <span class="usp-check">✓</span>
+                            <span><b>118+ Demo Plans</b> from 8 Insurers</span>
+                        </div>
+                        <div class="hero-usp-item">
+                            <span class="usp-check">✓</span>
+                            <span>Save up to <b>₹75,000 Sec 80D</b></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right: Healthcare + AI Illustration & Floating Metric Cards -->
+                <!-- Right: High-Conversion Interactive Quick-Quote & Risk Assessment Card (Star Health & Care Health Architecture) -->
                 <div class="hero-visual-col">
-                    <div class="hero-visual-card">
-                        
-                        <!-- Center Holographic AI Shield -->
-                        <div class="hero-graphic-center">
-                            <div class="shield-pulse">
-                                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                    <path d="M9 12h6"/>
-                                    <path d="M12 9v6"/>
-                                </svg>
+                    <div class="hero-quote-card">
+                        <div class="quote-card-header">
+                            <div class="quote-header-badge">
+                                <span class="badge-pulse-dot"></span>
+                                Instant Actuarial AI Estimator
                             </div>
-                            <div class="hero-estimate-chip">Actuarial Risk Prediction</div>
-                            <div class="hero-estimate-price">INR 27,999 <span>/ yr</span></div>
-                            <div style="font-size: 0.82rem; color: #55707d; margin-top: 4px; font-weight: 500;">
-                                Healthy Non-Smoker Profile &bull; BMI 24.2 &bull; Age 32
-                            </div>
+                            <h3 class="quote-card-title">Quick Insurance Rate Estimator</h3>
+                            <p class="quote-card-sub">Instant AI assessment • Multi-Insurer benchmark catalog</p>
                         </div>
 
-                        <!-- Floating Glass Card 1: Machine Learning Status -->
-                        <div class="floating-glass-card">
-                            <div class="floating-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        <form id="heroQuickQuoteForm" action="{{ url_for('predict') }}" method="GET" class="quote-card-body">
+                            <!-- 1. Who would you like to insure? (Care & Star Health signature pill buttons) -->
+                            <div class="quote-field-group">
+                                <label class="quote-field-label">Who would you like to insure?</label>
+                                <div class="member-pill-grid">
+                                    <button type="button" class="member-pill active" data-member="self">
+                                        <span class="pill-icon">🧑</span>
+                                        <span class="pill-title">Myself</span>
+                                    </button>
+                                    <button type="button" class="member-pill" data-member="spouse">
+                                        <span class="pill-icon">👫</span>
+                                        <span class="pill-title">Spouse</span>
+                                    </button>
+                                    <button type="button" class="member-pill" data-member="family">
+                                        <span class="pill-icon">👨‍👩‍👧</span>
+                                        <span class="pill-title">Family</span>
+                                    </button>
+                                    <button type="button" class="member-pill" data-member="parents">
+                                        <span class="pill-icon">👵</span>
+                                        <span class="pill-title">Parents</span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="floating-content">
-                                <strong>XGBoost Regressor</strong>
-                                <span>R² Score: 0.879 &bull; MAE: ₹2,374</span>
-                            </div>
-                            <span class="floating-badge">Optimal</span>
-                        </div>
 
-                        <!-- Floating Glass Card 2: Sample Plan Matching -->
-                        <div class="floating-glass-card">
-                            <div class="floating-icon" style="background: rgba(34, 193, 195, 0.15); color: #22c1c3;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                            </div>
-                            <div class="floating-content">
-                                <strong>HealthSecure Standard</strong>
-                                <span>Diff: ₹501 (1.76% deviation)</span>
-                            </div>
-                            <span class="floating-badge" style="background: rgba(34, 193, 195, 0.2); color: #22c1c3;">★ Closest</span>
-                        </div>
+                            <!-- 2. Age & Indian State Selectors -->
+                            <div class="quote-dual-row">
+                                <div class="quote-field-group">
+                                    <div class="label-with-val">
+                                        <label class="quote-field-label" for="heroAge">Applicant Age</label>
+                                        <span class="live-val-pill" id="heroAgeDisplay">28 Yrs</span>
+                                    </div>
+                                    <div class="slider-with-bubble">
+                                        <input type="range" id="heroAge" name="age" min="18" max="75" value="28" class="custom-range-slider">
+                                    </div>
+                                </div>
 
-                        <!-- Floating Glass Card 3: Explainable AI -->
-                        <div class="floating-glass-card">
-                            <div class="floating-icon" style="background: rgba(229, 166, 59, 0.15); color: #e5a63b;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                <div class="quote-field-group">
+                                    <label class="quote-field-label" for="heroState">Indian State</label>
+                                    <select id="heroState" name="region" class="quote-select">
+                                        <option value="Maharashtra" selected>Maharashtra</option>
+                                        <option value="Karnataka">Karnataka</option>
+                                        <option value="Tamil Nadu">Tamil Nadu</option>
+                                        <option value="Delhi">Delhi</option>
+                                        <option value="Gujarat">Gujarat</option>
+                                        <option value="Telangana">Telangana</option>
+                                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                        <option value="West Bengal">West Bengal</option>
+                                        <option value="Kerala">Kerala</option>
+                                        <option value="Rajasthan">Rajasthan</option>
+                                        <option value="Haryana">Haryana</option>
+                                        <option value="Punjab">Punjab</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="floating-content">
-                                <strong>Explainable AI (XAI)</strong>
-                                <span>Tobacco factor is top risk driver (84.1%)</span>
-                            </div>
-                            <span class="floating-badge" style="background: rgba(229, 166, 59, 0.2); color: #e5a63b;">Verified</span>
-                        </div>
 
+                            <!-- 3. Health & Lifestyle Risk Toggle Switches (Smoking & Alcohol) -->
+                            <div class="quote-dual-row">
+                                <div class="quote-field-group">
+                                    <label class="quote-field-label">Tobacco / Smoking</label>
+                                    <div class="segmented-pill-toggle">
+                                        <label class="pill-choice active" id="heroSmokerNo">
+                                            <input type="radio" name="smoker" value="no" checked>
+                                            <span>🚭 No</span>
+                                        </label>
+                                        <label class="pill-choice" id="heroSmokerYes">
+                                            <input type="radio" name="smoker" value="yes">
+                                            <span>🚬 Yes</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="quote-field-group">
+                                    <label class="quote-field-label">Alcohol / Liquor</label>
+                                    <div class="segmented-pill-toggle">
+                                        <label class="pill-choice active" id="heroLiquorNo">
+                                            <input type="radio" name="liquor" value="no" checked>
+                                            <span>🧃 No</span>
+                                        </label>
+                                        <label class="pill-choice" id="heroLiquorYes">
+                                            <input type="radio" name="liquor" value="yes">
+                                            <span>🍷 Yes</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. Dynamic Live Quote Breakdown Box (Care Health & Star Health Pricing Model) -->
+                            <div class="quote-estimate-box">
+                                <div class="estimate-top-row">
+                                    <div>
+                                        <span class="est-caption">Estimated Starting Premium</span>
+                                        <div class="est-main-figure" id="heroEstPrice">
+                                            ₹16 <span class="est-per-unit">/ day</span>
+                                        </div>
+                                    </div>
+                                    <div class="est-breakdown-chips">
+                                        <span class="breakdown-chip" id="heroEstMonth">₹480 / mo</span>
+                                        <span class="breakdown-chip annual" id="heroEstYear">₹5,760 / yr</span>
+                                    </div>
+                                </div>
+                                <div class="est-tax-perk">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                    <span>Save up to <b>₹75,000 under Sec 80D</b> • 21,000+ Cashless Hospitals</span>
+                                </div>
+                            </div>
+
+                            <!-- 5. Instant Action CTA -->
+                            <button type="submit" class="btn-quote-submit">
+                                <span>Get Accurate ML Quote &amp; 118+ Plans</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </button>
+
+                            <!-- 6. Trust Microcopy -->
+                            <div class="quote-trust-subtext">
+                                <span>🔒 100% Free &amp; Private</span>
+                                <span>⚡ 2-Hr Pre-Auth</span>
+                                <span>🛡️ 98.6% Settlement</span>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
@@ -216,34 +296,40 @@
     </section>
 
     <!-- =====================================================================
-         3. TRUST / REAL PROJECT STATISTICS BAR
+         3. TRUST & AUTHORITY BENCHMARKS BAR (COMMERCIAL STANDARDS)
          ===================================================================== -->
     <div class="landing-container">
         <div class="stats-bar-wrapper">
             <div class="stats-grid">
                 
                 <div class="stat-item">
-                    <div class="stat-number">1,338</div>
-                    <div class="stat-label">Dataset Records</div>
-                    <div class="stat-sublabel">Medical Cost Personal Dataset (Kaggle)</div>
+                    <div class="stat-number">21,000+</div>
+                    <div class="stat-label">Cashless Hospitals</div>
+                    <div class="stat-sublabel">Pan-India network across Metro &amp; Tier-2 cities</div>
                 </div>
 
                 <div class="stat-item">
-                    <div class="stat-number">4 <span class="stat-accent">Models</span></div>
-                    <div class="stat-label">Benchmarked Algorithms</div>
-                    <div class="stat-sublabel">XGBoost, Random Forest, Gradient Boosting, Linear</div>
+                    <div class="stat-number">98.6% <span class="stat-accent">CSR</span></div>
+                    <div class="stat-label">Claim Settlement Ratio</div>
+                    <div class="stat-sublabel">Industry-leading settlement benchmark</div>
                 </div>
 
                 <div class="stat-item">
-                    <div class="stat-number">7</div>
-                    <div class="stat-label">Actuarial Features</div>
-                    <div class="stat-sublabel">Demographic, clinical &amp; financial attributes</div>
-                </div>
-
-                <div class="stat-item">
-                    <div class="stat-number">100+ <span class="stat-accent">Plans</span></div>
-                    <div class="stat-label">Multi-Insurer Demo Catalog</div>
+                    <div class="stat-number">118+ <span class="stat-accent">Plans</span></div>
+                    <div class="stat-label">Multi-Insurer Catalog</div>
                     <div class="stat-sublabel">8 Leading Indian Insurers in MySQL</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-number">2 Hours</div>
+                    <div class="stat-label">Express Cashless Approval</div>
+                    <div class="stat-sublabel">Fast-track digital hospital pre-authorization</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-number">₹75,000</div>
+                    <div class="stat-label">Tax Deduction</div>
+                    <div class="stat-sublabel">Maximum tax savings under Section 80D</div>
                 </div>
 
             </div>
@@ -329,6 +415,287 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         4B. COMMERCIAL COVERAGE HIGHLIGHTS (STAR & CARE HEALTH STANDARD)
+         ===================================================================== -->
+    <section class="landing-section" id="coverage" style="padding-top: 20px;">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Comprehensive Benefits</span>
+                <h2 class="section-title">Experience Best-in-Class Coverage</h2>
+                <p class="section-subtitle">
+                    Designed around commercial standards from Star Health &amp; Care Health, HealthSecure matches you to policies with unmatched hospitalization and wellness benefits.
+                </p>
+            </div>
+
+            <div class="coverage-features-grid">
+                
+                <div class="coverage-card">
+                    <div class="coverage-icon-badge" style="background: rgba(34, 193, 195, 0.12); color: #0d9b88;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                    </div>
+                    <div class="coverage-content">
+                        <h4>Unlimited Automatic Recharge</h4>
+                        <p>100% sum insured restoration reinstates automatically if exhausted for unrelated ailments during the same policy year.</p>
+                        <span class="cov-tag">100% Reinstatement</span>
+                    </div>
+                </div>
+
+                <div class="coverage-card">
+                    <div class="coverage-icon-badge" style="background: rgba(22, 119, 200, 0.12); color: #1677c8;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </div>
+                    <div class="coverage-content">
+                        <h4>Zero Room Rent Capping</h4>
+                        <p>Total freedom to choose any hospital room category—from twin-sharing to private single deluxe suites—with zero proportionate deduction.</p>
+                        <span class="cov-tag">No Sub-Limits</span>
+                    </div>
+                </div>
+
+                <div class="coverage-card">
+                    <div class="coverage-icon-badge" style="background: rgba(229, 166, 59, 0.12); color: #d97706;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="coverage-content">
+                        <h4>60 / 90 Days Pre &amp; Post Hospitalization</h4>
+                        <p>Coverage for diagnostic investigations, specialist consults, and medications incurred 60 days before admission and 90 days post-discharge.</p>
+                        <span class="cov-tag">Full Diagnostic Bills</span>
+                    </div>
+                </div>
+
+                <div class="coverage-card">
+                    <div class="coverage-icon-badge" style="background: rgba(16, 185, 129, 0.12); color: #059669;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 11 12 14 22 4"/></svg>
+                    </div>
+                    <div class="coverage-content">
+                        <h4>AYUSH &amp; Modern Robotic Surgery</h4>
+                        <p>Holistic coverage including Ayurveda, Yoga, Unani, Siddha, Homeopathy as well as modern robotic-assisted surgical treatments.</p>
+                        <span class="cov-tag">Modern &amp; Holistic</span>
+                    </div>
+                </div>
+
+                <div class="coverage-card">
+                    <div class="coverage-icon-badge" style="background: rgba(139, 92, 246, 0.12); color: #7c3aed;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <div class="coverage-content">
+                        <h4>Annual Free Health Checkup</h4>
+                        <p>Complimentary annual preventative checkup for all insured members every renewal year, regardless of previous claim history.</p>
+                        <span class="cov-tag">Every Policy Year</span>
+                    </div>
+                </div>
+
+                <div class="coverage-card">
+                    <div class="coverage-icon-badge" style="background: rgba(236, 72, 153, 0.12); color: #db2777;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M16 12l-4-4-4 4M12 16V9"/></svg>
+                    </div>
+                    <div class="coverage-content">
+                        <h4>Express 2-Hour Cashless Pre-Auth</h4>
+                        <p>Fast-track digital hospital admission authorization processed in under 2 hours at over 21,000+ network hospitals pan-India.</p>
+                        <span class="cov-tag">2-Hr Turnaround</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         4C. 3-STEP SEAMLESS CASHLESS CLAIM JOURNEY (STAR / CARE HEALTH MODEL)
+         ===================================================================== -->
+    <section class="landing-section alt-bg" id="claims">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Hassle-Free Claims</span>
+                <h2 class="section-title">Seamless 3-Step Cashless Claim Journey</h2>
+                <p class="section-subtitle">
+                    Experience zero out-of-pocket stress during medical emergencies. Follow our fast-track 3-step digital cashless hospitalization journey.
+                </p>
+            </div>
+
+            <div class="claim-steps-grid">
+                
+                <div class="claim-step-card">
+                    <div class="claim-step-badge">Step 1</div>
+                    <div class="claim-icon-wrapper">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <h3>Hospital Admission &amp; E-Card</h3>
+                    <p>Walk into any of our <b>21,000+ cashless network hospitals</b> across India. Present your digital HealthSecure policy card at the hospital TPA desk.</p>
+                    <div class="claim-tag-row">
+                        <span class="c-tag">21,000+ Hospitals</span>
+                        <span class="c-tag">Digital E-Card</span>
+                    </div>
+                </div>
+
+                <div class="claim-step-connector">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+
+                <div class="claim-step-card highlight">
+                    <div class="claim-step-badge">Step 2</div>
+                    <div class="claim-icon-wrapper">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                    </div>
+                    <h3>2-Hour Express Pre-Auth</h3>
+                    <p>The hospital insurance desk submits a digital cashless pre-authorization. Our insurer partners verify and approve coverage within <b>under 2 hours</b>.</p>
+                    <div class="claim-tag-row">
+                        <span class="c-tag green">⚡ &lt; 2 Hr Approval</span>
+                        <span class="c-tag">Digital Verification</span>
+                    </div>
+                </div>
+
+                <div class="claim-step-connector">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+
+                <div class="claim-step-card">
+                    <div class="claim-step-badge">Step 3</div>
+                    <div class="claim-icon-wrapper">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <h3>100% Cashless Discharge</h3>
+                    <p>Focus on recovery. Hospital bills are settled directly with the hospital by the insurer. Zero out-of-pocket hassle for all covered treatments.</p>
+                    <div class="claim-tag-row">
+                        <span class="c-tag">Direct Settlement</span>
+                        <span class="c-tag">Zero Stress</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         4D. LEADING INDIAN INSURERS SHOWCASE (8 TOP BENCHMARK INSURERS)
+         ===================================================================== -->
+    <section class="landing-section" id="insurers">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-eyebrow">Multi-Insurer Comparison</span>
+                <h2 class="section-title">Compare Across 8 Leading Indian Insurers</h2>
+                <p class="section-subtitle">
+                    HealthSecure's recommendation catalog benchmarks over 118+ demo plans from India's premier standalone health and general insurance providers.
+                </p>
+            </div>
+
+            <div class="partner-insurers-grid">
+                
+                <div class="insurer-card">
+                    <div class="insurer-card-header">
+                        <span class="insurer-brand-badge star">Star Health</span>
+                        <span class="csr-pill">99.1% CSR</span>
+                    </div>
+                    <h4>Star Health &amp; Allied Insurance</h4>
+                    <p>India's leading standalone health insurer with specialized senior citizen plans and extensive cashless network.</p>
+                    <div class="insurer-meta">
+                        <span>🏥 14,000+ Hospitals</span>
+                        <span>⭐ Top Senior Care</span>
+                    </div>
+                </div>
+
+                <div class="insurer-card">
+                    <div class="insurer-card-header">
+                        <span class="insurer-brand-badge care">Care Health</span>
+                        <span class="csr-pill">95.2% CSR</span>
+                    </div>
+                    <h4>Care Health Insurance</h4>
+                    <p>Renowned for Ultimate Care plans, unlimited automatic recharge, zero room capping, and global coverage.</p>
+                    <div class="insurer-meta">
+                        <span>🏥 21,000+ Hospitals</span>
+                        <span>🔄 Unlimited Recharge</span>
+                    </div>
+                </div>
+
+                <div class="insurer-card">
+                    <div class="insurer-card-header">
+                        <span class="insurer-brand-badge hdfc">HDFC ERGO</span>
+                        <span class="csr-pill">98.4% CSR</span>
+                    </div>
+                    <h4>HDFC ERGO General Insurance</h4>
+                    <p>High trust brand featuring Optima Secure with 4X coverage and digital instant claim settlements.</p>
+                    <div class="insurer-meta">
+                        <span>🏥 12,000+ Hospitals</span>
+                        <span>🛡️ Optima Secure</span>
+                    </div>
+                </div>
+
+                <div class="insurer-card">
+                    <div class="insurer-card-header">
+                        <span class="insurer-brand-badge icici">ICICI Lombard</span>
+                        <span class="csr-pill">97.0% CSR</span>
+                    </div>
+                    <h4>ICICI Lombard General</h4>
+                    <p>Strong digital claim support with Elevate &amp; Complete Health packages featuring no copay clauses.</p>
+                    <div class="insurer-meta">
+                        <span>🏥 7,500+ Hospitals</span>
+                        <span>⚡ IL TakeCare App</span>
+                    </div>
+                </div>
+
+                <div class="insurer-card">
+                    <div class="insurer-card-header">
+                        <span class="insurer-brand-badge bupa">Niva Bupa</span>
+                        <span class="csr-pill">91.6% CSR</span>
+                    </div>
+                    <h4>Niva Bupa Health Insurance</h4>
+                    <p>Specialized ReAssure 2.0 plans with carry-forward unutilized sum insured and locking age benefits.</p>
+                    <div class="insurer-meta">
+                        <span>🏥 10,000+ Hospitals</span>
+                        <span>🔒 AgeLock Feature</span>
+                    </div>
+                </div>
+
+                <div class="insurer-card">
+                    <div class="insurer-card-header">
+                        <span class="insurer-brand-badge bajaj">Bajaj Allianz</span>
+                        <span class="csr-pill">98.0% CSR</span>
+                    </div>
+                    <h4>Bajaj Allianz General</h4>
+                    <p>Health Guard &amp; Silver Health policies offering in-house Health CDC claim assistance and tele-consults.</p>
+                    <div class="insurer-meta">
+                        <span>🏥 8,000+ Hospitals</span>
+                        <span>📞 In-House Claims</span>
+                    </div>
+                </div>
+
+                <div class="insurer-card">
+                    <div class="insurer-card-header">
+                        <span class="insurer-brand-badge tata">Tata AIG</span>
+                        <span class="csr-pill">96.5% CSR</span>
+                    </div>
+                    <h4>Tata AIG General Insurance</h4>
+                    <p>MediCare and MediCare Premier tiers offering worldwide emergency support and cumulative bonus.</p>
+                    <div class="insurer-meta">
+                        <span>🏥 7,000+ Hospitals</span>
+                        <span>🌍 Global Emergency</span>
+                    </div>
+                </div>
+
+                <div class="insurer-card">
+                    <div class="insurer-card-header">
+                        <span class="insurer-brand-badge birla">Aditya Birla</span>
+                        <span class="csr-pill">99.4% CSR</span>
+                    </div>
+                    <h4>Aditya Birla Health Insurance</h4>
+                    <p>Activ Health &amp; Fit policies rewarding active lifestyles with up to 100% premium return health returns.</p>
+                    <div class="insurer-meta">
+                        <span>🏥 10,500+ Hospitals</span>
+                        <span>🏃 Up to 100% Returns</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="text-align: center; margin-top: 36px;">
+                <a href="{{ url_for('insurance_plans') }}" class="btn-primary-hero">
+                    Explore All 118+ Plans Across Insurers
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </section>

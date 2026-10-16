@@ -901,7 +901,7 @@ def predict():
     if request.method == "POST" and "user_id" not in session:
         return redirect(url_for("login", next=url_for("predict")))
     result = None
-    form_data = request.form.to_dict()
+    form_data = request.form.to_dict() if request.method == "POST" else request.args.to_dict()
     if request.method == "POST":
         try:
             values = parse_form(request.form)

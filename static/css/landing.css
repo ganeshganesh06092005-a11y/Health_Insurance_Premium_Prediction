@@ -1352,6 +1352,615 @@ img, svg {
 }
 
 /* ==========================================================================
+   Star Health & Care Health Inspired Component Styles
+   ========================================================================== */
+
+/* 1. Hero Commercial USPs */
+.hero-usp-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 18px;
+    margin-top: 24px;
+}
+
+.hero-usp-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: #385160;
+}
+
+.usp-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(13, 155, 136, 0.14);
+    color: #0d9b88;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+/* 2. Hero Interactive Quick-Quote Card */
+.hero-quote-card {
+    background: #ffffff;
+    border: 1px solid var(--landing-border);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(6, 57, 67, 0.12);
+    padding: 26px;
+    position: relative;
+    border-top: 4px solid var(--landing-teal);
+}
+
+.quote-card-header {
+    margin-bottom: 16px;
+}
+
+.quote-header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #e8f8f5;
+    color: #097268;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+}
+
+.badge-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #097268;
+    animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.5; }
+}
+
+.quote-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--landing-navy);
+    margin: 4px 0 2px;
+    line-height: 1.2;
+}
+
+.quote-card-sub {
+    font-size: 0.8rem;
+    color: #627d8d;
+    margin: 0;
+}
+
+.quote-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quote-field-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.quote-field-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #415e6e;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Member Selection Pills (Star & Care Signature) */
+.member-pill-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.member-pill {
+    background: #f7fafc;
+    border: 1.5px solid #dbe6eb;
+    border-radius: 10px;
+    padding: 8px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.member-pill:hover {
+    border-color: var(--landing-teal);
+    background: #eef6f8;
+    transform: translateY(-1px);
+}
+
+.member-pill.active {
+    border-color: var(--landing-teal);
+    background: linear-gradient(135deg, rgba(7, 83, 97, 0.08), rgba(85, 221, 209, 0.2));
+    box-shadow: 0 4px 12px rgba(7, 83, 97, 0.1);
+}
+
+.pill-icon {
+    font-size: 1.25rem;
+    display: block;
+}
+
+.pill-title {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--landing-navy);
+}
+
+.quote-dual-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.label-with-val {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.live-val-pill {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: #0d9b88;
+    background: #e6f7f4;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.custom-range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #dce7ec;
+    outline: none;
+    margin: 8px 0;
+}
+
+.custom-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--landing-teal);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    transition: transform 0.1s;
+}
+
+.custom-range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.quote-select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1.5px solid #dbe6eb;
+    background: #fbfdfd;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--landing-navy);
+    cursor: pointer;
+}
+
+.quote-select:focus {
+    border-color: var(--landing-teal);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(7, 83, 97, 0.12);
+}
+
+/* Segmented Pill Toggle (No/Yes) */
+.segmented-pill-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    background: #f1f6f8;
+    padding: 3px;
+    border-radius: 8px;
+    border: 1px solid #dce7ec;
+}
+
+.pill-choice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #476272;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.pill-choice input {
+    display: none;
+}
+
+.pill-choice.active {
+    background: #ffffff;
+    color: var(--landing-navy);
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(6, 57, 67, 0.08);
+}
+
+.pill-choice.active.risk-active {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+/* Dynamic Live Quote Breakdown Box */
+.quote-estimate-box {
+    margin-top: 4px;
+    background: linear-gradient(135deg, #063943, #075361);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(6, 57, 67, 0.2);
+}
+
+.estimate-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.est-caption {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+    display: block;
+}
+
+.est-main-figure {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-top: 2px;
+}
+
+.est-per-unit {
+    font-size: 0.88rem;
+    color: #55ddd1;
+    font-weight: 600;
+}
+
+.est-breakdown-chips {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.breakdown-chip {
+    font-size: 0.74rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: #e1f7f5;
+}
+
+.breakdown-chip.annual {
+    background: rgba(85, 221, 209, 0.2);
+    color: #55ddd1;
+}
+
+.est-tax-perk {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.est-tax-perk svg {
+    color: #55ddd1;
+    flex-shrink: 0;
+}
+
+/* Action CTA */
+.btn-quote-submit {
+    width: 100%;
+    margin-top: 4px;
+    background: linear-gradient(135deg, #098376, #075361);
+    color: #ffffff;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(7, 83, 97, 0.25);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-quote-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(7, 83, 97, 0.35);
+    background: #05313a;
+}
+
+.quote-trust-subtext {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: #627d8d;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* 3. Commercial Coverage Features Grid */
+.coverage-features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.coverage-card {
+    background: #ffffff;
+    border: 1px solid var(--landing-border);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    box-shadow: var(--landing-shadow-sm);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.coverage-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--landing-shadow-md);
+    border-color: #b5d5de;
+}
+
+.coverage-icon-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.coverage-content h4 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+    color: var(--landing-navy);
+    font-weight: 700;
+}
+
+.coverage-content p {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    color: var(--landing-text-muted);
+    line-height: 1.5;
+}
+
+.cov-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #f0f7f8;
+    color: var(--landing-teal);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+/* 4. 3-Step Cashless Claim Journey */
+.claim-steps-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.claim-step-card {
+    flex: 1;
+    background: #ffffff;
+    border: 1.5px solid var(--landing-border);
+    border-radius: 16px;
+    padding: 26px 20px;
+    position: relative;
+    box-shadow: var(--landing-shadow-sm);
+    text-align: center;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.claim-step-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--landing-shadow-md);
+}
+
+.claim-step-card.highlight {
+    border-color: var(--landing-teal);
+    box-shadow: 0 8px 24px rgba(7, 83, 97, 0.12);
+}
+
+.claim-step-badge {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--landing-navy);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+.claim-step-card.highlight .claim-step-badge {
+    background: var(--landing-teal);
+}
+
+.claim-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #f0f7f9;
+    color: var(--landing-teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px auto 14px;
+}
+
+.claim-step-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    color: var(--landing-navy);
+    font-weight: 700;
+}
+
+.claim-step-card p {
+    margin: 0 0 14px;
+    font-size: 0.86rem;
+    color: var(--landing-text-muted);
+    line-height: 1.5;
+}
+
+.claim-tag-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.c-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.c-tag.green {
+    background: #dcfce7;
+    color: #15803d;
+    font-weight: 700;
+}
+
+.claim-step-connector {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* 5. Leading Insurance Partners Grid */
+.partner-insurers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.insurer-card {
+    background: #ffffff;
+    border: 1px solid var(--landing-border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--landing-shadow-sm);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.insurer-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--landing-shadow-md);
+    border-color: var(--landing-teal);
+}
+
+.insurer-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.insurer-brand-badge {
+    font-size: 0.76rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.insurer-brand-badge.star { background: #fee2e2; color: #b91c1c; }
+.insurer-brand-badge.care { background: #e0f2fe; color: #0284c7; }
+.insurer-brand-badge.hdfc { background: #fef3c7; color: #b45309; }
+.insurer-brand-badge.icici { background: #ffedd5; color: #c2410c; }
+.insurer-brand-badge.bupa { background: #e0e7ff; color: #4338ca; }
+.insurer-brand-badge.bajaj { background: #dbeafe; color: #1d4ed8; }
+.insurer-brand-badge.tata { background: #f3e8ff; color: #7e22ce; }
+.insurer-brand-badge.birla { background: #fae8ff; color: #a21caf; }
+
+.insurer-card h4 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+    color: var(--landing-navy);
+    font-weight: 700;
+}
+
+.insurer-card p {
+    margin: 0 0 12px;
+    font-size: 0.8rem;
+    color: var(--landing-text-muted);
+    line-height: 1.45;
+}
+
+.insurer-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #526f84;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 8px;
+}
+
+/* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
 @media (max-width: 1024px) {
@@ -1371,6 +1980,23 @@ img, svg {
 
     .about-grid {
         grid-template-columns: 1fr;
+    }
+
+    .coverage-features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .claim-steps-grid {
+        flex-direction: column;
+    }
+
+    .claim-step-connector {
+        transform: rotate(90deg);
+        margin: -4px 0;
+    }
+
+    .partner-insurers-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .steps-grid {
@@ -1420,6 +2046,26 @@ img, svg {
         flex-direction: column;
         width: 100%;
         margin-top: 12px;
+    }
+
+    .hero-usp-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .member-pill-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .quote-dual-row {
+        grid-template-columns: 1fr;
+    }
+
+    .coverage-features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .partner-insurers-grid {
+        grid-template-columns: 1fr;
     }
 
     .stats-grid {

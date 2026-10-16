@@ -796,6 +796,304 @@ td { color: #415c6b; }
     border-radius: 12px;
 }
 
+/* =====================================================================
+   MODERN FORM COMPONENTS (STAR HEALTH & CARE HEALTH UX ENHANCEMENTS)
+   ===================================================================== */
+
+/* Segmented Pill Selector Buttons */
+.form-pill-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.form-pill-btn {
+    background: #f8fafc;
+    border: 1.5px solid #d0dfe6;
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #355368;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    user-select: none;
+}
+
+.form-pill-btn:hover {
+    border-color: var(--blue);
+    background: #eef6fb;
+    transform: translateY(-1px);
+}
+
+.form-pill-btn.active {
+    background: #eef6fb;
+    border-color: var(--blue);
+    color: var(--navy);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(22, 119, 200, 0.15);
+}
+
+.form-pill-btn.good-choice.active {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #047857;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.form-pill-btn.risk-choice.active {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #b91c1c;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.form-pill-btn.warn-choice.active {
+    background: #fffbeb;
+    border-color: #f59e0b;
+    color: #b45309;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+.form-pill-btn.num-pill {
+    min-width: 44px;
+    height: 42px;
+    padding: 0;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.form-pill-btn.duration-btn {
+    flex: 1;
+    min-width: 100px;
+    flex-direction: column;
+    text-align: center;
+    padding: 8px 6px;
+    gap: 2px;
+}
+
+.form-pill-btn.duration-btn strong {
+    font-size: 0.88rem;
+    color: var(--navy);
+}
+
+.form-pill-btn.duration-btn small {
+    font-size: 0.7rem;
+    color: #0d9b88;
+    font-weight: 700;
+}
+
+.form-pill-btn.tier-btn {
+    flex: 1;
+    min-width: 140px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 14px;
+    gap: 3px;
+}
+
+.form-pill-btn.tier-btn strong {
+    font-size: 0.9rem;
+    color: var(--navy);
+}
+
+.form-pill-btn.tier-btn small {
+    font-size: 0.72rem;
+    color: #627e90;
+    font-weight: 500;
+}
+
+/* Dynamic Live BMI Gauge Card with Needle & Classification */
+.bmi-gauge-card {
+    background: #f4f8fa;
+    border: 1.5px solid #d5e5ec;
+    border-radius: 12px;
+    padding: 16px 18px;
+    grid-column: 1 / -1;
+    margin-bottom: 6px;
+}
+
+.bmi-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bmi-gauge-eyebrow {
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #5a7384;
+    letter-spacing: 0.05em;
+    display: block;
+}
+
+.bmi-val-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.bmi-number {
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: var(--navy);
+    font-family: monospace;
+}
+
+.bmi-badge-pill {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.bmi-formula-tip {
+    font-size: 0.72rem;
+    color: #6a8292;
+    text-align: right;
+    line-height: 1.3;
+}
+
+.bmi-meter-container {
+    margin: 14px 0 10px;
+    position: relative;
+}
+
+.bmi-meter-track {
+    display: flex;
+    height: 12px;
+    border-radius: 6px;
+    position: relative;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.meter-segment {
+    height: 100%;
+}
+
+.meter-segment.seg-under {
+    width: 21.25%;
+    background: #60a5fa;
+    border-radius: 6px 0 0 6px;
+}
+
+.meter-segment.seg-normal {
+    width: 16%;
+    background: #34d399;
+}
+
+.meter-segment.seg-over {
+    width: 12.5%;
+    background: #fbbf24;
+}
+
+.meter-segment.seg-obese {
+    width: 50.25%;
+    background: #f87171;
+    border-radius: 0 6px 6px 0;
+}
+
+.bmi-needle {
+    position: absolute;
+    top: -5px;
+    width: 4px;
+    height: 22px;
+    background: #0f172a;
+    border-radius: 2px;
+    transform: translateX(-50%);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bmi-needle::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: -3px;
+    width: 10px;
+    height: 6px;
+    background: #0f172a;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+.bmi-meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 6px;
+}
+
+.bmi-advisory-tip {
+    font-size: 0.78rem;
+    color: #3b5668;
+    background: #ffffff;
+    border: 1px solid #d5e5ec;
+    padding: 8px 12px;
+    border-radius: 6px;
+    line-height: 1.45;
+    margin-top: 8px;
+}
+
+/* Salary Presets */
+.salary-presets {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.preset-chip {
+    background: #f0f6f9;
+    border: 1px solid #d0dfe6;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--navy);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.preset-chip:hover {
+    background: var(--blue);
+    color: #ffffff;
+    border-color: var(--blue);
+}
+
+/* Result Price Breakdown Chips */
+.result-price-breakdown {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.price-chip-unit {
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: #eef6f9;
+    color: var(--navy);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.price-chip-unit.tax-chip {
+    background: #ecfdf5;
+    color: #047857;
+}
+
 /* RESPONSIVE QUERIES */
 @media (max-width: 900px) {
     .whatif-container { grid-template-columns: 1fr; }

@@ -104,4 +104,111 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial calculation if present
     updatePreviewCalc();
+
+    // =========================================================================
+    // 4. Hero Quick-Quote Widget Interactive Engine (Care & Star Health Style)
+    // =========================================================================
+    const heroAgeSlider = document.getElementById('heroAge');
+    const heroAgeDisplay = document.getElementById('heroAgeDisplay');
+    const heroEstPrice = document.getElementById('heroEstPrice');
+    const heroEstMonth = document.getElementById('heroEstMonth');
+    const heroEstYear = document.getElementById('heroEstYear');
+    const memberPills = document.querySelectorAll('.member-pill');
+    let currentMember = 'self';
+
+    // Member Pills Click Handler
+    memberPills.forEach(pill => {
+        pill.addEventListener('click', (e) => {
+            e.preventDefault();
+            memberPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            currentMember = pill.getAttribute('data-member');
+
+            // Intelligently adjust default age for parents/family
+            if (currentMember === 'parents' && heroAgeSlider) {
+                if (parseInt(heroAgeSlider.value) < 50) {
+                    heroAgeSlider.value = 58;
+                }
+            } else if (currentMember === 'self' && heroAgeSlider) {
+                if (parseInt(heroAgeSlider.value) > 50) {
+                    heroAgeSlider.value = 28;
+                }
+            }
+            updateHeroQuote();
+        });
+    });
+
+    // Segmented Pill Radio Toggles
+    const setupSegmentedRadios = (name) => {
+        const radios = document.querySelectorAll(`input[name="${name}"]`);
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                radios.forEach(r => {
+                    const label = r.closest('.pill-choice');
+                    if (label) {
+                        label.classList.toggle('active', r.checked);
+                        if (r.value === 'yes') {
+                            label.classList.toggle('risk-active', r.checked);
+                        }
+                    }
+                });
+                updateHeroQuote();
+            });
+        });
+    };
+    setupSegmentedRadios('smoker');
+    setupSegmentedRadios('liquor');
+
+    // Dynamic Calculation Function
+    function updateHeroQuote() {
+        if (!heroEstPrice || !heroEstMonth || !heroEstYear) return;
+
+        const age = heroAgeSlider ? parseInt(heroAgeSlider.value) || 28 : 28;
+        if (heroAgeDisplay) {
+            heroAgeDisplay.textContent = age + ' Yrs';
+        }
+
+        const smokerRadio = document.querySelector('input[name="smoker"]:checked');
+        const liquorRadio = document.querySelector('input[name="liquor"]:checked');
+        const isSmoker = smokerRadio ? smokerRadio.value === 'yes' : false;
+        const isLiquor = liquorRadio ? liquorRadio.value === 'yes' : false;
+
+        // Actuarial regression approximation for instant quotes
+        let baseAnnual = 3200 + (age * 115);
+        if (age > 45) {
+            baseAnnual += (age - 45) * 160;
+        }
+
+        // Tobacco surcharge
+        if (isSmoker) {
+            baseAnnual += 14500 + (age * 80);
+        }
+
+        // Alcohol surcharge
+        if (isLiquor) {
+            baseAnnual += 1800 + (age * 15);
+        }
+
+        // Member multiplier
+        if (currentMember === 'spouse') {
+            baseAnnual *= 1.75;
+        } else if (currentMember === 'family') {
+            baseAnnual *= 2.15;
+        } else if (currentMember === 'parents') {
+            baseAnnual *= 1.85;
+        }
+
+        const annualRounded = Math.round(baseAnnual / 10) * 10;
+        const dailyRate = Math.max(12, Math.round(annualRounded / 365));
+        const monthlyRate = Math.round(annualRounded / 12);
+
+        heroEstPrice.innerHTML = '₹' + dailyRate.toLocaleString('en-IN') + ' <span class="est-per-unit">/ day</span>';
+        heroEstMonth.textContent = '₹' + monthlyRate.toLocaleString('en-IN') + ' / mo';
+        heroEstYear.textContent = '₹' + annualRounded.toLocaleString('en-IN') + ' / yr';
+    }
+
+    if (heroAgeSlider) {
+        heroAgeSlider.addEventListener('input', updateHeroQuote);
+        updateHeroQuote();
+    }
 });

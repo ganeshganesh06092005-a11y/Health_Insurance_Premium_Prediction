@@ -59,15 +59,18 @@
             <label>Age
                 <input type="number" name="age" min="18" max="100" value="{{ form_data.get('age', '') }}" placeholder="18 - 100" required>
             </label>
-            <label>Gender
-                <select name="sex" required>
-                    <option value="">Select Gender</option>
-                    <option value="female" {% if form_data.get('sex') == 'female' %}selected{% endif %}>Female</option>
-                    <option value="male" {% if form_data.get('sex') == 'male' %}selected{% endif %}>Male</option>
-                </select>
-            </label>
+            <label>Gender</label>
+            <div class="form-pill-group" id="genderPillGroup">
+                <button type="button" class="form-pill-btn {% if form_data.get('sex', 'female') == 'female' %}active{% endif %}" data-val="female">
+                    <span>👩 Female</span>
+                </button>
+                <button type="button" class="form-pill-btn {% if form_data.get('sex') == 'male' %}active{% endif %}" data-val="male">
+                    <span>👨 Male</span>
+                </button>
+            </div>
+            <input type="hidden" name="sex" id="sexHiddenInput" value="{{ form_data.get('sex', 'female') }}" required>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px;">
                 <label>Height (cm)
                     <input type="number" id="heightInput" name="height" min="50" max="250" step="1" value="{{ form_data.get('height', '') }}" placeholder="e.g. 170" required>
                 </label>
@@ -76,74 +79,137 @@
                 </label>
             </div>
 
-            <!-- Dynamic Real-time Calculated BMI Widget -->
-            <div class="bmi-live-calc-box" style="background: #f3f8fa; border: 1px solid #d5e5ec; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+            <!-- Dynamic Real-time Calculated BMI Gauge & Classification Box -->
+            <div class="bmi-gauge-card">
+                <div class="bmi-card-top">
                     <div>
-                        <span style="font-size: .75rem; text-transform: uppercase; font-weight: 700; color: #5a7384; letter-spacing: .04em;">Calculated Body Mass Index (BMI)</span>
-                        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 2px;">
-                            <span id="bmiDisplayVal" style="font-size: 1.45rem; font-weight: 800; color: var(--navy); font-family: monospace;">--.-</span>
-                            <span id="bmiBadge" class="tag-pill tag-neutral" style="font-size: .75rem;">Enter Height &amp; Weight</span>
+                        <span class="bmi-gauge-eyebrow">Calculated Body Mass Index (BMI)</span>
+                        <div class="bmi-val-row">
+                            <span id="bmiDisplayVal" class="bmi-number">--.-</span>
+                            <span id="bmiBadge" class="bmi-badge-pill" style="background: #f1f5f9; color: #475569;">Enter Height &amp; Weight</span>
                         </div>
                     </div>
-                    <small style="color: #6a8292; font-size: .75rem; text-align: right; max-width: 140px; line-height: 1.3;">
-                        Dynamic Formula:<br><code>Weight / (Height / 100)²</code>
-                    </small>
+                    <div class="bmi-formula-tip">
+                        Dynamic Clinical Ratio:<br><code>Weight / (Height / 100)²</code>
+                    </div>
+                </div>
+
+                <!-- Color-Coded BMI Gauge Progress Bar with Real-time Needle -->
+                <div class="bmi-meter-container">
+                    <div class="bmi-meter-track">
+                        <div class="meter-segment seg-under" title="Underweight (&lt; 18.5)"></div>
+                        <div class="meter-segment seg-normal" title="Normal Healthy (18.5 - 24.9)"></div>
+                        <div class="meter-segment seg-over" title="Overweight (25.0 - 29.9)"></div>
+                        <div class="meter-segment seg-obese" title="Obese Range (&ge; 30.0)"></div>
+                        <div class="bmi-needle" id="bmiNeedle" style="left: 0%;"></div>
+                    </div>
+                    <div class="bmi-meter-labels">
+                        <span>10 (Under)</span>
+                        <span>18.5 (Normal)</span>
+                        <span>25 (Over)</span>
+                        <span>30 (Obese)</span>
+                        <span>50+</span>
+                    </div>
+                </div>
+
+                <!-- Clinical Underwriting Advisory Tip -->
+                <div class="bmi-advisory-tip" id="bmiAdvisoryTip">
+                    💡 Tip: Enter height and weight to calculate your clinical BMI tier and unlock optimal underwriting rates.
                 </div>
                 <input type="hidden" id="bmiInput" name="bmi" value="{{ form_data.get('bmi', '') }}">
             </div>
 
-            <label>Number of Children / Dependents
-                <input type="number" name="children" min="0" max="10" value="{{ form_data.get('children', '0') }}" required>
-            </label>
-            <label>Smoking Status
-                <select name="smoker" required>
-                    <option value="">Select Smoking Status</option>
-                    <option value="no" {% if form_data.get('smoker') == 'no' %}selected{% endif %}>No (Non-smoker)</option>
-                    <option value="yes" {% if form_data.get('smoker') == 'yes' %}selected{% endif %}>Yes (Smoker)</option>
-                </select>
-            </label>
-            <label>Liquor / Alcohol Consumption
-                <select name="liquor" id="liquorSelect" required>
-                    <option value="">Select Alcohol Consumption Status</option>
-                    <option value="no" {% if form_data.get('liquor', 'no') == 'no' %}selected{% endif %}>No (Non-drinker)</option>
-                    <option value="yes" {% if form_data.get('liquor') == 'yes' %}selected{% endif %}>Yes (Consumes Alcohol)</option>
-                </select>
-            </label>
+            <label>Number of Children / Dependents</label>
+            <div class="form-pill-group" id="childrenPillGroup">
+                {% for c in [0, 1, 2, 3, 4] %}
+                <button type="button" class="form-pill-btn num-pill {% if form_data.get('children', '0')|int == c %}active{% endif %}" data-val="{{ c }}">
+                    {{ c if c < 4 else '4+' }}
+                </button>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="children" id="childrenHiddenInput" value="{{ form_data.get('children', '0') }}" required>
+
+            <label>Smoking Status (Tobacco Use)</label>
+            <div class="form-pill-group" id="smokerPillGroup">
+                <button type="button" class="form-pill-btn good-choice {% if form_data.get('smoker', 'no') == 'no' %}active{% endif %}" data-val="no">
+                    <span>🚭 No (Non-smoker)</span>
+                </button>
+                <button type="button" class="form-pill-btn risk-choice {% if form_data.get('smoker') == 'yes' %}active{% endif %}" data-val="yes">
+                    <span>🚬 Yes (Smoker)</span>
+                </button>
+            </div>
+            <input type="hidden" name="smoker" id="smokerHiddenInput" value="{{ form_data.get('smoker', 'no') }}" required>
+
+            <label>Liquor / Alcohol Consumption</label>
+            <div class="form-pill-group" id="liquorPillGroup">
+                <button type="button" class="form-pill-btn good-choice {% if form_data.get('liquor', 'no') == 'no' %}active{% endif %}" data-val="no">
+                    <span>🧃 No (Non-drinker)</span>
+                </button>
+                <button type="button" class="form-pill-btn warn-choice {% if form_data.get('liquor') == 'yes' %}active{% endif %}" data-val="yes">
+                    <span>🍷 Yes (Consumes Alcohol)</span>
+                </button>
+            </div>
+            <input type="hidden" name="liquor" id="liquorHiddenInput" value="{{ form_data.get('liquor', 'no') }}" required>
+
             <label>Indian State / Region
-                <select name="region" required>
+                <select name="region" id="regionSelect" required>
                     <option value="">Select Indian State</option>
                     {% for state in ['Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Haryana', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Odisha', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'West Bengal'] %}
                         <option value="{{ state }}" {% if form_data.get('region') == state %}selected{% endif %}>{{ state }}</option>
                     {% endfor %}
                 </select>
             </label>
-            <label>Annual Salary (INR)
-                <input type="number" name="salary" min="100000" max="10000000" step="1000" value="{{ form_data.get('salary', '') }}" placeholder="e.g. 600000" required>
-            </label>
+
+            <div>
+                <label>Annual Salary (INR)
+                    <input type="number" id="salaryInput" name="salary" min="100000" max="10000000" step="1000" value="{{ form_data.get('salary', '') }}" placeholder="e.g. 600000" required>
+                </label>
+                <div class="salary-presets">
+                    <span style="font-size: 0.72rem; color: #627e90; align-self: center; margin-right: 2px;">Presets:</span>
+                    <button type="button" class="preset-chip" data-val="300000">₹3L</button>
+                    <button type="button" class="preset-chip" data-val="600000">₹6L</button>
+                    <button type="button" class="preset-chip" data-val="1000000">₹10L</button>
+                    <button type="button" class="preset-chip" data-val="1500000">₹15L</button>
+                    <button type="button" class="preset-chip" data-val="2500000">₹25L</button>
+                </div>
+            </div>
 
             <h2 class="form-heading">Coverage Preferences</h2>
-            <label>Policy Duration
-                <select name="policy_duration" required>
-                    {% for duration in [5, 10, 15, 20] %}
-                        <option value="{{ duration }}" {% if form_data.get('policy_duration', '5')|int == duration %}selected{% endif %}>{{ duration }} Years</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label>Recommended Plan Category
-                <select name="plan_category" required>
-                    {% for plan in [('basic', 'Basic Plan (Essential Coverage)'), ('silver', 'Silver Plan (Balanced Protection)'), ('gold', 'Gold Plan (Comprehensive Tier)')] %}
-                        <option value="{{ plan[0] }}" {% if form_data.get('plan_category', 'silver') == plan[0] %}selected{% endif %}>{{ plan[1] }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <button type="submit">Calculate Estimated Premium</button>
+
+            <label>Policy Duration</label>
+            <div class="form-pill-group" id="durationPillGroup">
+                {% for dur, disc in [(5, 'Standard'), (10, '5% Multi-Yr Off'), (15, '10% Multi-Yr Off'), (20, '15% Max Off')] %}
+                <button type="button" class="form-pill-btn duration-btn {% if form_data.get('policy_duration', '5')|int == dur %}active{% endif %}" data-val="{{ dur }}">
+                    <strong>{{ dur }} Years</strong>
+                    <small>{{ disc }}</small>
+                </button>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="policy_duration" id="durationHiddenInput" value="{{ form_data.get('policy_duration', '5') }}" required>
+
+            <label>Plan Category Tier</label>
+            <div class="form-pill-group" id="planPillGroup">
+                {% for p_key, p_name, p_desc in [('basic', 'Basic Plan', 'Essential Hospitalization'), ('silver', 'Silver Plan', 'Balanced Care & Critical'), ('gold', 'Gold Plan', 'Comprehensive Tier')] %}
+                <button type="button" class="form-pill-btn tier-btn {% if form_data.get('plan_category', 'silver') == p_key %}active{% endif %}" data-val="{{ p_key }}">
+                    <strong>{{ p_name }}</strong>
+                    <small>{{ p_desc }}</small>
+                </button>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="plan_category" id="planHiddenInput" value="{{ form_data.get('plan_category', 'silver') }}" required>
+
+            <button type="submit">Calculate Estimated Premium &rarr;</button>
         </form>
 
         {% if result %}
         <aside class="result" aria-live="polite">
             <p class="eyebrow">ML Prediction Estimate</p>
             <strong>INR {{ "{:,.2f}".format(result.premium) }} <span style="font-size: 1rem; color: var(--muted); font-weight: normal;">/ year</span></strong>
+            <div class="result-price-breakdown">
+                <span class="price-chip-unit">₹{{ "{:,.0f}".format(result.premium / 365) }} / day</span>
+                <span class="price-chip-unit">₹{{ "{:,.0f}".format(result.premium / 12) }} / month</span>
+                <span class="price-chip-unit tax-chip">Sec 80D: Save up to ₹{{ "{:,.0f}".format(result.premium * 0.3) }}</span>
+            </div>
             <p><b>{{ result.plan }} Plan</b> &mdash; {{ result.description }}</p>
             <hr>
             <p><small>Premium-to-Income Ratio</small><b>{{ "{:.2f}".format(result.ratio) }}%</b> <span class="muted-copy">(sustainable target &lt; 10%)</span></p>
@@ -318,11 +384,14 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    // 1. DYNAMIC BMI CALCULATION & GAUGE NEEDLE LOGIC
     const heightInput = document.getElementById("heightInput");
     const weightInput = document.getElementById("weightInput");
     const bmiDisplay = document.getElementById("bmiDisplayVal");
     const bmiBadge = document.getElementById("bmiBadge");
     const bmiInput = document.getElementById("bmiInput");
+    const bmiNeedle = document.getElementById("bmiNeedle");
+    const bmiAdvisoryTip = document.getElementById("bmiAdvisoryTip");
 
     function calculateBMI() {
         const height = parseFloat(heightInput.value);
@@ -330,32 +399,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (height >= 50 && height <= 250 && weight >= 20 && weight <= 250) {
             const heightInMeters = height / 100;
-            const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(2);
-            bmiDisplay.textContent = bmi;
-            bmiInput.value = bmi;
+            const bmi = parseFloat((weight / (heightInMeters * heightInMeters)).toFixed(2));
+            bmiDisplay.textContent = bmi.toFixed(2);
+            bmiInput.value = bmi.toFixed(2);
+
+            // Compute needle percentage position along the 10 - 50 scale
+            const clampedBmi = Math.max(10, Math.min(50, bmi));
+            const needlePct = ((clampedBmi - 10) / (50 - 10)) * 100;
+            if (bmiNeedle) {
+                bmiNeedle.style.left = needlePct + "%";
+            }
 
             if (bmi < 18.5) {
                 bmiBadge.textContent = "Underweight (< 18.5)";
                 bmiBadge.style.backgroundColor = "#e0f2fe";
                 bmiBadge.style.color = "#0369a1";
+                if (bmiAdvisoryTip) {
+                    bmiAdvisoryTip.innerHTML = "ℹ️ <b>Underweight Advisory:</b> Balanced clinical risk profile. Ensure comprehensive hospitalization coverage for essential nutrition and wellness support.";
+                }
             } else if (bmi <= 24.9) {
                 bmiBadge.textContent = "Normal Healthy (18.5 – 24.9)";
                 bmiBadge.style.backgroundColor = "#dcfce7";
                 bmiBadge.style.color = "#15803d";
+                if (bmiAdvisoryTip) {
+                    bmiAdvisoryTip.innerHTML = "🌟 <b>Optimal Health Tier:</b> Congratulations! Your normal BMI unlocks standard underwriting approval and up to <b>15% wellness discount</b> on premium rates.";
+                }
             } else if (bmi <= 29.9) {
                 bmiBadge.textContent = "Overweight (25.0 – 29.9)";
                 bmiBadge.style.backgroundColor = "#fef3c7";
                 bmiBadge.style.color = "#b45309";
+                if (bmiAdvisoryTip) {
+                    bmiAdvisoryTip.innerHTML = "⚠️ <b>Moderate Risk Tier:</b> Slightly elevated actuarial loading. Using our What-If simulator to model BMI reduction to 24.5 shows an estimated <b>8–12% premium savings</b>.";
+                }
             } else {
                 bmiBadge.textContent = "Obese Range (≥ 30.0)";
                 bmiBadge.style.backgroundColor = "#fee2e2";
                 bmiBadge.style.color = "#b91c1c";
+                if (bmiAdvisoryTip) {
+                    bmiAdvisoryTip.innerHTML = "❗ <b>Elevated Risk Tier:</b> Higher morbidity and cardiac risk loading applied. We recommend comprehensive Silver or Gold tiers with critical illness coverage.";
+                }
             }
         } else {
             bmiDisplay.textContent = "--.-";
             bmiBadge.textContent = "Enter Height & Weight";
             bmiBadge.style.backgroundColor = "#f1f5f9";
             bmiBadge.style.color = "#475569";
+            if (bmiNeedle) bmiNeedle.style.left = "0%";
+            if (bmiAdvisoryTip) {
+                bmiAdvisoryTip.innerHTML = "💡 Tip: Enter height and weight to calculate your clinical BMI tier and unlock optimal underwriting rates.";
+            }
         }
     }
 
@@ -364,6 +456,41 @@ document.addEventListener("DOMContentLoaded", function () {
         weightInput.addEventListener("input", calculateBMI);
         calculateBMI();
     }
+
+    // 2. SEGMENTED PILL CONTROLS HANDLER
+    function setupPills(containerId, hiddenInputId) {
+        const container = document.getElementById(containerId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+        if (!container || !hiddenInput) return;
+
+        const buttons = container.querySelectorAll(".form-pill-btn");
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                buttons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                hiddenInput.value = btn.getAttribute("data-val");
+            });
+        });
+    }
+
+    setupPills("genderPillGroup", "sexHiddenInput");
+    setupPills("childrenPillGroup", "childrenHiddenInput");
+    setupPills("smokerPillGroup", "smokerHiddenInput");
+    setupPills("liquorPillGroup", "liquorHiddenInput");
+    setupPills("durationPillGroup", "durationHiddenInput");
+    setupPills("planPillGroup", "planHiddenInput");
+
+    // 3. SALARY PRESET CHIPS HANDLER
+    const salaryInput = document.getElementById("salaryInput");
+    const presetChips = document.querySelectorAll(".preset-chip");
+    presetChips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            if (salaryInput) {
+                salaryInput.value = chip.getAttribute("data-val");
+                salaryInput.focus();
+            }
+        });
+    });
 });
 </script>
 </body>
