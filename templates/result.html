@@ -1,34 +1,87 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ current_lang or 'en' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthSecure | AI Premium Prediction &amp; Matching Plans</title>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <nav>
-    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">HealthSecure</a>
-    <div class="nav-spacer"></div>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">
+        <span style="font-size: 1.25rem;">🛡️</span> HealthSecure
+    </a>
     {% if session.get('user_id') %}
-        <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('predict') }}">Calculate Premium</a>
-        <a href="{{ url_for('history') }}">History</a>
-        <a href="{{ url_for('what_if', prediction_id=prediction.id) }}">What-If Simulator</a>
-        <a href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare Plans</a>
-        <a href="{{ url_for('insurance_plans') }}">Plans</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        {% if session.get('user_role') == 'admin' %}
+        <!-- Primary Navigation Menus (Aligned to Left) -->
+        <a href="{{ url_for('dashboard') }}">{{ t('nav_dashboard') }}</a>
+        <a href="{{ url_for('predict') }}" style="color: #82e3cf; font-weight: 700;">{{ t('nav_predict') }}</a>
+        <a href="{{ url_for('history') }}">{{ t('nav_history') }}</a>
+        <a href="{{ url_for('what_if', prediction_id=prediction.id) }}">{{ t('nav_simulator') }}</a>
+        <a href="{{ url_for('insurance_plans') }}">{{ t('nav_plans') }}</a>
+        <a href="{{ url_for('favorites') }}">{{ t('nav_favorites') }}</a>
+
+        <!-- Middle Spacer -->
+        <div class="nav-spacer"></div>
+
+        <!-- Account & Controls Group (Aligned to Right) -->
+        <span class="welcome">{{ t('welcome_prefix') }} {{ session.get('user_name', user.name if user is defined else 'Member') }}</span>
+        <a href="{{ url_for('profile') }}">{{ t('nav_profile') }}</a>
+        {% if (user is defined and user.role == 'admin') or session.get('user_role') == 'admin' %}
             <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
         {% endif %}
-        <form method="post" action="{{ url_for('logout') }}">
-            <button class="link-button" type="submit">Log out</button>
+
+        <!-- Notifications Bell -->
+        <a href="{{ url_for('notifications_page') }}" class="nav-notif-btn" title="{{ t('notifications_title') }}" aria-label="Notifications">
+            🔔
+            {% if unread_notifications_count > 0 %}
+                <span class="notif-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('logout') }}" style="margin: 0;">
+            <button class="link-button" type="submit">{{ t('btn_logout') }}</button>
         </form>
     {% else %}
-        <a href="{{ url_for('login') }}">Log in</a>
-        <a href="{{ url_for('register') }}">Create Account</a>
+        <div class="nav-spacer"></div>
+        <a href="{{ url_for('login') }}">{{ t('nav_login') }}</a>
+        <a href="{{ url_for('register') }}">{{ t('nav_register') }}</a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
     {% endif %}
 </nav>
 
@@ -41,18 +94,28 @@
 
     <section class="hero compact-hero">
         <p class="eyebrow">Prediction Inferred &amp; Plan Matching Complete</p>
-        <h1>AI Premium Prediction &amp; Matching Plans</h1>
+        <h1>{{ t('results_title') }}</h1>
         <p>Your demographic and clinical attributes have been processed by the trained Machine Learning regression model. Below are the closest matching demo insurance plans ranked by minimum annual premium difference.</p>
-        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
-            <a class="primary-btn" href="{{ url_for('download_report', prediction_id=prediction.id) }}">Download Official PDF Report</a>
-            <a class="secondary-btn" href="{{ url_for('what_if', prediction_id=prediction.id) }}">Run What-If Scenario</a>
-            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare Matching Plans</a>
+        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; align-items: center;">
+            <a class="primary-btn" href="{{ url_for('download_report', prediction_id=prediction.id) }}">{{ t('download_pdf') }}</a>
+            
+            {% if session.get('user_id') %}
+            <button type="button" id="emailReportBtn" class="btn-email-report" onclick="sendPredictionEmail({{ prediction.id }})">
+                <span id="emailBtnSpinner" class="spinner" style="display: none;"></span>
+                <span id="emailBtnIcon">✉️</span>
+                <span id="emailBtnText">{{ t('send_email_report') }}</span>
+            </button>
+            {% endif %}
+
+            <a class="secondary-btn" href="{{ url_for('what_if', prediction_id=prediction.id) }}">{{ t('run_what_if') }}</a>
+            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">{{ t('compare_matching_plans') }}</a>
             <a class="secondary-btn" href="{{ url_for('prediction_details', prediction_id=prediction.id) }}">Full XAI Details</a>
         </div>
+        <div id="emailStatusBanner" style="display: none; margin-top: 14px; max-width: 720px;" class="alert"></div>
     </section>
 
     <!-- TOP PREDICTION SUMMARY BANNER -->
-    <div style="background: white; border: 1px solid var(--line); border-left: 6px solid var(--mint); border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); margin-bottom: 28px;">
+    <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-left: 6px solid var(--mint); border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); margin-bottom: 28px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div>
                 <p class="eyebrow" style="color: var(--mint);">AI Premium Prediction</p>
@@ -62,12 +125,12 @@
                     </h2>
                     <span style="color: var(--muted); font-size: 1rem;">/ year</span>
                 </div>
-                <p style="margin: 6px 0 0; color: #436274; font-size: .92rem;">
+                <p style="margin: 6px 0 0; color: var(--body-text); font-size: .92rem;">
                     Applicant: <b>{{ prediction.full_name }}</b> &bull; {{ prediction.age }} yrs, {{ prediction.sex|title }}{% if prediction.height and prediction.weight %} &bull; {{ prediction.height|int }} cm / {{ prediction.weight }} kg{% endif %} &bull; BMI {{ prediction.bmi }} &bull; {{ 'Smoker' if prediction.smoker == 'yes' else 'Non-smoker' }} &bull; {{ 'Consumes Alcohol' if prediction.liquor == 'yes' else 'Non-drinker' }} &bull; Stated Income: ₹{{ '{:,.0f}'.format(prediction.salary) }}
                 </p>
             </div>
-            <div style="text-align: right; background: #f4faf9; padding: 12px 18px; border-radius: 8px; border: 1px solid #c9ece6;">
-                <small style="display: block; color: var(--muted); text-transform: uppercase; font-size: .72rem; font-weight: 700;">Affordability Ratio</small>
+            <div style="text-align: right; background: rgba(13, 155, 136, 0.08); padding: 12px 18px; border-radius: 8px; border: 1px solid rgba(13, 155, 136, 0.25);">
+                <small style="display: block; color: var(--muted); text-transform: uppercase; font-size: .72rem; font-weight: 700;">{{ t('affordability_ratio') }}</small>
                 <span style="font-size: 1.35rem; font-weight: 800; color: var(--navy);">{{ '{:.2f}'.format(prediction.premium_income_ratio) }}%</span>
                 <small style="display: block; color: var(--mint); font-size: .75rem; font-weight: 600;">Sustainable (&le; 10%)</small>
             </div>
@@ -79,19 +142,19 @@
         <div class="panel-header">
             <div>
                 <p class="eyebrow">Personalized AI Recommendation</p>
-                <h2>Recommended Plans Near Your Predicted Premium</h2>
+                <h2>{{ t('recommended_plans_title') }}</h2>
             </div>
-            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">Compare Plans Side-by-Side &rarr;</a>
+            <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=prediction.id) }}">{{ t('compare_matching_plans') }} &rarr;</a>
         </div>
 
-        <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
+        <p style="color: var(--muted); font-size: .92rem; margin-top: 0; line-height: 1.55;">
             Our AI recommendation engine evaluated active demo policies in MySQL against your predicted annual premium of <b>INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}</b> and personal health profile. The system curated these strategic policy options:
         </p>
 
         <!-- 4 CURATED PLAN CARDS GRID -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px;">
             {% for plan in matching_plans %}
-            <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: white; border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
+            <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
                 
                 <!-- TOP ROLE BADGE -->
                 <div style="position: absolute; top: -11px; left: 16px;">
@@ -100,13 +163,26 @@
                     </span>
                 </div>
 
+                <!-- FAVORITE HEART BUTTON -->
+                {% if session.get('user_id') %}
+                <div style="position: absolute; top: 12px; right: 14px; z-index: 2;">
+                    <button type="button" 
+                            class="plan-fav-btn {% if plan.plan_id in user_favorite_plan_ids %}favorited{% endif %}" 
+                            onclick="togglePlanFavorite(this, {{ plan.plan_id }})" 
+                            title="{% if plan.plan_id in user_favorite_plan_ids %}{{ t('btn_remove_fav') }}{% else %}{{ t('btn_favorite') }}{% endif %}"
+                            aria-label="Toggle favorite plan">
+                        <span class="fav-icon">{% if plan.plan_id in user_favorite_plan_ids %}❤️{% else %}🤍{% endif %}</span>
+                    </button>
+                </div>
+                {% endif %}
+
                 <div>
                     <!-- Company Badge & CSR Rating -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 6px; padding-right: 36px;">
                         <span class="company-badge {{ plan.company_badge_class }}">
                             {{ plan.company_short }}
                         </span>
-                        <span style="font-size: .7rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 4px;">
+                        <span class="company-csr-badge">
                             {{ plan.company_csr }} CSR
                         </span>
                     </div>
@@ -128,17 +204,17 @@
                         </span>
                     </div>
 
-                    <p style="font-size: .78rem; color: #526f84; font-style: italic; margin: 0 0 12px; line-height: 1.35;">
+                    <p style="font-size: .78rem; color: var(--muted); font-style: italic; margin: 0 0 12px; line-height: 1.35;">
                         {{ plan.role_description }}
                     </p>
 
                     <!-- Pricing & Delta Box -->
-                    <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+                    <div style="background: rgba(0, 0, 0, 0.02); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
                         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                            <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600;">Annual Premium</span>
+                            <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600;">{{ t('annual_premium') }}</span>
                             <span style="font-size: 1.3rem; font-weight: 800; color: var(--navy);">INR {{ '{:,.0f}'.format(plan.annual_premium) }}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; font-size: .8rem; color: #436274;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; font-size: .8rem; color: var(--muted);">
                             <span>Your Predicted Premium:</span>
                             <span>INR {{ '{:,.0f}'.format(prediction.estimated_premium) }}</span>
                         </div>
@@ -152,26 +228,26 @@
 
                     <!-- Core Policy Attributes -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; font-size: .84rem;">
-                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
-                            <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Coverage</span>
+                        <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+                            <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">{{ t('coverage_amount') }}</span>
                             <strong style="color: var(--navy);">{{ plan.coverage_display }}</strong>
                         </div>
-                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
-                            <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Policy Duration</span>
+                        <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+                            <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">{{ t('policy_duration') }}</span>
                             <strong style="color: var(--navy);">{{ plan.effective_duration }} Years</strong>
                         </div>
                     </div>
 
-                    <div style="font-size: .8rem; color: #436274; margin-bottom: 12px; background: #eff8f7; padding: 8px 10px; border-radius: 6px;">
+                    <div style="font-size: .8rem; color: var(--body-text); margin-bottom: 12px; background: rgba(13, 155, 136, 0.08); padding: 8px 10px; border-radius: 6px;">
                         <span>Estimated Total Premium: <b>INR {{ '{:,.0f}'.format(plan.total_estimated_premium) }}</b> (over {{ plan.effective_duration }}y)</span>
                     </div>
 
-                    <p style="color: #4a6372; font-size: .82rem; line-height: 1.45; margin: 0 0 12px;">
+                    <p style="color: var(--muted); font-size: .82rem; line-height: 1.45; margin: 0 0 12px;">
                         {{ plan.plan_description }}
                     </p>
 
                     <!-- Benefits List -->
-                    <ul style="margin: 0 0 16px; padding-left: 18px; font-size: .8rem; color: #375364; line-height: 1.55;">
+                    <ul style="margin: 0 0 16px; padding-left: 18px; font-size: .8rem; color: var(--body-text); line-height: 1.55;">
                         {% for b in plan.benefits_list %}
                             <li>✓ {{ b }}</li>
                         {% endfor %}
@@ -181,10 +257,10 @@
                 <!-- Action Button -->
                 <div style="display: flex; gap: 8px;">
                     <a class="primary-btn" style="flex: 1; text-align: center;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=prediction.id) }}">
-                        View Plan Details &rarr;
+                        {{ t('view_details') }} &rarr;
                     </a>
                     <a class="secondary-btn" style="text-align: center; width: auto; padding: 8px 12px;" href="{{ url_for('compare_plans', plans=plan.plan_id, prediction_id=prediction.id) }}" title="Compare Plan">
-                        Compare
+                        {{ t('btn_compare') }}
                     </a>
                 </div>
             </div>
@@ -203,19 +279,32 @@
                 </div>
                 <a class="view-link" href="{{ url_for('insurance_plans') }}">View All 100+ Plans Catalog &rarr;</a>
             </div>
-            <p style="font-size: .86rem; color: #526f84; margin-top: 0; line-height: 1.5;">
+            <p style="font-size: .86rem; color: var(--muted); margin-top: 0; line-height: 1.5;">
                 Below is the mathematically closest demo policy for your predicted premium (<b>INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}</b>) from each of the 8 leading Indian insurers:
             </p>
 
             <div class="company-match-grid">
                 {% for cmp in company_top_matches %}
-                <div class="company-match-card {% if cmp.is_overall_closest %}is-overall-closest{% endif %}">
+                <div class="company-match-card {% if cmp.is_overall_closest %}is-overall-closest{% endif %}" style="position: relative;">
+                    <!-- FAVORITE HEART BUTTON -->
+                    {% if session.get('user_id') %}
+                    <div style="position: absolute; top: 10px; right: 10px; z-index: 2;">
+                        <button type="button" 
+                                class="plan-fav-btn {% if cmp.plan_id in user_favorite_plan_ids %}favorited{% endif %}" 
+                                onclick="togglePlanFavorite(this, {{ cmp.plan_id }})" 
+                                title="{% if cmp.plan_id in user_favorite_plan_ids %}{{ t('btn_remove_fav') }}{% else %}{{ t('btn_favorite') }}{% endif %}"
+                                aria-label="Toggle favorite plan">
+                            <span class="fav-icon">{% if cmp.plan_id in user_favorite_plan_ids %}❤️{% else %}🤍{% endif %}</span>
+                        </button>
+                    </div>
+                    {% endif %}
+
                     <div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-right: 32px;">
                             <span class="company-badge {{ cmp.company_badge_class }}">
                                 {{ cmp.company_short }}
                             </span>
-                            <span style="font-size: .7rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 4px;">
+                            <span class="company-csr-badge">
                                 {{ cmp.company_csr }} CSR
                             </span>
                         </div>
@@ -229,7 +318,7 @@
                             <span class="match-score-pill" style="font-size: .68rem; padding: 2px 6px;">★ {{ cmp.match_score }}% Match</span>
                         </div>
 
-                        <div style="background: #f8fafb; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin: 8px 0 10px;">
+                        <div style="background: rgba(0, 0, 0, 0.02); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin: 8px 0 10px;">
                             <div style="display: flex; justify-content: space-between; align-items: baseline;">
                                 <span style="font-size: .72rem; color: var(--muted); text-transform: uppercase; font-weight: 600;">Annual Premium:</span>
                                 <strong style="font-size: 1.15rem; color: var(--navy);">INR {{ '{:,.0f}'.format(cmp.annual_premium) }}</strong>
@@ -242,7 +331,7 @@
                             </div>
                         </div>
 
-                        <p style="font-size: .78rem; color: #4a6372; line-height: 1.4; margin: 0 0 10px;">
+                        <p style="font-size: .78rem; color: var(--muted); line-height: 1.4; margin: 0 0 10px;">
                             {{ cmp.plan_description }}
                         </p>
                     </div>
@@ -262,9 +351,9 @@
         {% endif %}
 
         <!-- Academic Disclaimers -->
-        <div style="margin-top: 24px; padding: 14px 18px; background: #fef7e7; border: 1px solid #e5a63b; border-radius: 8px; font-size: .82rem; color: #5c4813; line-height: 1.5;">
+        <div style="margin-top: 24px; padding: 14px 18px; background: rgba(229, 166, 59, 0.12); border: 1px solid #e5a63b; border-radius: 8px; font-size: .82rem; color: var(--body-text); line-height: 1.5;">
             <b>IMPORTANT INSURANCE DISCLAIMER:</b>
-            These are project-defined sample insurance plans created for academic demonstration. They are not real insurance products, official insurer quotes, or financial recommendations.
+            {{ t('disclaimer_academic') }}
             <br><br>
             <b>MATCHING RULE NOTICE:</b>
             Premium matching is based only on the project's defined matching logic (|Plan Premium &minus; Predicted Premium| ranking and demographic risk profiling) and should not be interpreted as an official insurance eligibility or pricing rule.
@@ -283,7 +372,7 @@
 
         <p class="muted-copy" style="margin-top: 0;">Relative feature contribution computed from the trained tree-based regression model:</p>
         
-        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 16px 0;">
+        <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 16px 0;">
             {% for insight in insights %}
             <div class="importance-row">
                 <span style="font-weight: 600;">{{ insight.name }}</span>
@@ -295,10 +384,107 @@
             {% endfor %}
         </div>
 
-        <p style="margin: 12px 0 0; font-size: .88rem; color: #375364; background: #f0f7f7; padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--mint);">
+        <p style="margin: 12px 0 0; font-size: .88rem; color: var(--body-text); background: rgba(13, 155, 136, 0.08); padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--mint);">
             <b>Key Model Takeaway:</b> {{ explanation.simple_explanation }}
         </p>
     </section>
 </main>
+
+<script>
+// Send Prediction Report via Email
+let isEmailSending = false;
+
+function sendPredictionEmail(predictionId) {
+    if (isEmailSending) return;
+    
+    const btn = document.getElementById('emailReportBtn');
+    const spinner = document.getElementById('emailBtnSpinner');
+    const icon = document.getElementById('emailBtnIcon');
+    const text = document.getElementById('emailBtnText');
+    const banner = document.getElementById('emailStatusBanner');
+    
+    isEmailSending = true;
+    btn.disabled = true;
+    if (spinner) spinner.style.display = 'inline-block';
+    if (icon) icon.style.display = 'none';
+    if (text) text.textContent = 'Sending PDF Report...';
+    banner.style.display = 'none';
+
+    fetch(`/prediction/${predictionId}/email`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        banner.style.display = 'block';
+        if (data.success) {
+            banner.className = 'alert alert-success';
+            banner.textContent = '✓ ' + (data.message || 'Report sent successfully to your registered email address!');
+            if (text) text.textContent = 'Report Sent ✓';
+            setTimeout(() => {
+                if (text) text.textContent = '{{ t("send_email_report") }}';
+                btn.disabled = false;
+                isEmailSending = false;
+                if (spinner) spinner.style.display = 'none';
+                if (icon) icon.style.display = 'inline';
+            }, 5000);
+        } else {
+            banner.className = 'alert alert-danger';
+            banner.textContent = '✗ ' + (data.message || 'Unable to send report. Please try again.');
+            btn.disabled = false;
+            isEmailSending = false;
+            if (spinner) spinner.style.display = 'none';
+            if (icon) icon.style.display = 'inline';
+            if (text) text.textContent = '{{ t("send_email_report") }}';
+        }
+    })
+    .catch(err => {
+        banner.style.display = 'block';
+        banner.className = 'alert alert-danger';
+        banner.textContent = '✗ Network error communicating with email service. ' + err.message;
+        btn.disabled = false;
+        isEmailSending = false;
+        if (spinner) spinner.style.display = 'none';
+        if (icon) icon.style.display = 'inline';
+        if (text) text.textContent = '{{ t("send_email_report") }}';
+    });
+}
+
+// Toggle Plan Favorite
+function togglePlanFavorite(btn, planId) {
+    const isFav = btn.classList.contains('favorited');
+    const icon = btn.querySelector('.fav-icon');
+
+    fetch(`/favorites/toggle/${planId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            if (data.is_favorite) {
+                btn.classList.add('favorited');
+                if (icon) icon.textContent = '❤️';
+                btn.title = '{{ t("btn_remove_fav") }}';
+            } else {
+                btn.classList.remove('favorited');
+                if (icon) icon.textContent = '🤍';
+                btn.title = '{{ t("btn_favorite") }}';
+            }
+        } else {
+            alert(data.message || 'Error updating favorite status');
+        }
+    })
+    .catch(err => {
+        console.error('Error toggling favorite:', err);
+    });
+}
+</script>
 </body>
 </html>

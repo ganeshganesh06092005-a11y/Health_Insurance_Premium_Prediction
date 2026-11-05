@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthSecure | Admin Control Center</title>
@@ -31,6 +33,24 @@
         <a href="#audit-section" class="admin-nav-link">📋 Audit Log</a>
         <a href="{{ url_for('dashboard') }}" style="color: #82e3cf; font-size: 13px; font-weight: 600;">Member View &rarr;</a>
         
+        
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
         <form method="post" action="{{ url_for('logout') }}" style="margin: 0;">
             <button class="link-button" type="submit" style="color: #fca5a5;">Log out</button>
         </form>
@@ -82,8 +102,8 @@
         </div>
         <div class="stat">
             <span>Production ML Model</span>
-            <strong style="color: #0d9b88; font-size: 1.35rem;">{{ metrics.best_model }}</strong>
-            <small style="color: #047857; font-size: .75rem; font-weight: 700;">R²: {{ '{:.4f}'.format(metrics.results[0].R2 if metrics.results else 0.879) }} &bull; Optimal</small>
+            <strong style="color: var(--mint); font-size: 1.35rem;">{{ metrics.best_model }}</strong>
+            <small style="color: var(--mint); font-size: .75rem; font-weight: 700;">R²: {{ '{:.4f}'.format(metrics.results[0].R2 if metrics.results else 0.879) }} &bull; Optimal</small>
         </div>
     </section>
 
@@ -163,7 +183,7 @@
          ===================================================================== -->
     <section class="panel" id="ml-section" style="margin-bottom: 32px;">
         <div class="panel-header" style="border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 20px;">
-            <p class="eyebrow" style="color: #0d9b88;">Supervised Machine Learning Regression</p>
+            <p class="eyebrow" style="color: var(--mint);">Supervised Machine Learning Regression</p>
             <h2 style="margin: 4px 0 0; font-size: 1.35rem; color: var(--navy);">AI/ML Architecture &amp; Benchmarks</h2>
             <p style="margin: 4px 0 0; font-size: 0.88rem; color: var(--muted);">
                 Four supervised regression algorithms benchmarked using continuous test error metrics (MAE, MSE, RMSE, R² Score).
@@ -186,7 +206,7 @@
                 <tbody>
                     {% if metrics and metrics.results %}
                         {% for m in metrics.results %}
-                        <tr {% if m.model == metrics.best_model %}style="background: #eef8f6; font-weight: 600;"{% endif %}>
+                        <tr {% if m.model == metrics.best_model %}class="active-model-row" style="font-weight: 600;"{% endif %}>
                             <td>
                                 <strong style="color: var(--navy);">{{ m.model }}</strong>
                                 {% if m.model == metrics.best_model %}
@@ -199,7 +219,7 @@
                             <td><strong style="color: var(--navy);">{{ "{:.4f}".format(m.R2) }}</strong></td>
                             <td>
                                 {% if m.model == metrics.best_model %}
-                                    <span style="color: #0d9b88; font-weight: 800;">Active in Production</span>
+                                    <span style="color: var(--mint); font-weight: 800;">Active in Production</span>
                                 {% else %}
                                     <span style="color: var(--muted);">Benchmarked</span>
                                 {% endif %}
@@ -207,13 +227,13 @@
                         </tr>
                         {% endfor %}
                     {% else %}
-                        <tr style="background: #eef8f6; font-weight: 600;">
+                        <tr class="active-model-row" style="font-weight: 600;">
                             <td><strong style="color: var(--navy);">XGBoost Regressor</strong> <span class="tag-pill tag-positive">Selected Best</span></td>
                             <td>INR 2,374.08</td>
                             <td>18,778,544.88</td>
                             <td>INR 4,333.42</td>
                             <td><strong style="color: var(--navy);">0.8790</strong></td>
-                            <td><span style="color: #0d9b88; font-weight: 800;">Active in Production</span></td>
+                            <td><span style="color: var(--mint); font-weight: 800;">Active in Production</span></td>
                         </tr>
                         <tr>
                             <td><strong>Random Forest Regressor</strong></td>
@@ -248,22 +268,22 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 18px;">
             
             <!-- Left: Model Specs Card -->
-            <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 20px;">
+            <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 10px; padding: 20px;">
                 <h4 style="margin: 0 0 12px; color: var(--navy); font-size: 1.05rem;">Production Pipeline Specifications</h4>
                 <div style="display: grid; gap: 10px; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #d5e2e8; padding-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--line); padding-bottom: 6px;">
                         <span style="color: var(--muted);">Selected Pipeline:</span>
                         <strong style="color: var(--navy);">Scikit-Learn Pipeline + XGBoost</strong>
                     </div>
-                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #d5e2e8; padding-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--line); padding-bottom: 6px;">
                         <span style="color: var(--muted);">Feature Preprocessing:</span>
                         <strong>ColumnTransformer (StandardScaler + OneHotEncoder)</strong>
                     </div>
-                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #d5e2e8; padding-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--line); padding-bottom: 6px;">
                         <span style="color: var(--muted);">Dataset Volume:</span>
                         <strong>1,338 historical medical claims (Kaggle)</strong>
                     </div>
-                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #d5e2e8; padding-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--line); padding-bottom: 6px;">
                         <span style="color: var(--muted);">Actuarial Features:</span>
                         <strong>8 features (Age, Sex, Height, Weight/BMI, Smoker, Liquor, Region, Salary)</strong>
                     </div>
@@ -275,7 +295,7 @@
             </div>
 
             <!-- Right: Explainable AI (XAI) Feature Importances -->
-            <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 20px;">
+            <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 10px; padding: 20px;">
                 <h4 style="margin: 0 0 12px; color: var(--navy); font-size: 1.05rem;">Explainable AI (XAI) Feature Attribution</h4>
                 
                 {% set default_insights = [
@@ -294,9 +314,9 @@
                     <div>
                         <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 2px;">
                             <span style="color: var(--navy);">{{ item.name }}</span>
-                            <span style="color: #0d9b88;">{{ "{:.1f}".format(item.importance) }}%</span>
+                            <span style="color: var(--mint);">{{ "{:.1f}".format(item.importance) }}%</span>
                         </div>
-                        <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: var(--line); height: 8px; border-radius: 4px; overflow: hidden;">
                             <div style="background: linear-gradient(90deg, #0d9b88, #1677c8); height: 100%; width: {{ item.importance }}%;"></div>
                         </div>
                     </div>
@@ -508,6 +528,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const records = rawAnalytics.records || [];
     let charts = {};
+    // Chart.js Theme Adaptivity for Dark/Light Mode
+    function syncChartTheme() {
+        if (typeof Chart === 'undefined') return;
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        Chart.defaults.color = isDark ? '#94a3b8' : '#4b6676';
+        Chart.defaults.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+    }
+    syncChartTheme();
+    window.addEventListener('themechange', () => {
+        syncChartTheme();
+        Object.values(charts).forEach(c => c && c.update && c.update());
+    });
+
 
     function getFilteredData() {
         const plan = document.getElementById("filterPlan")?.value || "all";

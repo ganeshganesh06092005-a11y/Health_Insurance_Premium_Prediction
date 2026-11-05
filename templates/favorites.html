@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="{{ current_lang }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | {{ t('fav_title', 'Saved & Favorite Insurance Plans') }}</title>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">
+        <span style="font-size: 1.25rem;">🛡️</span> HealthSecure
+    </a>
+    {% if session.get('user_id') %}
+        <!-- Primary Navigation Menus (Aligned to Left) -->
+        <a href="{{ url_for('dashboard') }}">{{ t('nav_dashboard') }}</a>
+        <a href="{{ url_for('predict') }}">{{ t('nav_predict') }}</a>
+        <a href="{{ url_for('history') }}">{{ t('nav_history') }}</a>
+        <a href="{{ url_for('what_if') }}">{{ t('nav_simulator') }}</a>
+        <a href="{{ url_for('insurance_plans') }}">{{ t('nav_plans') }}</a>
+        <a href="{{ url_for('favorites') }}" style="color: #82e3cf; font-weight: 700;">{{ t('nav_favorites') }}</a>
+
+        <!-- Middle Spacer -->
+        <div class="nav-spacer"></div>
+
+        <!-- Account & Controls Group (Aligned to Right) -->
+        <span class="welcome">{{ t('welcome_prefix') }} {{ session.get('user_name', user.name if user is defined else 'Member') }}</span>
+        <a href="{{ url_for('profile') }}">{{ t('nav_profile') }}</a>
+        {% if (user is defined and user.role == 'admin') or session.get('user_role') == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
+        {% endif %}
+
+        <!-- Notifications Bell -->
+        <a href="{{ url_for('notifications_page') }}" class="nav-notif-btn" title="{{ t('notifications_title') }}" aria-label="Notifications">
+            🔔
+            {% if unread_notifications_count > 0 %}
+                <span class="notif-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('logout') }}" style="margin: 0;">
+            <button class="link-button" type="submit">{{ t('btn_logout') }}</button>
+        </form>
+    {% else %}
+        <div class="nav-spacer"></div>
+        <a href="{{ url_for('login') }}">{{ t('nav_login') }}</a>
+        <a href="{{ url_for('register') }}">{{ t('nav_register') }}</a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+    {% endif %}
+</nav>
+
+<main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="hero compact-hero">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div>
+                <p class="eyebrow">Personal Coverage Portfolio &bull; {{ favorite_plans|length }} Saved Policies</p>
+                <h1>{{ t('fav_title', 'Saved & Favorite Insurance Plans') }}</h1>
+                <p>{{ t('fav_subtitle', 'Review, compare, and organize sample policies bookmarked from your predictions or the multi-insurer catalog.') }}</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a class="secondary-btn" href="{{ url_for('insurance_plans') }}">
+                    🔍 {{ t('fav_empty_cta', 'Browse Multi-Insurer Catalog') }}
+                </a>
+                {% if favorite_plans|length >= 2 %}
+                    <a class="primary-btn" href="{{ url_for('compare_plans') }}?plans={{ favorite_plans|map(attribute='plan_id')|join(',') }}">
+                        ⚖ {{ t('fav_compare_selected', 'Compare Saved Plans Side-by-Side') }} &rarr;
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- DISCLAIMER STRIP -->
+    <div style="background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 8px; padding: 12px 16px; margin-bottom: 22px; font-size: 0.84rem; color: var(--muted); display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 1.2rem;">ℹ️</span>
+        <span>{{ t('disclaimer_text') }}</span>
+    </div>
+
+    <!-- FAVORITES CARDS GRID -->
+    {% if favorite_plans %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; align-items: stretch;">
+            {% for dp in favorite_plans %}
+                <div class="plan-catalog-item" id="fav-card-{{ dp.plan_id }}">
+                    <div style="display: flex; flex-direction: column; flex: 1;">
+                        <div class="plan-catalog-top">
+                            <span class="company-badge {{ dp.company_badge_class }}">
+                                {{ dp.company_short }}
+                            </span>
+                            <span class="company-csr-badge">
+                                {{ dp.company_csr }} CSR
+                            </span>
+                        </div>
+
+                        <h3 class="plan-catalog-title">🛡️ {{ dp.plan_name }}</h3>
+
+                        <div class="company-meta-strip" style="margin-bottom: 12px;">
+                            <span class="company-meta-tag">{{ dp.company_hospitals }} Hospitals</span>
+                            <span class="company-meta-tag">{{ dp.company_tag }}</span>
+                        </div>
+
+                        <div class="plan-price-panel">
+                            <span class="price-lbl">{{ t('res_predicted_premium', 'Annual Premium') }}</span>
+                            <strong class="price-val">INR {{ '{:,.0f}'.format(dp.annual_premium) }}</strong>
+                        </div>
+
+                        <div class="plan-metrics-grid">
+                            <div class="plan-metric-cell">
+                                <span class="cell-lbl">{{ t('res_sum_insured', 'Sum Insured') }}</span>
+                                <span class="cell-val">{{ dp.coverage_display }}</span>
+                            </div>
+                            <div class="plan-metric-cell">
+                                <span class="cell-lbl">{{ t('res_duration', 'Duration') }}</span>
+                                <span class="cell-val">{{ dp.policy_duration }} {{ t('res_years', 'Years') }}</span>
+                            </div>
+                        </div>
+
+                        <p class="plan-desc-text">{{ dp.plan_description }}</p>
+
+                        <div style="font-size: 0.74rem; color: var(--muted); margin-top: auto; padding-top: 8px;">
+                            Saved on: <b>{{ dp.saved_at }}</b>
+                        </div>
+                    </div>
+
+                    <div class="plan-card-actions">
+                        <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 7px 10px;" href="{{ url_for('plan_details', plan_id=dp.plan_id) }}">
+                            {{ t('btn_details', 'Inspect Details') }} &rarr;
+                        </a>
+                        <form method="post" action="{{ url_for('remove_favorite', plan_id=dp.plan_id) }}" style="margin: 0;">
+                            <button type="submit" class="secondary-btn fav-remove-btn" style="border-color: #fca5a5; color: #dc2626; font-size: .82rem; padding: 7px 12px;" title="{{ t('btn_remove_favorite', 'Remove from Favorites') }}">
+                                ✕ Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="panel" style="text-align: center; padding: 56px 24px;">
+            <div style="font-size: 3rem; margin-bottom: 14px;">❤️</div>
+            <h3 style="margin: 0 0 10px; color: var(--navy); font-size: 1.3rem;">{{ t('fav_empty_state', "You haven't bookmarked any insurance plans yet.") }}</h3>
+            <p style="color: var(--muted); font-size: 0.94rem; max-width: 480px; margin: 0 auto 24px; line-height: 1.55;">
+                {{ t('dash_no_favorites', 'Explore our database of 100+ demo insurance plans or run a premium prediction to save policies tailored to your budget.') }}
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a class="primary-btn" href="{{ url_for('insurance_plans') }}">{{ t('fav_empty_cta', 'Browse Multi-Insurer Catalog') }}</a>
+                <a class="secondary-btn" href="{{ url_for('predict') }}">{{ t('nav_predict', 'Calculate Premium') }}</a>
+            </div>
+        </div>
+    {% endif %}
+</main>
+</body>
+</html>

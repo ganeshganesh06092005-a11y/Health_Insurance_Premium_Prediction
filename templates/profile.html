@@ -1,36 +1,95 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ current_lang or 'en' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthSecure | Account Profile</title>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <nav>
-    <a href="{{ url_for('dashboard') }}">HealthSecure</a>
-    <div class="nav-spacer"></div>
-    <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
-    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-    <a href="{{ url_for('predict') }}">Calculate Premium</a>
-    <a href="{{ url_for('history') }}">History</a>
-    <a href="{{ url_for('what_if') }}">What-If Simulator</a>
-    <a href="{{ url_for('insurance_plans') }}">Plans</a>
-    <a href="{{ url_for('profile') }}" style="color: #82e3cf; font-weight: 700;">Profile</a>
-    {% if session.get('user_role') == 'admin' %}
-        <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">
+        <span style="font-size: 1.25rem;">🛡️</span> HealthSecure
+    </a>
+    {% if session.get('user_id') %}
+        <!-- Primary Navigation Menus (Aligned to Left) -->
+        <a href="{{ url_for('dashboard') }}">{{ t('nav_dashboard') }}</a>
+        <a href="{{ url_for('predict') }}">{{ t('nav_predict') }}</a>
+        <a href="{{ url_for('history') }}">{{ t('nav_history') }}</a>
+        <a href="{{ url_for('what_if') }}">{{ t('nav_simulator') }}</a>
+        <a href="{{ url_for('insurance_plans') }}">{{ t('nav_plans') }}</a>
+        <a href="{{ url_for('favorites') }}">{{ t('nav_favorites') }}</a>
+
+        <!-- Middle Spacer -->
+        <div class="nav-spacer"></div>
+
+        <!-- Account & Controls Group (Aligned to Right) -->
+        <span class="welcome">{{ t('welcome_prefix') }} {{ session.get('user_name', user.name if user is defined else 'Member') }}</span>
+        <a href="{{ url_for('profile') }}" style="color: #82e3cf; font-weight: 700;">{{ t('nav_profile') }}</a>
+        {% if (user is defined and user.role == 'admin') or session.get('user_role') == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
+        {% endif %}
+
+        <!-- Notifications Bell -->
+        <a href="{{ url_for('notifications_page') }}" class="nav-notif-btn" title="{{ t('notifications_title') }}" aria-label="Notifications">
+            🔔
+            {% if unread_notifications_count > 0 %}
+                <span class="notif-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('logout') }}" style="margin: 0;">
+            <button class="link-button" type="submit">{{ t('btn_logout') }}</button>
+        </form>
+    {% else %}
+        <div class="nav-spacer"></div>
+        <a href="{{ url_for('login') }}">{{ t('nav_login') }}</a>
+        <a href="{{ url_for('register') }}">{{ t('nav_register') }}</a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
     {% endif %}
-    <form method="post" action="{{ url_for('logout') }}">
-        <button class="link-button" type="submit">Log out</button>
-    </form>
 </nav>
 
 <main>
     <section class="hero compact-hero">
         <p class="eyebrow">Account Settings</p>
-        <h1>Manage Your Profile</h1>
-        <p>Update your personal information, manage security credentials, and keep your contact details current.</p>
+        <h1>{{ t('nav_profile') }}</h1>
+        <p>Update your personal information, manage security credentials, and configure your preferred interface language.</p>
     </section>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -54,6 +113,13 @@
             </label>
             <label>Date of Birth
                 <input type="date" name="dob" value="{{ user.dob.isoformat() if user.dob else '' }}">
+            </label>
+            <label style="grid-column: 1 / -1;">Preferred Language
+                <select name="preferred_lang">
+                    <option value="en" {% if (user.preferred_lang or current_lang) == 'en' %}selected{% endif %}>English</option>
+                    <option value="ta" {% if (user.preferred_lang or current_lang) == 'ta' %}selected{% endif %}>தமிழ் (Tamil)</option>
+                    <option value="hi" {% if (user.preferred_lang or current_lang) == 'hi' %}selected{% endif %}>हिन्दी (Hindi)</option>
+                </select>
             </label>
             <button type="submit">Update Personal Details</button>
         </form>

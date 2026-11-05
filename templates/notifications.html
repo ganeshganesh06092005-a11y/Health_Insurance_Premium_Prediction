@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="{{ current_lang }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthSecure | {{ t('notif_title', 'Notifications Center') }}</title>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">
+        <span style="font-size: 1.25rem;">🛡️</span> HealthSecure
+    </a>
+    {% if session.get('user_id') %}
+        <!-- Primary Navigation Menus (Aligned to Left) -->
+        <a href="{{ url_for('dashboard') }}">{{ t('nav_dashboard') }}</a>
+        <a href="{{ url_for('predict') }}">{{ t('nav_predict') }}</a>
+        <a href="{{ url_for('history') }}">{{ t('nav_history') }}</a>
+        <a href="{{ url_for('what_if') }}">{{ t('nav_simulator') }}</a>
+        <a href="{{ url_for('insurance_plans') }}">{{ t('nav_plans') }}</a>
+        <a href="{{ url_for('favorites') }}">{{ t('nav_favorites') }}</a>
+
+        <!-- Middle Spacer -->
+        <div class="nav-spacer"></div>
+
+        <!-- Account & Controls Group (Aligned to Right) -->
+        <span class="welcome">{{ t('welcome_prefix') }} {{ session.get('user_name', user.name if user is defined else 'Member') }}</span>
+        <a href="{{ url_for('profile') }}">{{ t('nav_profile') }}</a>
+        {% if (user is defined and user.role == 'admin') or session.get('user_role') == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
+        {% endif %}
+
+        <!-- Notifications Bell -->
+        <a href="{{ url_for('notifications_page') }}" class="nav-notif-btn active" title="{{ t('notifications_title') }}" aria-label="Notifications">
+            🔔
+            {% if unread_notifications_count > 0 %}
+                <span class="notif-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('logout') }}" style="margin: 0;">
+            <button class="link-button" type="submit">{{ t('btn_logout') }}</button>
+        </form>
+    {% else %}
+        <div class="nav-spacer"></div>
+        <a href="{{ url_for('login') }}">{{ t('nav_login') }}</a>
+        <a href="{{ url_for('register') }}">{{ t('nav_register') }}</a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+    {% endif %}
+</nav>
+
+<main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="hero compact-hero">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div>
+                <p class="eyebrow">{{ t('nav_notifications', 'In-App Alerts') }} &bull; HealthSecure Notification Engine</p>
+                <h1>{{ t('notif_title', 'Notifications Center') }}</h1>
+                <p>Stay informed about your ML premium calculations, generated reports, saved plans, and system advisories.</p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                {% if unread_count > 0 %}
+                    <form method="post" action="{{ url_for('mark_all_notifications_read') }}">
+                        <button type="submit" class="secondary-btn">
+                            ✓ {{ t('btn_mark_all_read', 'Mark All as Read') }}
+                        </button>
+                    </form>
+                {% endif %}
+                <form method="post" action="{{ url_for('clear_all_notifications') }}" onsubmit="return confirm('Clear all read notifications?');">
+                    <button type="submit" class="secondary-btn" style="border-color: #cbd5e1; color: var(--muted);">
+                        🗑 {{ t('btn_clear_all', 'Clear Read') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- NOTIFICATION FILTERS & STATS BAR -->
+    <div class="panel" style="padding: 14px 20px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="{{ url_for('notifications_view', filter='all') }}" class="plan-filter-btn {% if active_filter == 'all' %}active{% endif %}">
+                    {{ t('notif_all', 'All Notifications') }} ({{ total_count }})
+                </a>
+                <a href="{{ url_for('notifications_view', filter='unread') }}" class="plan-filter-btn {% if active_filter == 'unread' %}active{% endif %}">
+                    {{ t('notif_unread', 'Unread') }} ({{ unread_count }})
+                </a>
+                <a href="{{ url_for('notifications_view', filter='read') }}" class="plan-filter-btn {% if active_filter == 'read' %}active{% endif %}">
+                    {{ t('notif_read_tab', 'Read') }} ({{ total_count - unread_count }})
+                </a>
+            </div>
+            <span style="font-size: 0.82rem; color: var(--muted);">
+                Auto-refreshes with every prediction and plan action
+            </span>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS LIST -->
+    {% if notifications %}
+        <div class="notif-container">
+            {% for notif in notifications %}
+                <div class="notif-card {% if not notif.is_read %}notif-unread{% endif %}" id="notif-card-{{ notif.notification_id }}">
+                    <div class="notif-icon-col">
+                        {% if notif.notification_type == 'prediction' %}
+                            <div class="notif-avatar notif-avatar-prediction">📊</div>
+                        {% elif notif.notification_type == 'report_email' %}
+                            <div class="notif-avatar notif-avatar-email">✉</div>
+                        {% elif notif.notification_type == 'favorite_saved' %}
+                            <div class="notif-avatar notif-avatar-favorite">❤️</div>
+                        {% elif notif.notification_type == 'plan_recommended' %}
+                            <div class="notif-avatar notif-avatar-plan">🛡️</div>
+                        {% else %}
+                            <div class="notif-avatar notif-avatar-info">ℹ</div>
+                        {% endif %}
+                    </div>
+                    <div class="notif-content-col">
+                        <div class="notif-header-row">
+                            <h3 class="notif-title">{{ notif.title }}</h3>
+                            <div class="notif-meta">
+                                {% if not notif.is_read %}
+                                    <span class="notif-pill-new">{{ t('notif_unread', 'NEW') }}</span>
+                                {% endif %}
+                                <span class="notif-time">{{ notif.created_at.strftime('%b %d, %Y • %I:%M %p') }}</span>
+                            </div>
+                        </div>
+                        <p class="notif-msg">{{ notif.message }}</p>
+                    </div>
+                    <div class="notif-actions-col">
+                        {% if not notif.is_read %}
+                            <form method="post" action="{{ url_for('mark_notification_read', notification_id=notif.notification_id) }}">
+                                <button type="submit" class="notif-action-btn" title="{{ t('btn_mark_read', 'Mark as Read') }}">
+                                    ✓
+                                </button>
+                            </form>
+                        {% endif %}
+                        <form method="post" action="{{ url_for('delete_notification', notification_id=notif.notification_id) }}">
+                            <button type="submit" class="notif-action-btn notif-action-del" title="{{ t('btn_delete', 'Delete') }}">
+                                ✕
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="panel" style="text-align: center; padding: 48px 24px;">
+            <div style="font-size: 2.5rem; margin-bottom: 12px;">🔔</div>
+            <h3 style="margin: 0 0 8px; color: var(--navy);">{{ t('notif_empty', 'You have no notifications right now.') }}</h3>
+            <p style="color: var(--muted); font-size: 0.92rem; max-width: 440px; margin: 0 auto 18px;">
+                When you calculate premiums, receive emailed reports, or bookmark favorite insurance plans, you'll see your alerts right here.
+            </p>
+            <a class="primary-btn" href="{{ url_for('predict') }}">{{ t('nav_predict', 'Calculate Premium Now') }}</a>
+        </div>
+    {% endif %}
+</main>
+</body>
+</html>

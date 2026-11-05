@@ -211,4 +211,44 @@ document.addEventListener('DOMContentLoaded', () => {
         heroAgeSlider.addEventListener('input', updateHeroQuote);
         updateHeroQuote();
     }
+
+    // =========================================================================
+    // 5. ScrollSpy - Dynamic Active Line Alignment on Scroll
+    // =========================================================================
+    const desktopNavLinks = document.querySelectorAll('.landing-nav .nav-links .nav-link[href^="#"]');
+    const trackedSections = [];
+
+    desktopNavLinks.forEach(link => {
+        const hash = link.getAttribute('href');
+        if (hash && hash.length > 1) {
+            const sec = document.querySelector(hash);
+            if (sec) {
+                trackedSections.push({ link, section: sec });
+            }
+        }
+    });
+
+    function updateActiveNavLine() {
+        const scrollPosition = window.scrollY + 130;
+        let currentTarget = null;
+
+        for (let i = 0; i < trackedSections.length; i++) {
+            const secTop = trackedSections[i].section.offsetTop;
+            if (scrollPosition >= secTop) {
+                currentTarget = trackedSections[i].link;
+            }
+        }
+
+        if (!currentTarget && trackedSections.length > 0) {
+            currentTarget = trackedSections[0].link;
+        }
+
+        if (currentTarget) {
+            desktopNavLinks.forEach(lnk => lnk.classList.remove('active'));
+            currentTarget.classList.add('active');
+        }
+    }
+
+    window.addEventListener('scroll', updateActiveNavLine, { passive: true });
+    updateActiveNavLine();
 });

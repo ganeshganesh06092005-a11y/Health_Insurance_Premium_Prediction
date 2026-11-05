@@ -1,42 +1,95 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ current_lang or 'en' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthSecure | Recommended Insurance Plans</title>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <nav>
-    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">HealthSecure</a>
-    <div class="nav-spacer"></div>
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">
+        <span style="font-size: 1.25rem;">🛡️</span> HealthSecure
+    </a>
     {% if session.get('user_id') %}
-        <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('predict') }}">Calculate Premium</a>
-        <a href="{{ url_for('history') }}">History</a>
-        <a href="{{ url_for('what_if') }}">What-If Simulator</a>
-        <a href="{{ url_for('insurance_plans') }}" style="color: #82e3cf; font-weight: 700;">Plans</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        {% if session.get('user_role') == 'admin' %}
+        <!-- Primary Navigation Menus (Aligned to Left) -->
+        <a href="{{ url_for('dashboard') }}">{{ t('nav_dashboard') }}</a>
+        <a href="{{ url_for('predict') }}">{{ t('nav_predict') }}</a>
+        <a href="{{ url_for('history') }}">{{ t('nav_history') }}</a>
+        <a href="{{ url_for('what_if') }}">{{ t('nav_simulator') }}</a>
+        <a href="{{ url_for('insurance_plans') }}" style="color: #82e3cf; font-weight: 700;">{{ t('nav_plans') }}</a>
+        <a href="{{ url_for('favorites') }}">{{ t('nav_favorites') }}</a>
+
+        <!-- Middle Spacer -->
+        <div class="nav-spacer"></div>
+
+        <!-- Account & Controls Group (Aligned to Right) -->
+        <span class="welcome">{{ t('welcome_prefix') }} {{ session.get('user_name', user.name if user is defined else 'Member') }}</span>
+        <a href="{{ url_for('profile') }}">{{ t('nav_profile') }}</a>
+        {% if (user is defined and user.role == 'admin') or session.get('user_role') == 'admin' %}
             <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
         {% endif %}
-        <form method="post" action="{{ url_for('logout') }}">
-            <button class="link-button" type="submit">Log out</button>
+
+        <!-- Notifications Bell -->
+        <a href="{{ url_for('notifications_page') }}" class="nav-notif-btn" title="{{ t('notifications_title') }}" aria-label="Notifications">
+            🔔
+            {% if unread_notifications_count > 0 %}
+                <span class="notif-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('logout') }}" style="margin: 0;">
+            <button class="link-button" type="submit">{{ t('btn_logout') }}</button>
         </form>
     {% else %}
-        <a href="{{ url_for('insurance_plans') }}" style="color: #82e3cf;">Plans</a>
-        <a href="{{ url_for('login') }}">Log in</a>
-        <a href="{{ url_for('register') }}">Create Account</a>
+        <div class="nav-spacer"></div>
+        <a href="{{ url_for('login') }}">{{ t('nav_login') }}</a>
+        <a href="{{ url_for('register') }}">{{ t('nav_register') }}</a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
     {% endif %}
 </nav>
 
 <main>
     <section class="hero">
         <p class="eyebrow">Coverage Portfolio</p>
-        <h1>Recommended Health Insurance Plans</h1>
-        <p>HealthSecure pairs Machine Learning medical cost predictions with three structured insurance coverage tiers designed for various demographic and financial profiles.</p>
+        <h1>{{ t('recommended_plans_title') }}</h1>
+        <p>HealthSecure pairs Machine Learning medical cost predictions with structured insurance coverage tiers designed for various demographic and financial profiles.</p>
     </section>
 
     <!-- 3 PLAN CARDS -->
@@ -49,11 +102,11 @@
                 <div style="font-size: 1.5rem; font-weight: 700; color: var(--blue); margin-bottom: 12px;">
                     1.05x <span style="font-size: .85rem; color: var(--muted); font-weight: normal;">Benefit Factor</span>
                 </div>
-                <p style="color: #4a6372; font-size: .88rem; line-height: 1.5;">
+                <p style="color: var(--muted); font-size: .88rem; line-height: 1.5;">
                     A cost-conscious coverage option providing essential hospitalization protection against catastrophic illness or acute injuries.
                 </p>
                 <hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--line);">
-                <ul style="padding-left: 20px; font-size: .84rem; color: #375364; line-height: 1.7;">
+                <ul style="padding-left: 20px; font-size: .84rem; color: var(--body-text); line-height: 1.7;">
                     <li>Inpatient hospitalization cover</li>
                     <li>Day-care medical procedures</li>
                     <li>Standard ambulance cover</li>
@@ -74,11 +127,11 @@
                 <div style="font-size: 1.5rem; font-weight: 700; color: var(--mint); margin-bottom: 12px;">
                     1.20x <span style="font-size: .85rem; color: var(--muted); font-weight: normal;">Benefit Factor</span>
                 </div>
-                <p style="color: #4a6372; font-size: .88rem; line-height: 1.5;">
+                <p style="color: var(--muted); font-size: .88rem; line-height: 1.5;">
                     Our balanced flagship tier. Covers comprehensive routine, specialist, and critical care protection with optimal financial return.
                 </p>
                 <hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--line);">
-                <ul style="padding-left: 20px; font-size: .84rem; color: #375364; line-height: 1.7;">
+                <ul style="padding-left: 20px; font-size: .84rem; color: var(--body-text); line-height: 1.7;">
                     <li>Comprehensive inpatient &amp; ICU coverage</li>
                     <li>Pre &amp; post hospitalization (60 / 90 days)</li>
                     <li>Zero room-rent capping</li>
@@ -96,14 +149,14 @@
             <div>
                 <span class="tag-pill tag-warning" style="margin-bottom: 8px;">Tier 3 &bull; Comprehensive</span>
                 <h2 style="margin: 4px 0 8px; color: var(--navy);">Gold Plan</h2>
-                <div style="font-size: 1.5rem; font-weight: 700; color: #c48318; margin-bottom: 12px;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--amber); margin-bottom: 12px;">
                     1.40x <span style="font-size: .85rem; color: var(--muted); font-weight: normal;">Benefit Factor</span>
                 </div>
-                <p style="color: #4a6372; font-size: .88rem; line-height: 1.5;">
+                <p style="color: var(--muted); font-size: .88rem; line-height: 1.5;">
                     The premium tier for high-net-worth protection, zero copays, international emergency medical evacuation, and comprehensive riders.
                 </p>
                 <hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--line);">
-                <ul style="padding-left: 20px; font-size: .84rem; color: #375364; line-height: 1.7;">
+                <ul style="padding-left: 20px; font-size: .84rem; color: var(--body-text); line-height: 1.7;">
                     <li>Unlimited sum insured restoration</li>
                     <li>Zero copay nationwide across network hospitals</li>
                     <li>Worldwide emergency evacuation</li>
@@ -120,97 +173,170 @@
     <!-- DEMO INSURANCE PLANS CATALOG FROM DATABASE -->
     {% if demo_plans %}
     <section class="panel" style="margin-bottom: 30px;">
-        <div class="panel-header">
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 8px;">
             <div>
                 <p class="eyebrow">Database Catalog &bull; {{ demo_plans|length }} Active Policies Across 8 Leading Insurers</p>
                 <h2 style="margin: 0; color: var(--navy); font-family: Georgia, serif;">Complete Multi-Insurer Plans Catalog</h2>
             </div>
-            <a class="secondary-btn" href="{{ url_for('compare_plans') }}">Compare Demo Plans Side-by-Side &rarr;</a>
+            <a class="secondary-btn" href="{{ url_for('compare_plans') }}" style="display: inline-flex; align-items: center; gap: 6px;">
+                <span>Compare Demo Plans Side-by-Side</span> &rarr;
+            </a>
         </div>
-        <p style="color: #4a6372; font-size: .92rem; margin-top: 0; line-height: 1.55;">
+        <p style="color: var(--muted); font-size: .92rem; margin-top: 0; line-height: 1.55;">
             Explore over 100+ demo insurance plans stored in the MySQL database across 8 premier Indian insurers. These policies span entry-level micro-protection (₹2,850/yr) to worldwide ₹1 Crore high-sum covers, calibrated to dynamically match your Machine Learning predicted premium.
         </p>
 
-        <!-- MULTI-INSURER COMPANY FILTER PILLS -->
-        <div style="margin: 16px 0 10px;">
-            <span style="font-size: .78rem; text-transform: uppercase; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px;">Filter by Insurance Company:</span>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button type="button" class="plan-filter-btn company-filter-btn active" onclick="setCompanyFilter('all', this)">All Insurers ({{ demo_plans|length }})</button>
-                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Star Health and Allied Insurance', this)">Star Health</button>
-                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Care Health Insurance', this)">Care Health</button>
-                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('HDFC ERGO General Insurance', this)">HDFC ERGO</button>
-                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('ICICI Lombard General Insurance', this)">ICICI Lombard</button>
-                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Bajaj Allianz General Insurance', this)">Bajaj Allianz</button>
-                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('The New India Assurance Co. Ltd.', this)">New India (PSU)</button>
-                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('United India Insurance Co. Ltd.', this)">United India (PSU)</button>
-                <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('HealthSecure', this)">HealthSecure AI</button>
+        <!-- DATABASE CATALOG TOOLBAR & SEARCH / FILTER FRAME -->
+        <div class="catalog-toolbar-frame">
+            <!-- ROW 1: SEARCH, SORT & COUNTER -->
+            <div class="catalog-search-row">
+                <div class="catalog-search-box">
+                    <span class="catalog-search-icon">🔍</span>
+                    <input
+                        type="text"
+                        id="catalogSearchInput"
+                        class="catalog-search-input"
+                        placeholder="Search plan name, features, or insurer (e.g. Star, Cardiac, ₹10k, ICU)..."
+                        oninput="applyCombinedFilter()"
+                    >
+                </div>
+
+                <select id="catalogSortSelect" class="catalog-sort-select" onchange="applySorting()">
+                    <option value="default">Sort: Default Order</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="duration-desc">Duration: Longest First</option>
+                    <option value="csr-desc">Claim Ratio (CSR): Highest First</option>
+                </select>
+
+                <span id="catalogCountBadge" class="catalog-counter-badge">
+                    Showing {{ demo_plans|length }} of {{ demo_plans|length }} Policies
+                </span>
+
+                <button type="button" class="catalog-reset-btn" onclick="resetAllFilters()">
+                    ↺ Reset Filters
+                </button>
+            </div>
+
+            <!-- ROW 2: MULTI-INSURER COMPANY FILTER PILLS -->
+            <div class="catalog-filter-group">
+                <div class="catalog-filter-header">
+                    <span class="catalog-filter-label">Filter by Insurance Company:</span>
+                </div>
+                <div class="catalog-pills-row">
+                    <button type="button" class="plan-filter-btn company-filter-btn active" onclick="setCompanyFilter('all', this)">All Insurers ({{ demo_plans|length }})</button>
+                    <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Star Health and Allied Insurance', this)">Star Health</button>
+                    <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Care Health Insurance', this)">Care Health</button>
+                    <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('HDFC ERGO General Insurance', this)">HDFC ERGO</button>
+                    <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('ICICI Lombard General Insurance', this)">ICICI Lombard</button>
+                    <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('Bajaj Allianz General Insurance', this)">Bajaj Allianz</button>
+                    <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('The New India Assurance Co. Ltd.', this)">New India (PSU)</button>
+                    <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('United India Insurance Co. Ltd.', this)">United India (PSU)</button>
+                    <button type="button" class="plan-filter-btn company-filter-btn" onclick="setCompanyFilter('HealthSecure', this)">HealthSecure AI</button>
+                </div>
+            </div>
+
+            <!-- ROW 3: PRICE BRACKET FILTER PILLS -->
+            <div class="catalog-filter-group">
+                <div class="catalog-filter-header">
+                    <span class="catalog-filter-label">Filter by Annual Price Tier:</span>
+                </div>
+                <div class="catalog-pills-row">
+                    <button type="button" class="plan-filter-btn tier-filter-btn active" onclick="setTierFilter('all', this)">All Price Tiers</button>
+                    <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('micro', this)">Micro &amp; Essential (&le; ₹10k)</button>
+                    <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('standard', this)">Standard &amp; Family (₹10k - ₹35k)</button>
+                    <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('executive', this)">Executive &amp; Critical (₹35k - ₹60k)</button>
+                    <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('global', this)">Global &amp; 1 Crore Tiers (&gt; ₹60k)</button>
+                </div>
             </div>
         </div>
 
-        <!-- PRICE BRACKET FILTER PILLS -->
-        <div style="margin: 10px 0 18px;">
-            <span style="font-size: .78rem; text-transform: uppercase; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px;">Filter by Annual Price Tier:</span>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button type="button" class="plan-filter-btn tier-filter-btn active" onclick="setTierFilter('all', this)">All Price Tiers</button>
-                <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('micro', this)">Micro &amp; Essential (&le; ₹10k)</button>
-                <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('standard', this)">Standard &amp; Family (₹10k - ₹35k)</button>
-                <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('executive', this)">Executive &amp; Critical (₹35k - ₹60k)</button>
-                <button type="button" class="plan-filter-btn tier-filter-btn" onclick="setTierFilter('global', this)">Global &amp; 1 Crore Tiers (&gt; ₹60k)</button>
-            </div>
-        </div>
-
-        <div id="catalogPlansGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 18px;">
+        <!-- PLANS GRID -->
+        <div id="catalogPlansGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; align-items: stretch; margin-top: 18px;">
             {% for dp in demo_plans %}
             {% set tier = 'micro' if dp.annual_premium <= 10000 else ('standard' if dp.annual_premium <= 35000 else ('executive' if dp.annual_premium <= 60000 else 'global')) %}
-            <div class="plan-catalog-item" data-company="{{ dp.company_name }}" data-tier="{{ tier }}" style="background: white; border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow);">
-                <div>
-                    <!-- Company Badge & Insurer Meta Strip -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span class="company-badge {{ dp.company_badge_class }}">
-                            {{ dp.company_short }}
-                        </span>
-                        <span style="font-size: .7rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 4px;">
-                            {{ dp.company_csr }} CSR
-                        </span>
+            <div
+                class="plan-catalog-item"
+                data-company="{{ dp.company_name }}"
+                data-tier="{{ tier }}"
+                data-price="{{ dp.annual_premium }}"
+                data-duration="{{ dp.policy_duration }}"
+                data-csr="{{ dp.company_csr|replace('%','') }}"
+                data-search="{{ (dp.plan_name ~ ' ' ~ dp.company_name ~ ' ' ~ dp.company_short ~ ' ' ~ dp.plan_description ~ ' ' ~ dp.coverage_display ~ ' ' ~ dp.benefits)|lower }}"
+                style="position: relative;"
+            >
+                <div style="display: flex; flex-direction: column; flex: 1;">
+                    <!-- Company Badge, CSR & Favorite Heart -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <span class="company-badge {{ dp.company_badge_class }}">
+                                {{ dp.company_short }}
+                            </span>
+                            <span class="company-csr-badge">
+                                {{ dp.company_csr }} CSR
+                            </span>
+                        </div>
+                        {% if session.get('user_id') %}
+                        <button type="button" 
+                                class="plan-fav-btn {% if dp.plan_id in user_favorite_plan_ids %}favorited{% endif %}" 
+                                onclick="togglePlanFavorite(this, {{ dp.plan_id }})" 
+                                title="{% if dp.plan_id in user_favorite_plan_ids %}{{ t('btn_remove_fav') }}{% else %}{{ t('btn_favorite') }}{% endif %}"
+                                aria-label="Toggle favorite plan">
+                            <span class="fav-icon">{% if dp.plan_id in user_favorite_plan_ids %}❤️{% else %}🤍{% endif %}</span>
+                        </button>
+                        {% endif %}
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                        <h3 style="margin: 0; font-size: 1.15rem; color: var(--navy); font-family: Georgia, serif;">🛡️ {{ dp.plan_name }}</h3>
-                    </div>
+                    <h3 class="plan-catalog-title">🛡️ {{ dp.plan_name }}</h3>
 
-                    <div class="company-meta-strip">
+                    <div class="company-meta-strip" style="margin-bottom: 12px;">
                         <span class="company-meta-tag">{{ dp.company_hospitals }} Hospitals</span>
-                        <span class="company-meta-tag" style="max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ dp.company_tag }}</span>
+                        <span class="company-meta-tag">{{ dp.company_tag }}</span>
                     </div>
 
-                    <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px;">
-                        <span style="color: var(--muted); font-size: .72rem; text-transform: uppercase; font-weight: 600; display: block;">Annual Premium</span>
-                        <strong style="font-size: 1.25rem; color: var(--navy);">INR {{ '{:,.0f}'.format(dp.annual_premium) }}</strong>
+                    <div class="plan-price-panel">
+                        <span class="price-lbl">{{ t('annual_premium') }}</span>
+                        <strong class="price-val">INR {{ '{:,.0f}'.format(dp.annual_premium) }}</strong>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; font-size: .8rem;">
-                        <div style="background: #fcfcfc; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px;">
-                            <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase;">Sum Insured</span>
-                            <strong>{{ dp.coverage_display }}</strong>
+                    <div class="plan-metrics-grid">
+                        <div class="plan-metric-cell">
+                            <span class="cell-lbl">{{ t('coverage_amount') }}</span>
+                            <span class="cell-val">{{ dp.coverage_display }}</span>
                         </div>
-                        <div style="background: #fcfcfc; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px;">
-                            <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase;">Duration</span>
-                            <strong>{{ dp.policy_duration }} Years</strong>
+                        <div class="plan-metric-cell">
+                            <span class="cell-lbl">{{ t('policy_duration') }}</span>
+                            <span class="cell-val">{{ dp.policy_duration }} Years</span>
                         </div>
                     </div>
-                    <p style="color: #4a6372; font-size: .82rem; line-height: 1.4; margin: 0 0 10px;">{{ dp.plan_description }}</p>
+
+                    <p class="plan-desc-text">{{ dp.plan_description }}</p>
                 </div>
-                <div style="border-top: 1px solid var(--line); padding-top: 10px; margin-top: 8px; display: flex; gap: 6px;">
-                    <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .8rem; padding: 6px 8px;" href="{{ url_for('plan_details', plan_id=dp.plan_id) }}">Inspect Details &rarr;</a>
-                    <a class="secondary-btn" style="text-align: center; font-size: .8rem; padding: 6px 8px; width: auto;" href="{{ url_for('compare_plans', plans=dp.plan_id) }}" title="Compare this plan">Compare</a>
+
+                <div class="plan-card-actions">
+                    <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 7px 10px;" href="{{ url_for('plan_details', plan_id=dp.plan_id) }}">{{ t('view_details') }} &rarr;</a>
+                    <a class="secondary-btn" style="text-align: center; font-size: .82rem; padding: 7px 12px; width: auto;" href="{{ url_for('compare_plans', plans=dp.plan_id) }}" title="Compare this plan">{{ t('btn_compare') }}</a>
                 </div>
             </div>
             {% endfor %}
+
+            <!-- EMPTY SEARCH RESULTS STATE -->
+            <div id="catalogEmptyState" class="catalog-empty-card" style="display: none;">
+                <div style="font-size: 2.2rem; line-height: 1;">🔍</div>
+                <h3 style="margin: 0; color: var(--navy); font-size: 1.15rem;">No Insurance Plans Found</h3>
+                <p style="margin: 0; font-size: .88rem; max-width: 440px; line-height: 1.5;">
+                    No insurance policies matched your current search keywords or selected filter options. Try clearing filters or searching with different criteria.
+                </p>
+                <button type="button" class="primary-btn" onclick="resetAllFilters()" style="margin-top: 6px; padding: 8px 18px;">
+                    ↺ Clear Filters &amp; View All Plans
+                </button>
+            </div>
         </div>
 
         <script>
         let currentCompany = 'all';
         let currentTier = 'all';
+        const totalCatalogCount = {{ demo_plans|length }};
 
         function setCompanyFilter(company, btn) {
             document.querySelectorAll('.company-filter-btn').forEach(b => b.classList.remove('active'));
@@ -227,17 +353,110 @@
         }
 
         function applyCombinedFilter() {
+            const searchInput = document.getElementById('catalogSearchInput');
+            const searchKeyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
             const items = document.querySelectorAll('.plan-catalog-item');
+            const emptyState = document.getElementById('catalogEmptyState');
+            const badge = document.getElementById('catalogCountBadge');
+
             let visibleCount = 0;
             items.forEach(item => {
                 const matchCompany = (currentCompany === 'all' || item.dataset.company === currentCompany);
                 const matchTier = (currentTier === 'all' || item.dataset.tier === currentTier);
-                if (matchCompany && matchTier) {
+                const itemSearchText = item.dataset.search || '';
+                const matchSearch = (!searchKeyword || itemSearchText.includes(searchKeyword));
+
+                if (matchCompany && matchTier && matchSearch) {
                     item.style.display = 'flex';
                     visibleCount++;
                 } else {
                     item.style.display = 'none';
                 }
+            });
+
+            if (badge) {
+                badge.textContent = `Showing ${visibleCount} of ${totalCatalogCount} Policies`;
+            }
+
+            if (emptyState) {
+                emptyState.style.display = (visibleCount === 0) ? 'flex' : 'none';
+            }
+        }
+
+        function applySorting() {
+            const sortVal = document.getElementById('catalogSortSelect').value;
+            const grid = document.getElementById('catalogPlansGrid');
+            const items = Array.from(grid.querySelectorAll('.plan-catalog-item'));
+            const emptyState = document.getElementById('catalogEmptyState');
+
+            items.sort((a, b) => {
+                const priceA = parseFloat(a.dataset.price) || 0;
+                const priceB = parseFloat(b.dataset.price) || 0;
+                const durA = parseInt(a.dataset.duration) || 0;
+                const durB = parseInt(b.dataset.duration) || 0;
+                const csrA = parseFloat(a.dataset.csr) || 0;
+                const csrB = parseFloat(b.dataset.csr) || 0;
+
+                if (sortVal === 'price-asc') return priceA - priceB;
+                if (sortVal === 'price-desc') return priceB - priceA;
+                if (sortVal === 'duration-desc') return durB - durA;
+                if (sortVal === 'csr-desc') return csrB - csrA;
+                return 0;
+            });
+
+            items.forEach(item => grid.appendChild(item));
+            if (emptyState) grid.appendChild(emptyState);
+        }
+
+        function resetAllFilters() {
+            currentCompany = 'all';
+            currentTier = 'all';
+
+            const searchInput = document.getElementById('catalogSearchInput');
+            if (searchInput) searchInput.value = '';
+
+            const sortSelect = document.getElementById('catalogSortSelect');
+            if (sortSelect) sortSelect.value = 'default';
+
+            document.querySelectorAll('.company-filter-btn').forEach((b, idx) => {
+                b.classList.toggle('active', idx === 0);
+            });
+            document.querySelectorAll('.tier-filter-btn').forEach((b, idx) => {
+                b.classList.toggle('active', idx === 0);
+            });
+
+            applyCombinedFilter();
+            applySorting();
+        }
+
+        function togglePlanFavorite(btn, planId) {
+            const icon = btn.querySelector('.fav-icon');
+
+            fetch(`/favorites/toggle/${planId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.is_favorite) {
+                        btn.classList.add('favorited');
+                        if (icon) icon.textContent = '❤️';
+                        btn.title = '{{ t("btn_remove_fav") }}';
+                    } else {
+                        btn.classList.remove('favorited');
+                        if (icon) icon.textContent = '🤍';
+                        btn.title = '{{ t("btn_favorite") }}';
+                    }
+                } else {
+                    alert(data.message || 'Error updating favorite status');
+                }
+            })
+            .catch(err => {
+                console.error('Error toggling favorite:', err);
             });
         }
         </script>
@@ -248,10 +467,10 @@
     <section class="panel">
         <p class="eyebrow">Actuarial Formulation</p>
         <h3 style="margin: 4px 0 10px; color: var(--navy); font-size: 1.2rem; font-family: Georgia, serif;">How Estimated Benefit is Computed</h3>
-        <p style="color: #4a6372; font-size: .9rem; line-height: 1.55; margin-bottom: 12px;">
+        <p style="color: var(--muted); font-size: .9rem; line-height: 1.55; margin-bottom: 12px;">
             In this academic project, the estimated total protective benefit is modeled as:
         </p>
-        <div style="background: #f7fafb; padding: 14px 18px; border-radius: 6px; border: 1px solid var(--line); font-family: monospace; font-size: .95rem; color: var(--navy); margin-bottom: 14px;">
+        <div style="background: rgba(0, 0, 0, 0.02); padding: 14px 18px; border-radius: 6px; border: 1px solid var(--line); font-family: monospace; font-size: .95rem; color: var(--navy); margin-bottom: 14px;">
             Estimated Benefit = (Annual Predicted Premium × Policy Duration in Years) × Benefit Factor Rate
         </div>
         <p class="disclaimer">

@@ -94,7 +94,15 @@
         };
     }
 
+        function syncChartTheme() {
+        if (typeof Chart === 'undefined') return;
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        Chart.defaults.color = isDark ? '#94a3b8' : '#4b6676';
+        Chart.defaults.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+    }
+
     function initCharts() {
+        syncChartTheme();
         const metrics = calculateMetrics(rawRecords);
         const colors = ['#1677c8', '#0d9b88', '#e5a63b', '#7c6bb1', '#d46a6a'];
 
@@ -287,6 +295,11 @@
                 const el = document.getElementById(id);
                 if (el) el.value = 'all';
             });
+            updateCharts();
+        });
+
+        window.addEventListener('themechange', () => {
+            syncChartTheme();
             updateCharts();
         });
     });

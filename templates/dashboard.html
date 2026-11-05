@@ -1,31 +1,88 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ current_lang or 'en' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthSecure | Member Healthcare &amp; Insurance Dashboard</title>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <nav>
-    <a href="{{ url_for('dashboard') }}">
-        <span style="font-size: 1.3rem;">🛡️</span> HealthSecure
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">
+        <span style="font-size: 1.25rem;">🛡️</span> HealthSecure
     </a>
-    <div class="nav-spacer"></div>
-    <span class="welcome">Hi, {{ user.name }}</span>
-    <a href="{{ url_for('dashboard') }}" style="color: #82e3cf; font-weight: 700;">Dashboard</a>
-    <a href="{{ url_for('predict') }}">Calculate Premium</a>
-    <a href="{{ url_for('history') }}">History</a>
-    <a href="{{ url_for('what_if') }}">What-If Simulator</a>
-    <a href="{{ url_for('insurance_plans') }}">Insurance Plans</a>
-    <a href="{{ url_for('profile') }}">Profile</a>
-    {% if user.role == 'admin' or session.get('user_role') == 'admin' %}
-        <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
+    {% if session.get('user_id') %}
+        <!-- Primary Navigation Menus (Aligned to Left) -->
+        <a href="{{ url_for('dashboard') }}" style="color: #82e3cf; font-weight: 700;">{{ t('nav_dashboard') }}</a>
+        <a href="{{ url_for('predict') }}">{{ t('nav_predict') }}</a>
+        <a href="{{ url_for('history') }}">{{ t('nav_history') }}</a>
+        <a href="{{ url_for('what_if') }}">{{ t('nav_simulator') }}</a>
+        <a href="{{ url_for('insurance_plans') }}">{{ t('nav_plans') }}</a>
+        <a href="{{ url_for('favorites') }}">{{ t('nav_favorites') }}</a>
+
+        <!-- Middle Spacer -->
+        <div class="nav-spacer"></div>
+
+        <!-- Account & Controls Group (Aligned to Right) -->
+        <span class="welcome">{{ t('welcome_prefix') }} {{ session.get('user_name', user.name if user is defined else 'Member') }}</span>
+        <a href="{{ url_for('profile') }}">{{ t('nav_profile') }}</a>
+        {% if (user is defined and user.role == 'admin') or session.get('user_role') == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
+        {% endif %}
+
+        <!-- Notifications Bell -->
+        <a href="{{ url_for('notifications_page') }}" class="nav-notif-btn" title="{{ t('notifications_title') }}" aria-label="Notifications">
+            🔔
+            {% if unread_notifications_count > 0 %}
+                <span class="notif-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('logout') }}" style="margin: 0;">
+            <button class="link-button" type="submit">{{ t('btn_logout') }}</button>
+        </form>
+    {% else %}
+        <div class="nav-spacer"></div>
+        <a href="{{ url_for('login') }}">{{ t('nav_login') }}</a>
+        <a href="{{ url_for('register') }}">{{ t('nav_register') }}</a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
     {% endif %}
-    <form method="post" action="{{ url_for('logout') }}">
-        <button class="link-button" type="submit">Log out</button>
-    </form>
 </nav>
 
 <main>
@@ -40,20 +97,23 @@
         <div class="member-badge">
             <span style="font-size: 0.85rem;">✓</span> Verified Member &bull; ID: HS-M2026-{{ "%04d"|format(user.id) }}
         </div>
-        <h1>Welcome, {{ user.name }}.</h1>
+        <h1>{{ t('welcome_prefix') }} {{ user.name }}.</h1>
         <p>Manage your personal healthcare protection, review policy estimates, and find the right insurance plan for your family with intelligent automated recommendations.</p>
         <div style="display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
             <a class="primary-btn" href="{{ url_for('predict') }}">
-                <span style="font-size: 1rem;">⚡</span> Calculate New Premium
+                <span style="font-size: 1rem;">⚡</span> {{ t('nav_predict') }}
             </a>
             <a class="secondary-btn" href="{{ url_for('what_if') }}">
-                <span>🔄</span> Run What-If Simulator
+                <span>🔄</span> {{ t('nav_simulator') }}
+            </a>
+            <a class="secondary-btn" href="{{ url_for('favorites') }}">
+                <span>❤️</span> {{ t('favorites_title') }}
             </a>
             <a class="secondary-btn" href="{{ url_for('insurance_plans') }}">
                 <span>📋</span> Explore 100+ Plans
             </a>
             {% if user.role == 'admin' or session.get('user_role') == 'admin' %}
-                <a class="secondary-btn" href="{{ url_for('admin_dashboard') }}" style="border-color: #f59e0b; color: #b45309; background: #fef3c7;">
+                <a class="secondary-btn admin-portal-btn" href="{{ url_for('admin_dashboard') }}">
                     👑 Open Admin Portal
                 </a>
             {% endif %}
@@ -90,7 +150,7 @@
                 <span class="consumer-kpi-title">Section 80D Tax Benefit</span>
                 <span class="consumer-kpi-icon">🛡️</span>
             </div>
-            <div class="consumer-kpi-val" style="color: #047857;">
+            <div class="consumer-kpi-val" style="color: var(--mint);">
                 Up to ₹25,000
             </div>
             <div class="consumer-kpi-sub">
@@ -104,7 +164,7 @@
                 <span class="consumer-kpi-title">Cashless Network Access</span>
                 <span class="consumer-kpi-icon">🏥</span>
             </div>
-            <div class="consumer-kpi-val" style="color: #0284c7;">
+            <div class="consumer-kpi-val" style="color: var(--blue);">
                 21,000+
             </div>
             <div class="consumer-kpi-sub">
@@ -124,7 +184,7 @@
                 </div>
                 <div class="consumer-kpi-sub">
                     {% if latest.smoker == 'no' and latest.bmi < 25 %}
-                        <span style="color: #047857; font-weight: 700;">✓ Preferred Healthy Rate Applied</span>
+                        <span style="color: var(--mint); font-weight: 700;">✓ Preferred Healthy Rate Applied</span>
                     {% else %}
                         <span>Wellness discount eligible via What-If Simulator</span>
                     {% endif %}
@@ -140,6 +200,89 @@
         </div>
     </section>
 
+    <!-- SECTION: MY FAVORITE INSURANCE PLANS -->
+    <section class="panel" style="margin-bottom: 30px;">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Saved Portfolio</p>
+                <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0 0 6px;">{{ t('favorites_title') }}</h2>
+                <p style="color: var(--muted); font-size: .92rem; margin: 0;">
+                    Your bookmarked policies for side-by-side comparison and future reference.
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                {% if favorite_plans and favorite_plans|length > 1 %}
+                    <a class="primary-btn" href="{{ url_for('compare_plans') }}?plans={{ favorite_plans|map(attribute='plan_id')|join(',') }}">
+                        {{ t('btn_compare') }} Saved ({{ favorite_plans|length }})
+                    </a>
+                {% endif %}
+                <a class="secondary-btn" href="{{ url_for('favorites') }}">
+                    Manage All Favorites &rarr;
+                </a>
+            </div>
+        </div>
+
+        {% if favorite_plans %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 18px;">
+                {% for fav in favorite_plans[:4] %}
+                {% set plan = fav.plan %}
+                <div class="fav-plan-card" style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="company-badge {{ plan.company_badge_class }}">
+                                {{ plan.company_short }}
+                            </span>
+                            <form method="post" action="{{ url_for('remove_favorite', plan_id=plan.plan_id) }}" style="margin: 0;">
+                                <button type="submit" class="link-button" style="color: #ef4444; font-size: 0.8rem; font-weight: 600;" title="{{ t('btn_remove_fav') }}">
+                                    ✕ Remove
+                                </button>
+                            </form>
+                        </div>
+
+                        <h3 style="margin: 4px 0 8px; font-size: 1.15rem; color: var(--navy); font-family: Georgia, serif;">
+                            🛡️ {{ plan.plan_name }}
+                        </h3>
+
+                        <div style="background: rgba(0, 0, 0, 0.02); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                <span style="color: var(--muted); font-size: .72rem; text-transform: uppercase; font-weight: 600;">{{ t('annual_premium') }}</span>
+                                <span style="font-size: 1.25rem; font-weight: 800; color: var(--navy);">INR {{ '{:,.0f}'.format(plan.annual_premium) }}</span>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; font-size: .82rem;">
+                            <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;">
+                                <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase; font-weight: 600;">{{ t('coverage_amount') }}</span>
+                                <strong style="color: var(--navy);">{{ plan.coverage_display }}</strong>
+                            </div>
+                            <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;">
+                                <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase; font-weight: 600;">{{ t('policy_duration') }}</span>
+                                <strong style="color: var(--navy);">{{ plan.policy_duration }} Years</strong>
+                            </div>
+                        </div>
+
+                        <p style="color: var(--muted); font-size: .8rem; line-height: 1.4; margin: 0 0 10px;">
+                            {{ plan.plan_description }}
+                        </p>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--line); padding-top: 12px; display: flex; gap: 8px;">
+                        <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 7px 10px;" href="{{ url_for('plan_details', plan_id=plan.plan_id) }}">{{ t('view_details') }} &rarr;</a>
+                        <a class="secondary-btn" style="text-align: center; font-size: .82rem; padding: 7px 10px; width: auto;" href="{{ url_for('compare_plans', plans=plan.plan_id) }}">{{ t('btn_compare') }}</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 28px 20px; background: rgba(0, 0, 0, 0.02); border-radius: 10px; border: 1px dashed var(--line);">
+                <div style="font-size: 2rem; margin-bottom: 8px;">🤍</div>
+                <h4 style="margin: 0 0 6px; color: var(--navy);">{{ t('empty_favorites') }}</h4>
+                <p style="margin: 0 0 14px; font-size: 0.88rem; color: var(--muted);">Click the heart icon on any insurance plan card in the catalog or recommendations to save it here for comparison.</p>
+                <a class="secondary-btn" href="{{ url_for('insurance_plans') }}" style="display: inline-block;">Browse Insurance Plans</a>
+            </div>
+        {% endif %}
+    </section>
+
     <!-- RECOMMENDED PLANS SECTION -->
     {% if latest and latest_matching_plans %}
     <section class="panel" style="margin-bottom: 30px;">
@@ -147,19 +290,19 @@
             <div>
                 <p class="eyebrow">Personalized Policy Recommendation</p>
                 <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0 0 6px;">Recommended Plans Near Your Predicted Premium</h2>
-                <p style="color: #4a6372; font-size: .92rem; margin: 0;">
+                <p style="color: var(--muted); font-size: .92rem; margin: 0;">
                     Matched for <b>{{ latest.full_name }}</b> (Age {{ latest.age }}, {{ latest.policy_duration }}y term) based on predicted annual cost of <b>INR {{ '{:,.2f}'.format(latest.estimated_premium) }}</b>:
                 </p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <a class="primary-btn" href="{{ url_for('compare_plans', prediction_id=latest.id) }}">Compare Selected Plans</a>
+                <a class="primary-btn" href="{{ url_for('compare_plans', prediction_id=latest.id) }}">{{ t('compare_matching_plans') }}</a>
                 <a class="secondary-btn" href="{{ url_for('result', prediction_id=latest.id) }}">Full Recommendation Details &rarr;</a>
             </div>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; margin-top: 18px;">
             {% for plan in latest_matching_plans %}
-            <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: white; border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
+            <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
                 
                 <!-- TOP ROLE BADGE -->
                 <div style="position: absolute; top: -11px; left: 16px;">
@@ -168,13 +311,24 @@
                     </span>
                 </div>
 
+                <!-- FAVORITE HEART BUTTON -->
+                <div style="position: absolute; top: 10px; right: 12px; z-index: 2;">
+                    <button type="button" 
+                            class="plan-fav-btn {% if plan.plan_id in user_favorite_plan_ids %}favorited{% endif %}" 
+                            onclick="togglePlanFavorite(this, {{ plan.plan_id }})" 
+                            title="{% if plan.plan_id in user_favorite_plan_ids %}{{ t('btn_remove_fav') }}{% else %}{{ t('btn_favorite') }}{% endif %}"
+                            aria-label="Toggle favorite plan">
+                        <span class="fav-icon">{% if plan.plan_id in user_favorite_plan_ids %}❤️{% else %}🤍{% endif %}</span>
+                    </button>
+                </div>
+
                 <div>
                     <!-- Company Tag & CSR -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 6px; padding-right: 32px;">
                         <span class="company-badge {{ plan.company_badge_class }}" style="font-size: .72rem; padding: 2px 7px;">
                             {{ plan.company_short }}
                         </span>
-                        <span style="font-size: .7rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 4px;">
+                        <span class="company-csr-badge">
                             {{ plan.company_csr }} CSR
                         </span>
                     </div>
@@ -191,9 +345,9 @@
                         <span class="match-badge match-{{ plan.match_badge_class }}" style="font-size: .72rem;">{{ plan.match_label }}</span>
                     </div>
 
-                    <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
+                    <div style="background: rgba(0, 0, 0, 0.02); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                            <span style="color: var(--muted); font-size: .72rem; text-transform: uppercase; font-weight: 600;">Annual Premium</span>
+                            <span style="color: var(--muted); font-size: .72rem; text-transform: uppercase; font-weight: 600;">{{ t('annual_premium') }}</span>
                             <span style="font-size: 1.25rem; font-weight: 800; color: var(--navy);">INR {{ '{:,.0f}'.format(plan.annual_premium) }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--line);">
@@ -205,21 +359,21 @@
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; font-size: .82rem;">
-                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;">
-                            <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase; font-weight: 600;">Coverage</span>
+                        <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;">
+                            <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase; font-weight: 600;">{{ t('coverage_amount') }}</span>
                             <strong style="color: var(--navy);">{{ plan.coverage_display }}</strong>
                         </div>
-                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;">
+                        <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;">
                             <span style="display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase; font-weight: 600;">Term</span>
                             <strong style="color: var(--navy);">{{ plan.effective_duration }} Years</strong>
                         </div>
                     </div>
 
-                    <p style="color: #4a6372; font-size: .8rem; line-height: 1.4; margin: 0 0 10px;">
+                    <p style="color: var(--muted); font-size: .8rem; line-height: 1.4; margin: 0 0 10px;">
                         {{ plan.plan_description }}
                     </p>
 
-                    <ul style="margin: 0 0 12px; padding-left: 16px; font-size: .78rem; color: #375364; line-height: 1.5;">
+                    <ul style="margin: 0 0 12px; padding-left: 16px; font-size: .78rem; color: var(--body-text); line-height: 1.5;">
                         {% for b in plan.benefits_list[:3] %}
                             <li>✓ {{ b }}</li>
                         {% endfor %}
@@ -227,8 +381,8 @@
                 </div>
 
                 <div style="border-top: 1px solid var(--line); padding-top: 12px; display: flex; gap: 8px;">
-                    <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 7px 10px;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=latest.id) }}">Plan Details &rarr;</a>
-                    <a class="secondary-btn" style="text-align: center; font-size: .82rem; padding: 7px 10px; width: auto;" href="{{ url_for('compare_plans', plans=plan.plan_id, prediction_id=latest.id) }}">Compare</a>
+                    <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 7px 10px;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=latest.id) }}">{{ t('view_details') }} &rarr;</a>
+                    <a class="secondary-btn" style="text-align: center; font-size: .82rem; padding: 7px 10px; width: auto;" href="{{ url_for('compare_plans', plans=plan.plan_id, prediction_id=latest.id) }}">{{ t('btn_compare') }}</a>
                 </div>
             </div>
             {% endfor %}
@@ -237,11 +391,11 @@
     {% elif not latest %}
     <!-- EMPTY STATE ONBOARDING CARD -->
     <section class="panel" style="margin-bottom: 30px; text-align: center; padding: 40px 20px;">
-        <div style="width: 60px; height: 60px; margin: 0 auto 16px; background: #effaf8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+        <div style="width: 60px; height: 60px; margin: 0 auto 16px; background: rgba(13, 155, 136, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
             🛡️
         </div>
         <h2 style="font-family: Georgia, serif; color: var(--navy); margin-bottom: 8px;">Find Your Ideal Health Insurance in 60 Seconds</h2>
-        <p style="max-width: 580px; margin: 0 auto 20px; color: #526f84; font-size: 0.95rem;">
+        <p style="max-width: 580px; margin: 0 auto 20px; color: var(--muted); font-size: 0.95rem;">
             Provide basic medical &amp; demographic details to immediately estimate your premium and receive matched demo policies from Star Health, Care Health, HDFC ERGO, and more.
         </p>
         <a class="primary-btn" href="{{ url_for('predict') }}" style="display: inline-block;">
@@ -300,7 +454,7 @@
         <div class="panel-header">
             <div>
                 <p class="eyebrow">History Overview</p>
-                <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0;">Your Recent Saved Estimates</h2>
+                <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0;">{{ t('history_title') }}</h2>
             </div>
             <a class="view-link" href="{{ url_for('history') }}">View Complete History &rarr;</a>
         </div>
@@ -313,7 +467,7 @@
                             <th>Date</th>
                             <th>Applicant</th>
                             <th>Plan Category</th>
-                            <th>Annual Premium</th>
+                            <th>{{ t('annual_premium') }}</th>
                             <th>Term / Ratio</th>
                             <th>Actions</th>
                         </tr>
@@ -326,7 +480,7 @@
                             <td>{{ record.plan_category|title }} Plan</td>
                             <td class="price">
                                 INR {{ '{:,.2f}'.format(record.estimated_premium) }}
-                                <div style="font-size: .72rem; color: #64748b; font-weight: normal;">
+                                <div style="font-size: .72rem; color: var(--muted); font-weight: normal;">
                                     ~₹{{ '{:,.0f}'.format(record.estimated_premium / 365) }}/day
                                 </div>
                             </td>
@@ -335,7 +489,7 @@
                                 <div class="action-btn-group">
                                     <a class="btn-action btn-action-details" href="{{ url_for('prediction_details', prediction_id=record.id) }}" title="View Full Details & Matched Plans">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                                        Details
+                                        {{ t('view_details') }}
                                     </a>
                                     <a class="btn-action btn-action-whatif" href="{{ url_for('what_if', prediction_id=record.id) }}" title="What-If Scenario Simulation">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/></svg>
@@ -362,5 +516,37 @@
     </section>
 </main>
 
+<script>
+function togglePlanFavorite(btn, planId) {
+    const icon = btn.querySelector('.fav-icon');
+
+    fetch(`/favorites/toggle/${planId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            if (data.is_favorite) {
+                btn.classList.add('favorited');
+                if (icon) icon.textContent = '❤️';
+                btn.title = '{{ t("btn_remove_fav") }}';
+            } else {
+                btn.classList.remove('favorited');
+                if (icon) icon.textContent = '🤍';
+                btn.title = '{{ t("btn_favorite") }}';
+            }
+        } else {
+            alert(data.message || 'Error updating favorite status');
+        }
+    })
+    .catch(err => {
+        console.error('Error toggling favorite:', err);
+    });
+}
+</script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthSecure | Machine Learning Model Performance &amp; Comparison</title>
@@ -23,7 +25,25 @@
     {% if admin_view %}
         <a href="{{ url_for('admin_dashboard') }}" style="color: #e5a63b;">Admin Dashboard</a>
     {% endif %}
-    <form method="post" action="{{ url_for('logout') }}">
+    
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('logout') }}">
         <button class="link-button" type="submit">Log out</button>
     </form>
 </nav>
@@ -36,7 +56,7 @@
     </section>
 
     <!-- PRODUCTION MODEL HIGHLIGHT BANNER -->
-    <div style="background: white; border: 1px solid var(--line); border-left: 6px solid var(--mint); border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); margin-bottom: 24px;">
+    <div style="background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--mint); border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); margin-bottom: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
                 <span class="eyebrow" style="color: var(--mint);">Active Production Algorithm</span>
@@ -44,7 +64,7 @@
             </div>
             <span class="active-model-tag" style="font-size: .85rem; padding: 6px 14px;">Production Selected</span>
         </div>
-        <p style="margin: 8px 0 0; color: #436274; font-size: .95rem; line-height: 1.55;">
+        <p style="margin: 8px 0 0; color: var(--ink-secondary); font-size: .95rem; line-height: 1.55;">
             <b>Selection Justification:</b> <b>{{ metrics.best_model }}</b> was selected as the operational model because it achieved the lowest Mean Absolute Error (<b>MAE</b>) and highest Coefficient of Determination (<b>R² Score</b>) on the held-out 20% test partition (268 unseen instances). Mean Absolute Error was chosen as the primary selection criterion because it is directly interpretable in currency units (INR) without disproportionate distortion from extreme medical outlier costs.
         </p>
     </div>
@@ -93,7 +113,7 @@
                     </thead>
                     <tbody>
                     {% for item in metrics.results %}
-                        <tr style="{% if item.model == metrics.best_model %}background: #f3faf8; font-weight: 600;{% endif %}">
+                        <tr style="{% if item.model == metrics.best_model %}background: var(--surface-alt); font-weight: 600;{% endif %}">
                             <td style="color: var(--navy);">
                                 {{ item.model }}
                                 {% if item.model == metrics.best_model %}
@@ -119,11 +139,11 @@
 
             <!-- COMPARATIVE METRIC CHARTS -->
             <div class="chart-grid" style="margin-top: 24px;">
-                <div style="background: white; border: 1px solid var(--line); border-radius: 8px; padding: 18px;">
+                <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px;">
                     <p class="eyebrow">Error Metrics (Lower is Better)</p>
                     <canvas id="chartErrors" height="190"></canvas>
                 </div>
-                <div style="background: white; border: 1px solid var(--line); border-radius: 8px; padding: 18px;">
+                <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px;">
                     <p class="eyebrow">R² Score (Closer to 1.0 is Better)</p>
                     <canvas id="chartR2" height="190"></canvas>
                 </div>
@@ -140,10 +160,10 @@
     <section class="panel" style="border-left: 4px solid var(--blue);">
         <p class="eyebrow" style="color: var(--blue);">Dataset Transparency &amp; Academic Integrity</p>
         <h3 style="margin: 4px 0 8px; color: var(--navy); font-size: 1.15rem; font-family: Georgia, serif;">Handling of the Salary Attribute</h3>
-        <p style="margin: 0 0 10px; color: #436274; font-size: .9rem; line-height: 1.55;">
+        <p style="margin: 0 0 10px; color: var(--ink-secondary); font-size: .9rem; line-height: 1.55;">
             The publicly available <b>Medical Cost Personal Dataset</b> (Kaggle) originally contains 7 columns: <code>age, sex, bmi, children, smoker, region, charges</code>. It does <i>not</i> natively include an individual income or salary field.
         </p>
-        <p style="margin: 0; color: #436274; font-size: .9rem; line-height: 1.55;">
+        <p style="margin: 0; color: var(--ink-secondary); font-size: .9rem; line-height: 1.55;">
             To support insurance affordability analysis, premium-to-income ratios, and financial suitability scoring within this MCA final-year project, a documented academic proxy is generated deterministically (<code>180000 + age*6500 + bmi*2500 + children*12000</code>). Crucially, <b>the training pipeline and production inference pipeline use the exact same feature schema</b> (7 features) to prevent covariate mismatch or untrained feature leakage.
         </p>
     </section>
@@ -154,21 +174,21 @@
         <h3 style="margin: 4px 0 14px; color: var(--navy); font-size: 1.25rem; font-family: Georgia, serif;">Why Accuracy Percentage is Not Used for Regression</h3>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 16px;">
-            <div style="background: #f9fbfc; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+            <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
                 <b style="color: var(--navy); font-size: .95rem;">MAE (Mean Absolute Error)</b>
-                <p style="margin: 6px 0 0; color: #556e7e; font-size: .83rem; line-height: 1.45;">
+                <p style="margin: 6px 0 0; color: var(--muted); font-size: .83rem; line-height: 1.45;">
                     The average absolute magnitude of errors between predicted and actual charges. Preserves original INR currency units and provides direct financial interpretability.
                 </p>
             </div>
-            <div style="background: #f9fbfc; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+            <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
                 <b style="color: var(--navy); font-size: .95rem;">RMSE (Root Mean Squared Error)</b>
-                <p style="margin: 6px 0 0; color: #556e7e; font-size: .83rem; line-height: 1.45;">
+                <p style="margin: 6px 0 0; color: var(--muted); font-size: .83rem; line-height: 1.45;">
                     Square root of mean squared deviations. Penalizes large prediction errors more severely than MAE, ensuring no extreme catastrophic mispredictions.
                 </p>
             </div>
-            <div style="background: #f9fbfc; border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
+            <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 8px; padding: 14px;">
                 <b style="color: var(--navy); font-size: .95rem;">R² Score (Variance Explained)</b>
-                <p style="margin: 6px 0 0; color: #556e7e; font-size: .83rem; line-height: 1.45;">
+                <p style="margin: 6px 0 0; color: var(--muted); font-size: .83rem; line-height: 1.45;">
                     Quantifies the proportion of total variance in medical charges explained by the model's independent variables. A score of ~0.87 means 87% of cost variation is captured.
                 </p>
             </div>
@@ -184,6 +204,15 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const results = {{ metrics.results|tojson }};
+    // Chart theme sync
+    function syncChartTheme() {
+        if (typeof Chart === 'undefined') return;
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        Chart.defaults.color = isDark ? '#94a3b8' : '#4b6676';
+        Chart.defaults.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+    }
+    syncChartTheme();
+
     const labels = results.map(r => r.model.replace(' Regressor', ''));
 
     // Chart 1: MAE vs RMSE

@@ -1,462 +1,1154 @@
 <!doctype html>
-<html lang="en">
+
+<html lang="{{ current_lang or 'en' }}">
+
 <head>
+
     <meta charset="utf-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>HealthSecure | Predict Health Insurance Premium</title>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translator.js') }}"></script>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+
 </head>
+
 <body>
+
 <nav>
     <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">
-        HealthSecure
+        <span style="font-size: 1.25rem;">🛡️</span> HealthSecure
     </a>
-    <div class="nav-spacer"></div>
     {% if session.get('user_id') %}
-        <span class="welcome">Hi, {{ session.get('user_name', 'member') }}</span>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('predict') }}" style="color: #82e3cf; font-weight: 700;">Calculate Premium</a>
-        <a href="{{ url_for('history') }}">History</a>
-        <a href="{{ url_for('what_if') }}">What-If Simulator</a>
-        <a href="{{ url_for('insurance_plans') }}">Plans</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        {% if session.get('user_role') == 'admin' %}
+        <!-- Primary Navigation Menus (Aligned to Left) -->
+        <a href="{{ url_for('dashboard') }}">{{ t('nav_dashboard') }}</a>
+        <a href="{{ url_for('predict') }}" style="color: #82e3cf; font-weight: 700;">{{ t('nav_predict') }}</a>
+        <a href="{{ url_for('history') }}">{{ t('nav_history') }}</a>
+        <a href="{{ url_for('what_if') }}">{{ t('nav_simulator') }}</a>
+        <a href="{{ url_for('insurance_plans') }}">{{ t('nav_plans') }}</a>
+        <a href="{{ url_for('favorites') }}">{{ t('nav_favorites') }}</a>
+
+        <!-- Middle Spacer -->
+        <div class="nav-spacer"></div>
+
+        <!-- Account & Controls Group (Aligned to Right) -->
+        <span class="welcome">{{ t('welcome_prefix') }} {{ session.get('user_name', user.name if user is defined else 'Member') }}</span>
+        <a href="{{ url_for('profile') }}">{{ t('nav_profile') }}</a>
+        {% if (user is defined and user.role == 'admin') or session.get('user_role') == 'admin' %}
             <a href="{{ url_for('admin_dashboard') }}" class="admin-portal-link">👑 Admin Portal</a>
         {% endif %}
-        <form method="post" action="{{ url_for('logout') }}">
-            <button class="link-button" type="submit">Log out</button>
+
+        <!-- Notifications Bell -->
+        <a href="{{ url_for('notifications_page') }}" class="nav-notif-btn" title="{{ t('notifications_title') }}" aria-label="Notifications">
+            🔔
+            {% if unread_notifications_count > 0 %}
+                <span class="notif-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('logout') }}" style="margin: 0;">
+            <button class="link-button" type="submit">{{ t('btn_logout') }}</button>
         </form>
     {% else %}
-        <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('insurance_plans') }}">Insurance Plans</a>
-        <a href="{{ url_for('login') }}">Log in</a>
-        <a href="{{ url_for('register') }}">Create Account</a>
+        <div class="nav-spacer"></div>
+        <a href="{{ url_for('login') }}">{{ t('nav_login') }}</a>
+        <a href="{{ url_for('register') }}">{{ t('nav_register') }}</a>
+
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="{{ t('theme_toggle') }}" aria-label="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+        </button>
+
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown">
+            <button type="button" class="lang-dropbtn" aria-label="Select Language">
+                🌐 {{ available_languages.get(current_lang, 'English') }}
+            </button>
+            <div class="lang-dropdown-content">
+                <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeLanguage('en', event)" class="{% if current_lang == 'en' %}active{% endif %}">English</a>
+                <a href="{{ url_for('set_language', lang_code='ta') }}" onclick="changeLanguage('ta', event)" class="{% if current_lang == 'ta' %}active{% endif %}">தமிழ் (Tamil)</a>
+                <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeLanguage('hi', event)" class="{% if current_lang == 'hi' %}active{% endif %}">हिन्दी (Hindi)</a>
+            </div>
+        </div>
     {% endif %}
 </nav>
 
+
+
 <main>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
+
         {% for category, message in messages %}
+
             <div class="alert {{ category }}">{{ message }}</div>
+
         {% endfor %}
+
     {% endwith %}
 
+
+
     <section class="hero compact-hero">
+
         <p class="eyebrow">HealthSecure Smart AI Underwriting</p>
+
         <h1>Predict Your Health Insurance Premium</h1>
+
         <p>Enter your health and demographic attributes. The trained Machine Learning regression model estimates your annual medical charges, computes affordability ratios, and matches tailored protection tiers.</p>
+
     </section>
+
+
 
     <section class="layout" aria-label="Premium calculator">
-        <form class="card" method="post" action="{{ url_for('predict') }}">
-            <h2 class="form-heading">Applicant Profile</h2>
-            <label>Full name
-                <input name="full_name" value="{{ form_data.get('full_name', '') }}" placeholder="e.g. John Doe" required autocomplete="name">
-            </label>
-            <label>Age
-                <input type="number" name="age" min="18" max="100" value="{{ form_data.get('age', '') }}" placeholder="18 - 100" required>
-            </label>
-            <label>Gender</label>
-            <div class="form-pill-group" id="genderPillGroup">
-                <button type="button" class="form-pill-btn {% if form_data.get('sex', 'female') == 'female' %}active{% endif %}" data-val="female">
-                    <span>👩 Female</span>
-                </button>
-                <button type="button" class="form-pill-btn {% if form_data.get('sex') == 'male' %}active{% endif %}" data-val="male">
-                    <span>👨 Male</span>
-                </button>
-            </div>
-            <input type="hidden" name="sex" id="sexHiddenInput" value="{{ form_data.get('sex', 'female') }}" required>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px;">
-                <label>Height (cm)
-                    <input type="number" id="heightInput" name="height" min="50" max="250" step="1" value="{{ form_data.get('height', '') }}" placeholder="e.g. 170" required>
-                </label>
-                <label>Weight (kg)
-                    <input type="number" id="weightInput" name="weight" min="20" max="250" step="0.5" value="{{ form_data.get('weight', '') }}" placeholder="e.g. 68" required>
-                </label>
-            </div>
+        <form class="card premium-form-card" method="post" action="{{ url_for('predict') }}">
 
-            <!-- Dynamic Real-time Calculated BMI Gauge & Classification Box -->
-            <div class="bmi-gauge-card">
-                <div class="bmi-card-top">
-                    <div>
-                        <span class="bmi-gauge-eyebrow">Calculated Body Mass Index (BMI)</span>
-                        <div class="bmi-val-row">
-                            <span id="bmiDisplayVal" class="bmi-number">--.-</span>
-                            <span id="bmiBadge" class="bmi-badge-pill" style="background: #f1f5f9; color: #475569;">Enter Height &amp; Weight</span>
+            <!-- SECTION 1: APPLICANT PROFILE FRAME -->
+
+            <div class="form-section-frame applicant-profile-frame">
+
+                <div class="section-frame-header">
+
+                    <div class="frame-title-group">
+
+                        <span class="frame-icon">👤</span>
+
+                        <div>
+
+                            <h2 class="form-heading">Applicant Profile</h2>
+
+                            <span class="frame-subtitle">Personal &amp; Biometric Health Factors</span>
+
                         </div>
+
                     </div>
-                    <div class="bmi-formula-tip">
-                        Dynamic Clinical Ratio:<br><code>Weight / (Height / 100)²</code>
-                    </div>
+
                 </div>
 
-                <!-- Color-Coded BMI Gauge Progress Bar with Real-time Needle -->
-                <div class="bmi-meter-container">
-                    <div class="bmi-meter-track">
-                        <div class="meter-segment seg-under" title="Underweight (&lt; 18.5)"></div>
-                        <div class="meter-segment seg-normal" title="Normal Healthy (18.5 - 24.9)"></div>
-                        <div class="meter-segment seg-over" title="Overweight (25.0 - 29.9)"></div>
-                        <div class="meter-segment seg-obese" title="Obese Range (&ge; 30.0)"></div>
-                        <div class="bmi-needle" id="bmiNeedle" style="left: 0%;"></div>
+
+
+                <div class="profile-fields-grid">
+
+                    <!-- Full Name -->
+
+                    <div class="form-field field-full-width">
+
+                        <label for="fullNameInput" class="form-label">Full Name</label>
+
+                        <input id="fullNameInput" name="full_name" value="{{ form_data.get('full_name', '') }}" placeholder="e.g. John Doe" required autocomplete="name">
+
                     </div>
-                    <div class="bmi-meter-labels">
-                        <span>10 (Under)</span>
-                        <span>18.5 (Normal)</span>
-                        <span>25 (Over)</span>
-                        <span>30 (Obese)</span>
-                        <span>50+</span>
+
+
+
+                    <!-- Age & Gender in a balanced 2-column row -->
+
+                    <div class="form-field">
+
+                        <label for="ageInput" class="form-label">Age (Years)</label>
+
+                        <input type="number" id="ageInput" name="age" min="18" max="100" value="{{ form_data.get('age', '') }}" placeholder="18 - 100" required>
+
                     </div>
+
+
+
+                    <div class="form-field">
+
+                        <label class="form-label">Biological Gender</label>
+
+                        <div class="form-pill-group" id="genderPillGroup">
+
+                            <button type="button" class="form-pill-btn {% if form_data.get('sex', 'female') == 'female' %}active{% endif %}" data-val="female">
+
+                                <span>👩 Female</span>
+
+                            </button>
+
+                            <button type="button" class="form-pill-btn {% if form_data.get('sex') == 'male' %}active{% endif %}" data-val="male">
+
+                                <span>👨 Male</span>
+
+                            </button>
+
+                        </div>
+
+                        <input type="hidden" name="sex" id="sexHiddenInput" value="{{ form_data.get('sex', 'female') }}" required>
+
+                    </div>
+
+
+
+                    <!-- Height & Weight in a balanced 2-column row -->
+
+                    <div class="form-field">
+
+                        <label for="heightInput" class="form-label">Height (cm)</label>
+
+                        <input type="number" id="heightInput" name="height" min="50" max="250" step="1" value="{{ form_data.get('height', '') }}" placeholder="e.g. 170" required>
+
+                    </div>
+
+
+
+                    <div class="form-field">
+
+                        <label for="weightInput" class="form-label">Weight (kg)</label>
+
+                        <input type="number" id="weightInput" name="weight" min="20" max="250" step="0.5" value="{{ form_data.get('weight', '') }}" placeholder="e.g. 68" required>
+
+                    </div>
+
                 </div>
 
-                <!-- Clinical Underwriting Advisory Tip -->
-                <div class="bmi-advisory-tip" id="bmiAdvisoryTip">
-                    💡 Tip: Enter height and weight to calculate your clinical BMI tier and unlock optimal underwriting rates.
+
+
+                <!-- Dynamic Real-time Calculated BMI Gauge & Classification Box -->
+
+                <div class="bmi-gauge-card">
+
+                    <div class="bmi-card-top">
+
+                        <div>
+
+                            <span class="bmi-gauge-eyebrow">Calculated Body Mass Index (BMI)</span>
+
+                            <div class="bmi-val-row">
+
+                                <span id="bmiDisplayVal" class="bmi-number">--.-</span>
+
+                                <span id="bmiBadge" class="bmi-badge-pill" style="background: #f1f5f9; color: #475569;">Enter Height &amp; Weight</span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="bmi-formula-tip">
+
+                            Dynamic Clinical Ratio:<br><code>Weight (kg) / (Height/100)²</code>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Multi-Metric Biometric Breakdown (Age & Gender Adjusted) -->
+
+                    <div class="bmi-biometric-metrics" id="bmiBiometricsRow">
+
+                        <div class="biometric-chip">
+
+                            <span class="bio-chip-label">Est. Body Fat %</span>
+
+                            <strong class="bio-chip-val" id="bodyFatVal">--.-%</strong>
+
+                        </div>
+
+                        <div class="biometric-chip">
+
+                            <span class="bio-chip-label">Healthy Weight Range</span>
+
+                            <strong class="bio-chip-val" id="healthyWeightVal">-- – -- kg</strong>
+
+                        </div>
+
+                        <div class="biometric-chip">
+
+                            <span class="bio-chip-label">Actuarial Risk Tier</span>
+
+                            <strong class="bio-chip-val" id="underwritingTierVal">Standard</strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Color-Coded BMI Gauge Progress Bar with Real-time Needle -->
+
+                    <div class="bmi-meter-container">
+
+                        <div class="bmi-meter-track">
+
+                            <div class="meter-segment seg-under" title="Underweight (&lt; 18.5)"></div>
+
+                            <div class="meter-segment seg-normal" title="Normal Healthy (18.5 - 24.9)"></div>
+
+                            <div class="meter-segment seg-over" title="Overweight (25.0 - 29.9)"></div>
+
+                            <div class="meter-segment seg-obese" title="Obese Range (&ge; 30.0)"></div>
+
+                            <div class="bmi-needle" id="bmiNeedle" style="left: 0%;"></div>
+
+                        </div>
+
+                        <div class="bmi-meter-labels">
+
+                            <span>10 (Under)</span>
+
+                            <span>18.5 (Normal)</span>
+
+                            <span>25 (Over)</span>
+
+                            <span>30 (Obese)</span>
+
+                            <span>50+</span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Clinical Underwriting Advisory Tip -->
+
+                    <div class="bmi-advisory-tip" id="bmiAdvisoryTip">
+
+                        💡 Tip: Enter age, gender, height (cm), and weight (kg) to calculate your complete biometric profile.
+
+                    </div>
+
+                    <input type="hidden" id="bmiInput" name="bmi" value="{{ form_data.get('bmi', '') }}">
+
                 </div>
-                <input type="hidden" id="bmiInput" name="bmi" value="{{ form_data.get('bmi', '') }}">
+
             </div>
 
-            <label>Number of Children / Dependents</label>
-            <div class="form-pill-group" id="childrenPillGroup">
-                {% for c in [0, 1, 2, 3, 4] %}
-                <button type="button" class="form-pill-btn num-pill {% if form_data.get('children', '0')|int == c %}active{% endif %}" data-val="{{ c }}">
-                    {{ c if c < 4 else '4+' }}
-                </button>
-                {% endfor %}
-            </div>
-            <input type="hidden" name="children" id="childrenHiddenInput" value="{{ form_data.get('children', '0') }}" required>
 
-            <label>Smoking Status (Tobacco Use)</label>
-            <div class="form-pill-group" id="smokerPillGroup">
-                <button type="button" class="form-pill-btn good-choice {% if form_data.get('smoker', 'no') == 'no' %}active{% endif %}" data-val="no">
-                    <span>🚭 No (Non-smoker)</span>
-                </button>
-                <button type="button" class="form-pill-btn risk-choice {% if form_data.get('smoker') == 'yes' %}active{% endif %}" data-val="yes">
-                    <span>🚬 Yes (Smoker)</span>
-                </button>
-            </div>
-            <input type="hidden" name="smoker" id="smokerHiddenInput" value="{{ form_data.get('smoker', 'no') }}" required>
 
-            <label>Liquor / Alcohol Consumption</label>
-            <div class="form-pill-group" id="liquorPillGroup">
-                <button type="button" class="form-pill-btn good-choice {% if form_data.get('liquor', 'no') == 'no' %}active{% endif %}" data-val="no">
-                    <span>🧃 No (Non-drinker)</span>
-                </button>
-                <button type="button" class="form-pill-btn warn-choice {% if form_data.get('liquor') == 'yes' %}active{% endif %}" data-val="yes">
-                    <span>🍷 Yes (Consumes Alcohol)</span>
-                </button>
-            </div>
-            <input type="hidden" name="liquor" id="liquorHiddenInput" value="{{ form_data.get('liquor', 'no') }}" required>
+            <!-- SECTION 2: LIFESTYLE & REGIONAL FACTORS FRAME -->
 
-            <label>Indian State / Region
-                <select name="region" id="regionSelect" required>
-                    <option value="">Select Indian State</option>
-                    {% for state in ['Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Haryana', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Odisha', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'West Bengal'] %}
-                        <option value="{{ state }}" {% if form_data.get('region') == state %}selected{% endif %}>{{ state }}</option>
-                    {% endfor %}
-                </select>
-            </label>
+            <div class="form-section-frame">
 
-            <div>
-                <label>Annual Salary (INR)
-                    <input type="number" id="salaryInput" name="salary" min="100000" max="10000000" step="1000" value="{{ form_data.get('salary', '') }}" placeholder="e.g. 600000" required>
-                </label>
-                <div class="salary-presets">
-                    <span style="font-size: 0.72rem; color: #627e90; align-self: center; margin-right: 2px;">Presets:</span>
-                    <button type="button" class="preset-chip" data-val="300000">₹3L</button>
-                    <button type="button" class="preset-chip" data-val="600000">₹6L</button>
-                    <button type="button" class="preset-chip" data-val="1000000">₹10L</button>
-                    <button type="button" class="preset-chip" data-val="1500000">₹15L</button>
-                    <button type="button" class="preset-chip" data-val="2500000">₹25L</button>
+                <div class="section-frame-header">
+
+                    <div class="frame-title-group">
+
+                        <span class="frame-icon">📋</span>
+
+                        <div>
+
+                            <h2 class="form-heading">Lifestyle &amp; Demographics</h2>
+
+                            <span class="frame-subtitle">Underwriting Risk Factors &amp; Region</span>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
+
+
+                <div class="profile-fields-grid">
+
+                    <div class="form-field field-full-width">
+
+                        <label class="form-label">Number of Children / Dependents</label>
+
+                        <div class="form-pill-group" id="childrenPillGroup">
+
+                            {% for c in [0, 1, 2, 3, 4] %}
+
+                            <button type="button" class="form-pill-btn num-pill {% if form_data.get('children', '0')|int == c %}active{% endif %}" data-val="{{ c }}">
+
+                                {{ c if c < 4 else '4+' }}
+
+                            </button>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <input type="hidden" name="children" id="childrenHiddenInput" value="{{ form_data.get('children', '0') }}" required>
+
+                    </div>
+
+
+
+                    <div class="form-field">
+
+                        <label class="form-label">Smoking Status (Tobacco Use)</label>
+
+                        <div class="form-pill-group" id="smokerPillGroup">
+
+                            <button type="button" class="form-pill-btn good-choice {% if form_data.get('smoker', 'no') == 'no' %}active{% endif %}" data-val="no">
+
+                                <span>🚭 No (Non-smoker)</span>
+
+                            </button>
+
+                            <button type="button" class="form-pill-btn risk-choice {% if form_data.get('smoker') == 'yes' %}active{% endif %}" data-val="yes">
+
+                                <span>🚬 Yes (Smoker)</span>
+
+                            </button>
+
+                        </div>
+
+                        <input type="hidden" name="smoker" id="smokerHiddenInput" value="{{ form_data.get('smoker', 'no') }}" required>
+
+                    </div>
+
+
+
+                    <div class="form-field">
+
+                        <label class="form-label">Alcohol Consumption</label>
+
+                        <div class="form-pill-group" id="liquorPillGroup">
+
+                            <button type="button" class="form-pill-btn good-choice {% if form_data.get('liquor', 'no') == 'no' %}active{% endif %}" data-val="no">
+
+                                <span>🧃 No (Non-drinker)</span>
+
+                            </button>
+
+                            <button type="button" class="form-pill-btn warn-choice {% if form_data.get('liquor') == 'yes' %}active{% endif %}" data-val="yes">
+
+                                <span>🍷 Yes (Drinker)</span>
+
+                            </button>
+
+                        </div>
+
+                        <input type="hidden" name="liquor" id="liquorHiddenInput" value="{{ form_data.get('liquor', 'no') }}" required>
+
+                    </div>
+
+
+
+                    <div class="form-field">
+
+                        <label for="regionSelect" class="form-label">Indian State / Region</label>
+
+                        <select name="region" id="regionSelect" required>
+
+                            <option value="">Select Indian State</option>
+
+                            {% for state in ['Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Haryana', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Odisha', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'West Bengal'] %}
+
+                                <option value="{{ state }}" {% if form_data.get('region') == state %}selected{% endif %}>{{ state }}</option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="form-field">
+
+                        <label for="salaryInput" class="form-label">Annual Salary (INR)</label>
+
+                        <input type="number" id="salaryInput" name="salary" min="100000" max="10000000" step="1000" value="{{ form_data.get('salary', '') }}" placeholder="e.g. 600000" required>
+
+                        <div class="salary-presets">
+
+                            <span style="font-size: 0.72rem; color: var(--muted); align-self: center; margin-right: 2px;">Presets:</span>
+
+                            <button type="button" class="preset-chip" data-val="300000">₹3L</button>
+
+                            <button type="button" class="preset-chip" data-val="600000">₹6L</button>
+
+                            <button type="button" class="preset-chip" data-val="1000000">₹10L</button>
+
+                            <button type="button" class="preset-chip" data-val="1500000">₹15L</button>
+
+                            <button type="button" class="preset-chip" data-val="2500000">₹25L</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <h2 class="form-heading">Coverage Preferences</h2>
 
-            <label>Policy Duration</label>
-            <div class="form-pill-group" id="durationPillGroup">
-                {% for dur, disc in [(5, 'Standard'), (10, '5% Multi-Yr Off'), (15, '10% Multi-Yr Off'), (20, '15% Max Off')] %}
-                <button type="button" class="form-pill-btn duration-btn {% if form_data.get('policy_duration', '5')|int == dur %}active{% endif %}" data-val="{{ dur }}">
-                    <strong>{{ dur }} Years</strong>
-                    <small>{{ disc }}</small>
-                </button>
-                {% endfor %}
+
+            <!-- SECTION 3: COVERAGE PREFERENCES FRAME -->
+
+            <div class="form-section-frame">
+
+                <div class="section-frame-header">
+
+                    <div class="frame-title-group">
+
+                        <span class="frame-icon">🛡️</span>
+
+                        <div>
+
+                            <h2 class="form-heading">Coverage Preferences</h2>
+
+                            <span class="frame-subtitle">Policy Duration &amp; Tier Selection</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="profile-fields-grid">
+
+                    <div class="form-field field-full-width">
+
+                        <label class="form-label">Policy Duration</label>
+
+                        <div class="form-pill-group" id="durationPillGroup">
+
+                            {% for dur, disc in [(5, 'Standard'), (10, '5% Multi-Yr Off'), (15, '10% Multi-Yr Off'), (20, '15% Max Off')] %}
+
+                            <button type="button" class="form-pill-btn duration-btn {% if form_data.get('policy_duration', '5')|int == dur %}active{% endif %}" data-val="{{ dur }}">
+
+                                <strong>{{ dur }} Years</strong>
+
+                                <small>{{ disc }}</small>
+
+                            </button>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <input type="hidden" name="policy_duration" id="durationHiddenInput" value="{{ form_data.get('policy_duration', '5') }}" required>
+
+                    </div>
+
+
+
+                    <div class="form-field field-full-width">
+
+                        <label class="form-label">Plan Category Tier</label>
+
+                        <div class="form-pill-group" id="planPillGroup">
+
+                            {% for p_key, p_name, p_desc in [('basic', 'Basic Plan', 'Essential Hospitalization'), ('silver', 'Silver Plan', 'Balanced Care & Critical'), ('gold', 'Gold Plan', 'Comprehensive Tier')] %}
+
+                            <button type="button" class="form-pill-btn tier-btn {% if form_data.get('plan_category', 'silver') == p_key %}active{% endif %}" data-val="{{ p_key }}">
+
+                                <strong>{{ p_name }}</strong>
+
+                                <small>{{ p_desc }}</small>
+
+                            </button>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <input type="hidden" name="plan_category" id="planHiddenInput" value="{{ form_data.get('plan_category', 'silver') }}" required>
+
+                    </div>
+
+                </div>
+
             </div>
-            <input type="hidden" name="policy_duration" id="durationHiddenInput" value="{{ form_data.get('policy_duration', '5') }}" required>
 
-            <label>Plan Category Tier</label>
-            <div class="form-pill-group" id="planPillGroup">
-                {% for p_key, p_name, p_desc in [('basic', 'Basic Plan', 'Essential Hospitalization'), ('silver', 'Silver Plan', 'Balanced Care & Critical'), ('gold', 'Gold Plan', 'Comprehensive Tier')] %}
-                <button type="button" class="form-pill-btn tier-btn {% if form_data.get('plan_category', 'silver') == p_key %}active{% endif %}" data-val="{{ p_key }}">
-                    <strong>{{ p_name }}</strong>
-                    <small>{{ p_desc }}</small>
-                </button>
-                {% endfor %}
-            </div>
-            <input type="hidden" name="plan_category" id="planHiddenInput" value="{{ form_data.get('plan_category', 'silver') }}" required>
 
-            <button type="submit">Calculate Estimated Premium &rarr;</button>
+
+            <button type="submit" class="submit-premium-btn">Calculate Estimated Premium &rarr;</button>
+
         </form>
 
+
+
         {% if result %}
+
         <aside class="result" aria-live="polite">
+
             <p class="eyebrow">ML Prediction Estimate</p>
+
             <strong>INR {{ "{:,.2f}".format(result.premium) }} <span style="font-size: 1rem; color: var(--muted); font-weight: normal;">/ year</span></strong>
+
             <div class="result-price-breakdown">
+
                 <span class="price-chip-unit">₹{{ "{:,.0f}".format(result.premium / 365) }} / day</span>
+
                 <span class="price-chip-unit">₹{{ "{:,.0f}".format(result.premium / 12) }} / month</span>
+
                 <span class="price-chip-unit tax-chip">Sec 80D: Save up to ₹{{ "{:,.0f}".format(result.premium * 0.3) }}</span>
+
             </div>
+
             <p><b>{{ result.plan }} Plan</b> &mdash; {{ result.description }}</p>
+
             <hr>
+
             <p><small>Premium-to-Income Ratio</small><b>{{ "{:.2f}".format(result.ratio) }}%</b> <span class="muted-copy">(sustainable target &lt; 10%)</span></p>
+
             <p><small>Policy Duration</small><b>{{ result.duration }} Years</b></p>
+
             <p><small>Total Estimated Premium</small><b>INR {{ "{:,.2f}".format(result.total_premium) }}</b></p>
+
             <p><small>Estimated Protective Benefit ({{ result.benefit_factor }}x factor)</small><b class="price">INR {{ "{:,.2f}".format(result.benefit) }}</b></p>
+
             
+
             <p class="disclaimer">
+
                 Academic estimate only. The calculated benefit is a project-defined illustrative multiplier and is not an official guaranteed maturity return.
+
             </p>
+
+
 
             <div class="result-actions">
+
                 <a class="primary-btn" href="{{ url_for('result', prediction_id=result.prediction_id) }}">View 3 Matched Plans &rarr;</a>
+
                 <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=result.prediction_id) }}">Compare Plans</a>
+
                 <a class="secondary-btn" href="{{ url_for('download_report', prediction_id=result.prediction_id) }}">PDF Report</a>
+
                 <a class="secondary-btn" href="{{ url_for('what_if', prediction_id=result.prediction_id) }}">What-If</a>
+
             </div>
+
+
 
             <!-- FEATURE 1: EXPLAINABLE AI (XAI) SECTION -->
+
             <div class="xai-section">
+
                 <hr>
+
                 <p class="eyebrow">Explainable AI (XAI)</p>
+
                 <h3 style="margin: 4px 0 10px; color: var(--navy); font-size: 1.15rem; font-family: Georgia, serif;">Factors Influencing Premium Prediction</h3>
+
                 <p class="muted-copy" style="margin-bottom: 12px;">Relative feature contribution computed from the trained tree-based regression model:</p>
+
                 
+
                 {% for insight in result.insights %}
+
                 <div class="importance-row">
+
                     <span>{{ insight.name }}</span>
+
                     <div class="importance-track">
+
                         <i style="width: {{ insight.importance }}%;"></i>
+
                     </div>
+
                     <strong>{{ '{:.1f}'.format(insight.importance) }}%</strong>
+
                 </div>
+
                 {% endfor %}
 
-                <p style="margin: 14px 0 8px; font-size: .84rem; color: #375364; background: #f0f7f7; padding: 10px; border-radius: 6px;">
+
+
+                <p style="margin: 14px 0 8px; font-size: .84rem; color: var(--ink-secondary); background: var(--surface-alt); padding: 10px; border-radius: 6px;">
+
                     <b>Key Model Takeaway:</b> {{ result.explanation.simple_explanation }}
+
                 </p>
+
+
 
                 <h4 style="margin: 16px 0 6px; font-size: .92rem; color: var(--navy);">How the model interpreted your information:</h4>
+
                 <div style="display: grid; gap: 8px;">
+
                     {% for item in result.explanation.interpretations[:4] %}
-                    <div style="background: #fbfdfd; border: 1px solid var(--line); border-radius: 6px; padding: 9px 12px; font-size: .8rem;">
+
+                    <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 6px; padding: 9px 12px; font-size: .8rem;">
+
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+
                             <b style="color: var(--navy);">{{ item.feature }} ({{ item.value }})</b>
+
                             <span class="tag-pill tag-{{ item.status }}">{{ item.impact }}</span>
+
                         </div>
-                        <span style="color: #556e7e;">{{ item.explanation }}</span>
+
+                        <span style="color: var(--muted);">{{ item.explanation }}</span>
+
                     </div>
+
                     {% endfor %}
+
                 </div>
+
+
 
                 <p class="muted-copy" style="margin-top: 12px; font-style: italic;">
+
                     {{ result.explanation.disclaimer }}
+
                 </p>
+
             </div>
+
         </aside>
+
         {% else %}
+
         <aside class="result muted">
+
             <p class="eyebrow">How It Works</p>
+
             <strong>One transparent estimate grounded in your data.</strong>
+
             <p>Our ensemble machine learning model evaluates 7 core factors (Age, BMI, Smoking Status, Children, Region, Gender, and Salary Proxy) to estimate baseline medical claims probability.</p>
+
             <p>Every prediction is paired with Explainable AI feature importances, scenario simulation controls, and downloadable verification reports.</p>
-            <div style="margin-top: 20px; padding: 14px; background: #f4f9f9; border-radius: 8px; border-left: 3px solid var(--blue);">
-                <p style="margin: 0; font-size: .85rem; color: #375364;">
+
+            <div style="margin-top: 20px; padding: 14px; background: var(--surface-alt); border-radius: 8px; border-left: 3px solid var(--blue);">
+
+                <p style="margin: 0; font-size: .85rem; color: var(--ink-secondary);">
+
                     <b>Data Privacy Notice:</b> Your demographic inputs are stored securely in your private account history and never shared.
+
                 </p>
+
             </div>
+
         </aside>
+
         {% endif %}
+
     </section>
+
     
+
     {% if result and result.matching_plans %}
+
     <section class="panel" style="margin-top: 32px;">
+
         <div class="panel-header">
+
             <div>
+
                 <p class="eyebrow">Automatic Recommendation</p>
+
                 <h2 style="font-family: Georgia, serif; color: var(--navy); margin: 0 0 6px;">Recommended Plans Near Your Predicted Premium</h2>
-                <p style="color: #4a6372; font-size: .92rem; margin: 0;">Matched using <code>|Plan Annual Premium &minus; Predicted Premium|</code> against dynamic demo plans in MySQL.</p>
+
+                <p style="color: var(--muted); font-size: .92rem; margin: 0;">Matched using <code>|Plan Annual Premium &minus; Predicted Premium|</code> against dynamic demo plans in MySQL.</p>
+
             </div>
+
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+
                 <a class="secondary-btn" href="{{ url_for('compare_plans', prediction_id=result.prediction_id) }}">Compare All 3 Plans Side-by-Side &rarr;</a>
+
                 <a class="primary-btn" href="{{ url_for('result', prediction_id=result.prediction_id) }}">Full Recommendation View</a>
+
             </div>
+
         </div>
+
+
 
         <!-- 3 PLAN CARDS GRID -->
+
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+
             {% for plan in result.matching_plans %}
-            <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: white; border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
+
+            <div class="plan-rec-card {% if plan.is_closest %}closest-match{% endif %}" style="background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); position: relative;">
+
                 {% if plan.is_closest %}
+
                     <div style="position: absolute; top: -11px; right: 18px; background: var(--mint); color: white; padding: 3px 12px; border-radius: 12px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; box-shadow: 0 4px 10px rgba(13, 155, 136, .3);">
+
                         ★ Closest Match
+
                     </div>
+
                 {% endif %}
 
+
+
                 <div>
+
                     <!-- Company Badge & CSR Rating -->
+
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+
                         <span class="company-badge {{ plan.company_badge_class }}">
+
                             {{ plan.company_short }}
+
                         </span>
-                        <span style="font-size: .7rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 4px;">
+
+                        <span class="company-csr-badge">
+
                             {{ plan.company_csr }} CSR
+
                         </span>
+
                     </div>
+
+
 
                     <h3 style="margin: 0 0 8px; font-size: 1.22rem; color: var(--navy); font-family: Georgia, serif; display: flex; align-items: center; gap: 6px;">
+
                         🛡️ {{ plan.plan_name }}
+
                     </h3>
 
+
+
                     <div style="margin-bottom: 12px;">
+
                         <span class="match-badge match-{{ plan.match_badge_class }}">{{ plan.match_label }}</span>
+
                         <span style="font-size: .78rem; color: var(--muted); margin-left: 6px;">
+
                             (Diff: ₹{{ '{:,.0f}'.format(plan.difference) }} / {{ plan.difference_pct }}%)
+
                         </span>
+
                     </div>
 
-                    <div style="background: #f7fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+
+
+                    <div style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+
                         <div style="display: flex; justify-content: space-between; align-items: baseline;">
+
                             <span style="color: var(--muted); font-size: .75rem; text-transform: uppercase; font-weight: 600;">Annual Premium</span>
+
                             <span style="font-size: 1.3rem; font-weight: 800; color: var(--navy);">INR {{ '{:,.0f}'.format(plan.annual_premium) }}</span>
+
                         </div>
+
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; font-size: .82rem; font-weight: 700; color: {{ 'var(--mint)' if plan.is_closest else '#1677c8' }}; border-top: 1px dashed var(--line); padding-top: 4px;">
+
                             <span>Difference from Prediction:</span>
+
                             <span>INR {{ '{:,.2f}'.format(plan.difference) }}</span>
+
                         </div>
+
                     </div>
+
+
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; font-size: .84rem;">
-                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+
+                        <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+
                             <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Coverage</span>
+
                             <strong style="color: var(--navy);">{{ plan.coverage_display }}</strong>
+
                         </div>
-                        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+
+                        <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;">
+
                             <span style="display: block; color: var(--muted); font-size: .7rem; text-transform: uppercase; font-weight: 600;">Policy Duration</span>
+
                             <strong style="color: var(--navy);">{{ plan.effective_duration }} Years</strong>
+
                         </div>
+
                     </div>
 
-                    <div style="font-size: .82rem; color: #436274; margin-bottom: 12px; background: #eff8f7; padding: 8px 10px; border-radius: 6px;">
+
+
+                    <div style="font-size: .82rem; color: var(--ink-secondary); margin-bottom: 12px; background: var(--surface-alt); padding: 8px 10px; border-radius: 6px;">
+
                         <span>Total Estimated Premium: <b>INR {{ '{:,.0f}'.format(plan.total_estimated_premium) }}</b> ({{ plan.effective_duration }}y)</span>
+
                     </div>
 
-                    <p style="color: #4a6372; font-size: .84rem; line-height: 1.45; margin: 0 0 12px;">
+
+
+                    <p style="color: var(--muted); font-size: .84rem; line-height: 1.45; margin: 0 0 12px;">
+
                         {{ plan.plan_description }}
+
                     </p>
 
-                    <ul style="margin: 0 0 14px; padding-left: 18px; font-size: .82rem; color: #375364; line-height: 1.6;">
+
+
+                    <ul style="margin: 0 0 14px; padding-left: 18px; font-size: .82rem; color: var(--body-text); line-height: 1.6;">
+
                         {% for b in plan.benefits_list %}
+
                             <li>✓ {{ b }}</li>
+
                         {% endfor %}
+
                     </ul>
+
                 </div>
+
+
 
                 <div style="border-top: 1px solid var(--line); padding-top: 14px; display: flex; gap: 8px;">
+
                     <a class="secondary-btn" style="flex: 1; text-align: center; font-size: .82rem; padding: 8px 10px;" href="{{ url_for('plan_details', plan_id=plan.plan_id, prediction_id=result.prediction_id) }}">View Plan Details &rarr;</a>
+
                     <a class="secondary-btn" style="text-align: center; font-size: .82rem; padding: 8px 12px; width: auto;" href="{{ url_for('compare_plans', plans=plan.plan_id, prediction_id=result.prediction_id) }}">Compare</a>
+
                 </div>
+
             </div>
+
             {% endfor %}
+
         </div>
 
-        <div style="margin-top: 18px; padding: 12px 16px; background: #fff8eb; border-left: 4px solid #f39c12; border-radius: 6px;">
-            <p style="margin: 0; font-size: .82rem; color: #855309; line-height: 1.5;">
+
+
+        <div style="margin-top: 18px; padding: 12px 16px; background: var(--warning-bg); border-left: 4px solid var(--amber); border-radius: 6px;">
+
+            <p style="margin: 0; font-size: .82rem; color: var(--warning-text); line-height: 1.5;">
+
                 <b>Academic &amp; Demo Project Notice:</b> Demo plans are mock illustrative insurance packages stored in MySQL for educational demonstration. They do not represent real-world commercial contracts.
+
             </p>
+
         </div>
+
     </section>
+
     {% endif %}
+
 </main>
 
+
+
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. DYNAMIC BMI CALCULATION & GAUGE NEEDLE LOGIC
+
+    // 1. DYNAMIC MULTI-FACTOR BMI CALCULATION & BIOMETRICS (Age, Height, Weight, Gender)
+
     const heightInput = document.getElementById("heightInput");
+
     const weightInput = document.getElementById("weightInput");
+
+    const ageInput = document.getElementById("ageInput");
+
+    const sexHiddenInput = document.getElementById("sexHiddenInput");
+
     const bmiDisplay = document.getElementById("bmiDisplayVal");
+
     const bmiBadge = document.getElementById("bmiBadge");
+
     const bmiInput = document.getElementById("bmiInput");
+
     const bmiNeedle = document.getElementById("bmiNeedle");
+
     const bmiAdvisoryTip = document.getElementById("bmiAdvisoryTip");
 
+    const bodyFatVal = document.getElementById("bodyFatVal");
+
+    const healthyWeightVal = document.getElementById("healthyWeightVal");
+
+    const underwritingTierVal = document.getElementById("underwritingTierVal");
+
+
+
     function calculateBMI() {
+
         const height = parseFloat(heightInput.value);
+
         const weight = parseFloat(weightInput.value);
 
+        const age = parseFloat(ageInput ? ageInput.value : 30) || 30;
+
+        const gender = (sexHiddenInput ? sexHiddenInput.value : "female").toLowerCase();
+
+        const isMale = gender === "male";
+
+
+
         if (height >= 50 && height <= 250 && weight >= 20 && weight <= 250) {
+
             const heightInMeters = height / 100;
+
             const bmi = parseFloat((weight / (heightInMeters * heightInMeters)).toFixed(2));
+
             bmiDisplay.textContent = bmi.toFixed(2);
+
             bmiInput.value = bmi.toFixed(2);
 
-            // Compute needle percentage position along the 10 - 50 scale
+
+
+            // Healthy Weight Range for this height (18.5 to 24.9 BMI)
+
+            const minW = (18.5 * heightInMeters * heightInMeters).toFixed(1);
+
+            const maxW = (24.9 * heightInMeters * heightInMeters).toFixed(1);
+
+            if (healthyWeightVal) healthyWeightVal.textContent = minW + " – " + maxW + " kg";
+
+
+
+            // Deurenberg Adult Body Fat % formula: 1.20*BMI + 0.23*Age - 10.8*(sex==male?1:0) - 5.4
+
+            const sexFactor = isMale ? 1 : 0;
+
+            let estBodyFat = (1.20 * bmi) + (0.23 * age) - (10.8 * sexFactor) - 5.4;
+
+            estBodyFat = Math.max(5, Math.min(60, estBodyFat));
+
+            if (bodyFatVal) bodyFatVal.textContent = estBodyFat.toFixed(1) + "%";
+
+
+
+            // Needle percentage along 10 - 50 scale
+
             const clampedBmi = Math.max(10, Math.min(50, bmi));
+
             const needlePct = ((clampedBmi - 10) / (50 - 10)) * 100;
-            if (bmiNeedle) {
-                bmiNeedle.style.left = needlePct + "%";
-            }
+
+            if (bmiNeedle) bmiNeedle.style.left = needlePct + "%";
+
+
+
+            const genderTitle = isMale ? "Male" : "Female";
 
             if (bmi < 18.5) {
+
                 bmiBadge.textContent = "Underweight (< 18.5)";
+
                 bmiBadge.style.backgroundColor = "#e0f2fe";
+
                 bmiBadge.style.color = "#0369a1";
+
+                if (underwritingTierVal) underwritingTierVal.textContent = "Moderate (Underweight)";
+
                 if (bmiAdvisoryTip) {
-                    bmiAdvisoryTip.innerHTML = "ℹ️ <b>Underweight Advisory:</b> Balanced clinical risk profile. Ensure comprehensive hospitalization coverage for essential nutrition and wellness support.";
+
+                    bmiAdvisoryTip.innerHTML = `ℹ️ <b>Clinical Profile (${genderTitle}, Age ${Math.round(age)}):</b> Body Mass Index of <b>${bmi.toFixed(2)}</b> is below standard threshold. Target healthy weight is <b>${minW}–${maxW} kg</b>. Essential inpatient hospitalization protection recommended.`;
+
                 }
+
             } else if (bmi <= 24.9) {
+
                 bmiBadge.textContent = "Normal Healthy (18.5 – 24.9)";
+
                 bmiBadge.style.backgroundColor = "#dcfce7";
+
                 bmiBadge.style.color = "#15803d";
+
+                if (underwritingTierVal) underwritingTierVal.textContent = "Preferred / Optimal";
+
                 if (bmiAdvisoryTip) {
-                    bmiAdvisoryTip.innerHTML = "🌟 <b>Optimal Health Tier:</b> Congratulations! Your normal BMI unlocks standard underwriting approval and up to <b>15% wellness discount</b> on premium rates.";
+
+                    bmiAdvisoryTip.innerHTML = `🌟 <b>Optimal Clinical Tier (${genderTitle}, Age ${Math.round(age)}):</b> Congratulations! Your BMI of <b>${bmi.toFixed(2)}</b> and ~<b>${estBodyFat.toFixed(1)}%</b> body fat qualify for Preferred Underwriting with up to <b>15% wellness discounts</b>.`;
+
                 }
+
             } else if (bmi <= 29.9) {
+
                 bmiBadge.textContent = "Overweight (25.0 – 29.9)";
+
                 bmiBadge.style.backgroundColor = "#fef3c7";
+
                 bmiBadge.style.color = "#b45309";
+
+                if (underwritingTierVal) underwritingTierVal.textContent = "Standard Loading";
+
                 if (bmiAdvisoryTip) {
-                    bmiAdvisoryTip.innerHTML = "⚠️ <b>Moderate Risk Tier:</b> Slightly elevated actuarial loading. Using our What-If simulator to model BMI reduction to 24.5 shows an estimated <b>8–12% premium savings</b>.";
+
+                    bmiAdvisoryTip.innerHTML = `⚠️ <b>Moderate Risk Tier (${genderTitle}, Age ${Math.round(age)}):</b> Current weight is above the ideal <b>${maxW} kg</b> ceiling for your height. Moderate morbidity loading applied. Silver flagship tier recommended.`;
+
                 }
+
             } else {
+
                 bmiBadge.textContent = "Obese Range (≥ 30.0)";
+
                 bmiBadge.style.backgroundColor = "#fee2e2";
+
                 bmiBadge.style.color = "#b91c1c";
+
+                if (underwritingTierVal) underwritingTierVal.textContent = "Elevated Actuarial";
+
                 if (bmiAdvisoryTip) {
-                    bmiAdvisoryTip.innerHTML = "❗ <b>Elevated Risk Tier:</b> Higher morbidity and cardiac risk loading applied. We recommend comprehensive Silver or Gold tiers with critical illness coverage.";
+
+                    bmiAdvisoryTip.innerHTML = `❗ <b>Elevated Risk Tier (${genderTitle}, Age ${Math.round(age)}):</b> BMI of <b>${bmi.toFixed(2)}</b> with ~<b>${estBodyFat.toFixed(1)}%</b> body fat. Cardiovascular and diabetes protection recommended with comprehensive Silver or Gold coverage.`;
+
                 }
+
             }
+
         } else {
+
             bmiDisplay.textContent = "--.-";
+
             bmiBadge.textContent = "Enter Height & Weight";
+
             bmiBadge.style.backgroundColor = "#f1f5f9";
+
             bmiBadge.style.color = "#475569";
+
             if (bmiNeedle) bmiNeedle.style.left = "0%";
+
+            if (bodyFatVal) bodyFatVal.textContent = "--.-%";
+
+            if (healthyWeightVal) healthyWeightVal.textContent = "-- – -- kg";
+
+            if (underwritingTierVal) underwritingTierVal.textContent = "Standard";
+
             if (bmiAdvisoryTip) {
-                bmiAdvisoryTip.innerHTML = "💡 Tip: Enter height and weight to calculate your clinical BMI tier and unlock optimal underwriting rates.";
+
+                bmiAdvisoryTip.innerHTML = "💡 Tip: Enter age, gender, height (cm), and weight (kg) to calculate your complete biometric profile.";
+
             }
+
         }
+
     }
+
+
 
     if (heightInput && weightInput) {
+
         heightInput.addEventListener("input", calculateBMI);
+
         weightInput.addEventListener("input", calculateBMI);
+
+        if (ageInput) ageInput.addEventListener("input", calculateBMI);
+
         calculateBMI();
+
     }
 
+
+
     // 2. SEGMENTED PILL CONTROLS HANDLER
-    function setupPills(containerId, hiddenInputId) {
+
+    function setupPills(containerId, hiddenInputId, onSelectCallback) {
         const container = document.getElementById(containerId);
         const hiddenInput = document.getElementById(hiddenInputId);
         if (!container || !hiddenInput) return;
@@ -467,29 +1159,52 @@ document.addEventListener("DOMContentLoaded", function () {
                 buttons.forEach(b => b.classList.remove("active"));
                 btn.classList.add("active");
                 hiddenInput.value = btn.getAttribute("data-val");
+                if (onSelectCallback) onSelectCallback(btn.getAttribute("data-val"));
             });
         });
     }
 
-    setupPills("genderPillGroup", "sexHiddenInput");
+    setupPills("genderPillGroup", "sexHiddenInput", calculateBMI);
+
     setupPills("childrenPillGroup", "childrenHiddenInput");
+
     setupPills("smokerPillGroup", "smokerHiddenInput");
+
     setupPills("liquorPillGroup", "liquorHiddenInput");
+
     setupPills("durationPillGroup", "durationHiddenInput");
+
     setupPills("planPillGroup", "planHiddenInput");
 
+
+
     // 3. SALARY PRESET CHIPS HANDLER
+
     const salaryInput = document.getElementById("salaryInput");
+
     const presetChips = document.querySelectorAll(".preset-chip");
+
     presetChips.forEach(chip => {
+
         chip.addEventListener("click", () => {
+
             if (salaryInput) {
+
                 salaryInput.value = chip.getAttribute("data-val");
+
                 salaryInput.focus();
+
             }
+
         });
+
     });
+
 });
+
 </script>
+
 </body>
+
 </html>
+
