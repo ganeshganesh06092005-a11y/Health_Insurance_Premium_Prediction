@@ -1,36 +1,36 @@
 {
-  "dataset_rows": 1338,
-  "training_rows": 1070,
-  "testing_rows": 268,
-  "best_model": "XGBoost Regressor",
+  "dataset_rows": 8000,
+  "training_rows": 6400,
+  "testing_rows": 1600,
+  "best_model": "Linear Regression",
   "results": [
     {
       "model": "Linear Regression",
-      "MAE": 4195.37,
-      "MSE": 33382061.37,
-      "RMSE": 5777.72,
-      "R2": 0.7966
+      "MAE": 2615.84,
+      "MSE": 11686946.46,
+      "RMSE": 3418.62,
+      "R2": 0.6492
     },
     {
       "model": "Random Forest Regressor",
-      "MAE": 2499.4,
-      "MSE": 20678901.62,
-      "RMSE": 4547.41,
-      "R2": 0.874
+      "MAE": 2776.21,
+      "MSE": 13262480.05,
+      "RMSE": 3641.77,
+      "R2": 0.6019
     },
     {
       "model": "Gradient Boosting Regressor",
-      "MAE": 2552.66,
-      "MSE": 19980332.24,
-      "RMSE": 4469.94,
-      "R2": 0.8783
+      "MAE": 2640.68,
+      "MSE": 11908669.51,
+      "RMSE": 3450.89,
+      "R2": 0.6425
     },
     {
       "model": "XGBoost Regressor",
-      "MAE": 2422.94,
-      "MSE": 18251536.24,
-      "RMSE": 4272.18,
-      "R2": 0.8888
+      "MAE": 2629.69,
+      "MSE": 11863578.29,
+      "RMSE": 3444.35,
+      "R2": 0.6439
     }
   ]
 }

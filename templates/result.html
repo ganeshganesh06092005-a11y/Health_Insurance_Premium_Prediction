@@ -118,14 +118,20 @@
     <div style="background: var(--card-bg, #ffffff); border: 1px solid var(--line); border-left: 6px solid var(--mint); border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); margin-bottom: 28px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div>
-                <p class="eyebrow" style="color: var(--mint);">AI Premium Prediction</p>
-                <div style="display: flex; align-items: baseline; gap: 10px;">
-                    <h2 style="margin: 4px 0 0; color: var(--navy); font-size: 2.2rem; font-family: Georgia, serif;">
+                <p class="eyebrow" style="color: var(--mint); margin-bottom: 2px;">Estimated Annual Health Insurance Premium</p>
+                <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <h2 style="margin: 4px 0 0; color: var(--navy); font-size: 2.3rem; font-family: Georgia, serif; font-weight: 800;">
                         INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}
                     </h2>
-                    <span style="color: var(--muted); font-size: 1rem;">/ year</span>
+                    <span style="color: var(--muted); font-size: 1.05rem; font-weight: 600;">/ year</span>
+                    <span style="background: rgba(13, 155, 136, 0.12); color: var(--mint); padding: 4px 10px; border-radius: 6px; font-size: .88rem; font-weight: 700;">
+                        ≈ ₹{{ '{:,.0f}'.format(prediction.estimated_premium / 12) }}/month
+                    </span>
+                    <span style="background: rgba(2, 132, 199, 0.10); color: #0284c7; padding: 4px 10px; border-radius: 6px; font-size: .88rem; font-weight: 700;">
+                        ≈ ₹{{ '{:,.0f}'.format(prediction.estimated_premium / 365) }}/day
+                    </span>
                 </div>
-                <p style="margin: 6px 0 0; color: var(--body-text); font-size: .92rem;">
+                <p style="margin: 8px 0 0; color: var(--body-text); font-size: .92rem; line-height: 1.5;">
                     Applicant: <b>{{ prediction.full_name }}</b> &bull; {{ prediction.age }} yrs, {{ prediction.sex|title }}{% if prediction.height and prediction.weight %} &bull; {{ prediction.height|int }} cm / {{ prediction.weight }} kg{% endif %} &bull; BMI {{ prediction.bmi }} &bull; {{ 'Smoker' if prediction.smoker == 'yes' else 'Non-smoker' }} &bull; {{ 'Consumes Alcohol' if prediction.liquor == 'yes' else 'Non-drinker' }} &bull; Stated Income: ₹{{ '{:,.0f}'.format(prediction.salary) }}
                 </p>
             </div>

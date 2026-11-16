@@ -113,7 +113,7 @@
         <div class="stat">
             <span>Estimated Annual Premium</span>
             <strong>INR {{ '{:,.2f}'.format(prediction.estimated_premium) }}</strong>
-            <small style="color: var(--muted); font-size: .75rem;">ML regression output</small>
+            <small style="color: var(--mint); font-weight: 700; font-size: .8rem;">≈ ₹{{ '{:,.0f}'.format(prediction.estimated_premium / 12) }}/mo &bull; ₹{{ '{:,.0f}'.format(prediction.estimated_premium / 365) }}/day</small>
         </div>
         <div class="stat">
             <span>Premium-to-Income Ratio</span>

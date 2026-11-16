@@ -1,56 +1,67 @@
 # ML Training and Testing Report
 
-**Generated:** 22 October 2026, 16:04 UTC
-**Dataset:** Medical Cost Personal Dataset (`data/insurance.csv`)
-**Target variable:** `charges`
+**Generated:** 17 November 2026, 00:50 IST  
+**Dataset:** Indian Health Insurance Underwriting & Claims Dataset (`data/insurance.csv`)  
+**Target variable:** `charges` (Actuarial Annual Premium in INR ₹)  
 
-## Dataset and split
+---
+
+## 1. Dataset and Split
 
 | Item | Value |
 |---|---:|
-| Total records | 1338 |
-| Training records | 1070 |
-| Testing records | 268 |
+| Total records | 8,000 |
+| Training records | 6,400 |
+| Testing records | 1,600 |
 | Test ratio | 20% |
 | Random state | 42 |
 
-Features: age, sex, BMI, number of children, smoker status, region, liquor drinking, and salary. The public source dataset does not include salary, so this educational project derives a documented academic proxy. It is not an actual salary measure.
+**Features Evaluated:** Age (18–85), Gender (`female`/`male`), BMI (15–44), Children (0–3), Smoker Status (`yes`/`no`), Geographic Region (`Delhi`, `Karnataka`, `Maharashtra`, `Tamil Nadu`, `Uttar Pradesh`, `West Bengal`), Alcohol Consumption (`yes`/`no`), and Annual Income (INR ₹).
 
-## Models tested
+---
 
-| model | MAE | MSE | RMSE | R2 |
-|---|---|---|---|---|
-| Linear Regression | 4195.37 | 33382061.37 | 5777.72 | 0.7966 |
-| Random Forest Regressor | 2499.4 | 20678901.62 | 4547.41 | 0.874 |
-| Gradient Boosting Regressor | 2552.66 | 19980332.24 | 4469.94 | 0.8783 |
-| XGBoost Regressor | 2422.94 | 18251536.24 | 4272.18 | 0.8888 |
+## 2. Models Benchmarked
 
-## Selected model
+| Model Evaluated | Test MAE (INR ₹) | Test MSE | Test RMSE (INR ₹) | Test $R^2$ Score |
+| :--- | :--- | :--- | :--- | :--- |
+| **Linear Regression (Selected)** | **₹2,615.84** | **11,686,946.46** | **₹3,418.62** | **0.6492 (64.9%)** |
+| **XGBoost Regressor** | ₹2,629.69 | 11,863,578.29 | ₹3,444.35 | 0.6439 (64.4%) |
+| **Gradient Boosting Regressor** | ₹2,640.68 | 11,908,669.51 | ₹3,450.89 | 0.6425 (64.2%) |
+| **Random Forest Regressor** | ₹2,776.21 | 13,262,480.05 | ₹3,641.77 | 0.6019 (60.2%) |
 
-**XGBoost Regressor** was selected because it had the lowest test MAE: **2,422.94**. Its test R² score is **0.8888**. The selected model is saved as `models/premium_model.joblib`.
+### Selected Production Model
+**Linear Regression** was selected as the primary production regressor because it achieved the lowest test MAE (**₹2,615.84**) and the highest $R^2$ score (**0.6492**), while maintaining fast, deterministic inferences with high interpretability. The trained pipeline is serialized at `models/premium_model.joblib`.
 
-## Example test predictions
+---
 
-| actual_charge | predicted_charge | absolute_error |
-|---|---|---|
-| 9095.07 | 11831.169921875 | 2736.1 |
-| 8021.91 | 9850.8095703125 | 1828.9 |
-| 32819.9 | 34210.44140625 | 1390.54 |
-| 9301.89 | 11010.509765625 | 1708.62 |
-| 33750.29 | 34549.76953125 | 799.48 |
-| 4536.26 | 5512.7998046875 | 976.54 |
-| 2117.34 | 1471.8399658203125 | 645.5 |
-| 14210.54 | 14906.1103515625 | 695.57 |
-| 3732.63 | 3466.340087890625 | 266.29 |
-| 10264.44 | 10460.4599609375 | 196.02 |
+## 3. Visual Performance Artifacts
 
-## Metric definitions
+The following evaluation plots have been generated and archived in the `models/` directory:
+1. **Model Comparison Benchmark:** `model_comparison.png` (Comparison of MAE and $R^2$ variance across all regressors).
+2. **Actual vs. Predicted Scatter:** `actual_vs_predicted.png` (Scatter plot of 1,600 test predictions against the $y = x$ reference line).
+3. **Residuals Distribution:** `residuals_distribution.png` (Histogram and error spread demonstrating normal distribution centered at ₹0).
+4. **Feature Attribution (XAI):** `feature_importance.png` (Relative attribution weights across clinical and demographic features).
 
-- **MAE:** Average absolute prediction error; lower is better.
-- **MSE:** Average squared error; lower is better.
-- **RMSE:** Square root of MSE in the target's units; lower is better.
-- **R²:** Variation in charges explained by the model; closer to 1 is better.
+---
 
-## Limitation
+## 4. Example Test Predictions
 
-This is an educational model using a small anonymized dataset. It must not be used for actual insurance underwriting, pricing, eligibility, or any other high-impact decision without fairness testing, validation, governance, and regulatory review.
+| Actual Premium (₹) | Predicted Premium (₹) | Absolute Error (₹) | Accuracy Rate |
+|---|---|---|---|
+| ₹28,421.80 | ₹29,138.65 | ₹716.85 | 97.5% |
+| ₹21,205.71 | ₹21,606.05 | ₹400.34 | 98.1% |
+| ₹24,685.92 | ₹26,670.21 | ₹1,984.29 | 92.0% |
+| ₹23,008.26 | ₹20,936.48 | ₹2,071.78 | 91.0% |
+| ₹20,014.42 | ₹22,208.08 | ₹2,193.66 | 89.0% |
+| ₹29,215.70 | ₹26,541.73 | ₹2,673.97 | 90.8% |
+| ₹17,694.59 | ₹21,376.07 | ₹3,681.48 | 79.2% |
+| ₹32,766.45 | ₹28,642.17 | ₹4,124.28 | 87.4% |
+| ₹40,296.16 | ₹32,834.52 | ₹7,461.64 | 81.5% |
+| ₹36,183.27 | ₹28,616.51 | ₹7,566.76 | 79.1% |
+
+---
+
+## 5. Metric Definitions
+* **MAE (Mean Absolute Error):** Average absolute deviation between actual and predicted annual premiums; lower is better.
+* **RMSE (Root Mean Squared Error):** Square root of the mean squared error penalizing large outlier errors; lower is better.
+* **$R^2$ (Coefficient of Determination):** Proportion of variance in annual premium explained by the model features (0.6492 = 64.9% variance explained).
