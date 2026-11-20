@@ -1,6 +1,7 @@
 """
-Complete generator for Software Engineering Lab Manual:
-HEALTH INSURANCE PREMIUM PREDICTION SYSTEM (HEALTHSECURE)
+Software Engineering Laboratory Manual Generator (Clean Black & White / Times New Roman / 12pt / Justified)
+Project: HEALTH INSURANCE PREMIUM PREDICTION SYSTEM (HEALTHSECURE)
+Department of Computer Applications, Nehru College of Management, Coimbatore
 """
 
 import os
@@ -15,9 +16,12 @@ from docx.oxml.ns import qn
 OUTPUT_DIR = Path("d:/Ganesh/Health_Insurance_Premium_Prediction")
 DIAGRAMS_DIR = OUTPUT_DIR / "lab_manual_diagrams"
 DOCX_PATH = OUTPUT_DIR / "SE_Lab_Manual_Health_Insurance.docx"
+PDF_PATH = OUTPUT_DIR / "SE_Lab_Manual_Health_Insurance.pdf"
 MD_PATH = OUTPUT_DIR / "SE_Lab_Manual_Health_Insurance.md"
 
-def set_cell_margins(cell, top=80, bottom=80, left=120, right=120):
+BLACK = RGBColor(0, 0, 0)
+
+def set_cell_margins(cell, top=100, bottom=100, left=150, right=150):
     tcPr = cell._tc.get_or_add_tcPr()
     tcMar = OxmlElement('w:tcMar')
     for m, val in [('top', top), ('bottom', bottom), ('left', left), ('right', right)]:
@@ -27,15 +31,7 @@ def set_cell_margins(cell, top=80, bottom=80, left=120, right=120):
         tcMar.append(node)
     tcPr.append(tcMar)
 
-def set_cell_shading(cell, color_hex):
-    tcPr = cell._tc.get_or_add_tcPr()
-    shd = OxmlElement('w:shd')
-    shd.set(qn('w:val'), 'clear')
-    shd.set(qn('w:color'), 'auto')
-    shd.set(qn('w:fill'), color_hex)
-    tcPr.append(shd)
-
-def set_table_borders(table, color="CCCCCC", sz="4", val="single"):
+def set_table_borders(table, color="000000", sz="4", val="single"):
     tblPr = table._tbl.tblPr
     tblBorders = OxmlElement('w:tblBorders')
     for border_name in ['top', 'left', 'bottom', 'right', 'insideH', 'insideV']:
@@ -47,472 +43,485 @@ def set_table_borders(table, color="CCCCCC", sz="4", val="single"):
         tblBorders.append(border)
     tblPr.append(tblBorders)
 
-def create_document():
+def build_manual():
     doc = docx.Document()
     
-    # Page Setup: Normal A4, 1 inch margins
+    # Page Setup: Standard A4, 1-inch margins
     for sec in doc.sections:
-        sec.top_margin = Inches(0.8)
-        sec.bottom_margin = Inches(0.8)
-        sec.left_margin = Inches(0.8)
-        sec.right_margin = Inches(0.8)
+        sec.top_margin = Inches(1.0)
+        sec.bottom_margin = Inches(1.0)
+        sec.left_margin = Inches(1.0)
+        sec.right_margin = Inches(1.0)
+        sec.page_width = Inches(8.27)
+        sec.page_height = Inches(11.69)
         
-    # Styles
-    normal_style = doc.styles['Normal']
-    normal_style.font.name = 'Arial'
-    normal_style.font.size = Pt(10.5)
-    normal_style.font.color.rgb = RGBColor(30, 41, 59)
-    normal_style.paragraph_format.line_spacing = 1.15
-    normal_style.paragraph_format.space_after = Pt(4)
+    # Set Normal Style: Times New Roman, 12pt, Line Spacing 1.15, Black color
+    style = doc.styles['Normal']
+    style.font.name = 'Times New Roman'
+    style.font.size = Pt(12)
+    style.font.color.rgb = BLACK
+    style.paragraph_format.line_spacing = 1.15
+    style.paragraph_format.space_after = Pt(6)
+    style.paragraph_format.space_before = Pt(0)
     
-    # Document Title Block
-    title_p = doc.add_paragraph()
-    title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_sub = title_p.add_run("DEPARTMENT OF COMPUTER APPLICATIONS\nNEHRU COLLEGE OF MANAGEMENT, COIMBATORE\n\n")
-    r_sub.font.name = "Arial"
-    r_sub.font.size = Pt(11)
-    r_sub.font.bold = True
-    r_sub.font.color.rgb = RGBColor(71, 85, 105)
-    
-    r_main = title_p.add_run("SOFTWARE ENGINEERING LABORATORY\nPRACTICAL RECORD MANUAL\n")
-    r_main.font.name = "Arial"
-    r_main.font.size = Pt(16)
-    r_main.font.bold = True
-    r_main.font.color.rgb = RGBColor(30, 58, 138)
-    
-    p_proj = doc.add_paragraph()
-    p_proj.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_p = p_proj.add_run("PROJECT: HEALTH INSURANCE PREMIUM PREDICTION & RECOMMENDATION SYSTEM (HEALTHSECURE)\n")
-    r_p.font.name = "Arial"
-    r_p.font.size = Pt(12)
-    r_p.font.bold = True
-    r_p.font.color.rgb = RGBColor(14, 116, 144)
-    
-    doc.add_paragraph("―" * 65).alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # Helper to add standard justified paragraph with a tab indent (0.5 inch)
+    def add_para(text, is_passage=True):
+        p = doc.add_paragraph()
+        if is_passage:
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.paragraph_format.first_line_indent = Inches(0.5)
+        else:
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.line_spacing = 1.15
+        p.paragraph_format.space_after = Pt(6)
+        r = p.add_run(text)
+        r.font.name = 'Times New Roman'
+        r.font.size = Pt(12)
+        r.font.color.rgb = BLACK
+        return p
 
-    def add_ex_header(ex_no, title):
+    # Helper for headings (Bold Times New Roman 12pt, Black, Left aligned, no tab indent)
+    def add_heading(text, is_bold=True, is_center=False):
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER if is_center else WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.first_line_indent = Inches(0)
+        p.paragraph_format.line_spacing = 1.15
+        p.paragraph_format.space_before = Pt(8)
+        p.paragraph_format.space_after = Pt(4)
+        r = p.add_run(text)
+        r.font.name = 'Times New Roman'
+        r.font.size = Pt(12)
+        r.font.bold = is_bold
+        r.font.color.rgb = BLACK
+        return p
+
+    # Helper for exercise header box (Default all side borders, black text, no background color)
+    def add_ex_header(ex_no_str, title_str):
         tbl = doc.add_table(rows=2, cols=2)
         tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
-        set_table_borders(tbl, color="1E3A8A", sz="8")
-        col_w = [Inches(1.8), Inches(5.0)]
-        for r in tbl.rows:
+        set_table_borders(tbl, color="000000", sz="6", val="single")
+        col_w = [Inches(1.8), Inches(4.4)]
+        for row in tbl.rows:
             for idx, w in enumerate(col_w):
-                r.cells[idx].width = w
-                set_cell_margins(r.cells[idx], top=60, bottom=60, left=100, right=100)
+                row.cells[idx].width = w
+                set_cell_margins(row.cells[idx], top=80, bottom=80, left=120, right=120)
+                
+        # Cell 0,0
         c00 = tbl.cell(0, 0)
-        c00.text = f"EX NO: {ex_no}"
-        set_cell_shading(c00, "1E3A8A")
-        c00.paragraphs[0].runs[0].font.bold = True
-        c00.paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
+        c00.text = f"| EX NO: {ex_no_str}"
+        p00 = c00.paragraphs[0]
+        p00.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p00.runs[0].font.name = 'Times New Roman'
+        p00.runs[0].font.size = Pt(12)
+        p00.runs[0].font.bold = True
+        p00.runs[0].font.color.rgb = BLACK
         
+        # Cell 0,1
         c01 = tbl.cell(0, 1)
-        c01.text = title
-        set_cell_shading(c01, "EFF6FF")
-        c01.paragraphs[0].runs[0].font.bold = True
-        c01.paragraphs[0].runs[0].font.color.rgb = RGBColor(30, 58, 138)
+        c01.text = f"| {title_str} |"
+        p01 = c01.paragraphs[0]
+        p01.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p01.runs[0].font.name = 'Times New Roman'
+        p01.runs[0].font.size = Pt(12)
+        p01.runs[0].font.bold = True
+        p01.runs[0].font.color.rgb = BLACK
         
+        # Cell 1,0
         c10 = tbl.cell(1, 0)
-        c10.text = "DATE:"
-        set_cell_shading(c10, "F8FAFC")
-        c10.paragraphs[0].runs[0].font.bold = True
+        c10.text = "| DATE:"
+        p10 = c10.paragraphs[0]
+        p10.runs[0].font.name = 'Times New Roman'
+        p10.runs[0].font.size = Pt(12)
+        p10.runs[0].font.bold = True
+        p10.runs[0].font.color.rgb = BLACK
         
+        # Cell 1,1
         c11 = tbl.cell(1, 1)
-        c11.text = ""
-        set_cell_shading(c11, "FFFFFF")
+        c11.text = "| |"
+        p11 = c11.paragraphs[0]
+        p11.runs[0].font.name = 'Times New Roman'
+        p11.runs[0].font.size = Pt(12)
+        p11.runs[0].font.color.rgb = BLACK
         
-        p = doc.add_paragraph()
-        p.paragraph_format.space_after = Pt(6)
+        p_sp = doc.add_paragraph()
+        p_sp.paragraph_format.space_before = Pt(4)
+        p_sp.paragraph_format.space_after = Pt(4)
 
-    def add_section_h(text):
-        p = doc.add_paragraph()
-        r = p.add_run(text)
-        r.font.bold = True
-        r.font.size = Pt(11)
-        r.font.color.rgb = RGBColor(30, 58, 138)
-        p.paragraph_format.space_before = Pt(8)
-        p.paragraph_format.space_after = Pt(3)
+    # Helper for adding image with caption (all black, Times New Roman 12)
+    def add_image_figure(img_path, caption_text):
+        if Path(img_path).exists():
+            p_img = doc.add_paragraph()
+            p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_img.paragraph_format.first_line_indent = Inches(0)
+            p_img.paragraph_format.space_before = Pt(6)
+            p_img.paragraph_format.space_after = Pt(2)
+            run = p_img.add_run()
+            run.add_picture(str(img_path), width=Inches(5.8))
+            
+            p_cap = doc.add_paragraph()
+            p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_cap.paragraph_format.first_line_indent = Inches(0)
+            p_cap.paragraph_format.space_before = Pt(2)
+            p_cap.paragraph_format.space_after = Pt(8)
+            rc = p_cap.add_run(caption_text)
+            rc.font.name = 'Times New Roman'
+            rc.font.size = Pt(11)
+            rc.font.bold = True
+            rc.font.color.rgb = BLACK
 
-    def add_sub_h(text):
-        p = doc.add_paragraph()
-        r = p.add_run(text)
-        r.font.bold = True
-        r.font.size = Pt(10.5)
-        r.font.color.rgb = RGBColor(15, 23, 42)
-        p.paragraph_format.space_before = Pt(6)
-        p.paragraph_format.space_after = Pt(2)
+    # Helper for result block
+    def add_result_block(result_text):
+        add_heading("RESULT")
+        add_para(result_text, is_passage=True)
+        doc.add_page_break()
 
-    def add_result(text):
-        p = doc.add_paragraph()
-        r_lbl = p.add_run("RESULT:\n")
-        r_lbl.font.bold = True
-        r_lbl.font.color.rgb = RGBColor(16, 185, 129)
-        r_body = p.add_run(text)
-        p.paragraph_format.space_before = Pt(8)
-        p.paragraph_format.space_after = Pt(14)
-        doc.add_paragraph("―" * 65).alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    # ==========================================
-    # EX NO 1
-    # ==========================================
+    # =========================================================================
+    # EX NO 1: Problem Definition & Feasibility Study
+    # =========================================================================
     add_ex_header("01", "Problem Definition & Feasibility Study")
-    add_section_h("AIM:")
-    doc.add_paragraph("To identify the real-world healthcare financing problem and conduct a comprehensive feasibility study to determine the technical, economic, and operational feasibility of the Health Insurance Premium Prediction and Policy Recommendation System (HealthSecure).")
+    add_heading("AIM")
+    add_para("To identify the real-world healthcare financing problem and conduct a feasibility study to determine the technical, economic, and operational feasibility of the Health Insurance Premium Prediction System (HealthSecure).")
     
-    add_section_h("PROJECT TITLE:")
-    doc.add_paragraph("HEALTH INSURANCE PREMIUM PREDICTION SYSTEM (HEALTHSECURE)")
+    add_heading("Project title : HEALTH INSURANCE PREMIUM PREDICTION SYSTEM")
     
-    add_section_h("PROBLEM DEFINITION:")
-    doc.add_paragraph("In contemporary healthcare financing, determining fair, accurate, and actuarially sound health insurance premiums is a complex and high-stakes challenge. Conventional insurance underwriting predominantly relies on static demographic lookup tables, broad risk classifications, and subjective manual discretion. Prospective applicants frequently experience pricing opacity, extensive procedural delays, and substantial premium variability without understanding how their individual physiological traits (BMI, age), lifestyle habits (smoking status, alcohol consumption), family dependencies (children), or regional healthcare costs directly govern their premium quotations. Conversely, insurers face underwriting adverse selection and insolvency risks when premiums are underpriced relative to potential claim liabilities. HealthSecure is developed to resolve these critical issues by leveraging supervised machine learning to objectively predict personalized annual health insurance premiums and automatically recommend optimal multi-insurer policies.")
+    add_heading("Problem Definition:")
+    add_para("In the retail health insurance sector, prospective policyholders face significant challenges in estimating accurate and transparent annual premiums prior to submitting detailed formal applications. Traditional actuarial underwriting processes predominantly rely on static demographic lookup tables, broad risk classifications, and subjective manual discretion. As a consequence, applicants frequently experience procedural delays, pricing opacity, and inconsistent risk categorization. Furthermore, applicants lack clarity regarding how specific physiological attributes such as dynamic Body Mass Index (BMI), lifestyle habits including tobacco usage and alcohol consumption, familial dependencies, and regional healthcare tariffs interact to influence their required premium charges. HealthSecure is developed to resolve these issues by automating annual health insurance premium estimation and policy matching using supervised machine learning algorithms.")
     
-    add_section_h("PROBLEM STATEMENT:")
-    doc.add_paragraph("To develop an enterprise-grade supervised machine learning framework that automatically estimates personalized annual health insurance premiums based on applicant demographic, clinical, and lifestyle attributes (age, sex, BMI, children, smoker, region, alcohol habits, and salary), strictly preventing data leakage from historical claim records while delivering transparent feature attribution and multi-insurer policy matching.")
+    add_heading("Problem Statement")
+    add_para("To develop a machine learning-based system that automatically evaluates applicant demographic, clinical, and lifestyle risk factors to accurately estimate personalized annual health insurance premiums, strictly avoiding data leakage from historical claim amounts, thereby reducing manual underwriting latency and providing transparent, scientifically grounded premium quotations.")
     
-    add_section_h("FEASIBILITY STUDY:")
-    add_sub_h("1. Technical Feasibility")
-    doc.add_paragraph("Technical feasibility evaluates whether the necessary computing hardware, programming languages, algorithmic libraries, and software engineering frameworks are available to construct and deploy the machine learning system.")
-    doc.add_paragraph("• Hardware Requirements:\n  - Computer/Laptop: Minimum Intel Core i3/i5 or AMD Ryzen processor\n  - RAM: Minimum 4 GB RAM (8 GB recommended for training benchmarks)\n  - Storage: Minimum 10 GB free hard drive/SSD space\n  - Network: Standard Internet connection for downloading Python dependencies and open datasets")
-    doc.add_paragraph("• Software Requirements:\n  - Operating System: Windows 10/11 or Linux (Ubuntu 22.04+)\n  - Programming Language: Python 3.10+\n  - Integrated Development Environment (IDE): Visual Studio Code / PyCharm\n  - Framework: Flask 3.1 / Streamlit Web Framework\n  - Core Libraries: Pandas, NumPy, Scikit-learn, XGBoost, Joblib, Matplotlib, ReportLab\n  - Machine Learning Algorithm: Linear Regression (Production), Random Forest, Gradient Boosting, XGBoost\n  - Preprocessing Techniques: Standard Scaling, One-Hot Encoding, Derived BMI Calculation")
-    doc.add_paragraph("• Technical Feasibility Result:\n  The required computing infrastructure and software frameworks are fully available and production-tested. Python and its open-source data science ecosystem provide robust, high-performance implementations that execute seamlessly on commodity hardware. Therefore, the proposed system is technically feasible.")
+    add_heading("Feasibility study:")
+    add_heading("Technical Feasibility")
+    add_para("Technical feasibility determines whether the required hardware, software, tools, and technologies are available for developing the system.")
     
-    add_sub_h("2. Economic Feasibility")
-    doc.add_paragraph("Economic feasibility assesses whether the system can be developed, tested, and deployed within a practical and cost-effective budget.")
-    doc.add_paragraph("The entire platform is constructed utilizing open-source programming languages, freely distributed libraries, and open-access actuarial datasets. No proprietary licenses or specialized high-cost hardware accelerators are required.")
+    add_heading("Hardware Requirements", is_bold=False)
+    add_para("Computer/Laptop\nMinimum 4 GB RAM\nMinimum 10 GB free storage\nInternet connection for downloading required libraries and datasets", is_passage=False)
     
-    # Table for Economic Feasibility
-    tbl_econ = doc.add_table(rows=10, cols=2)
+    add_heading("Software Requirements", is_bold=False)
+    add_para("Operating System: Windows/Linux\nProgramming Language: Python\nIDE: Visual Studio Code / PyCharm\nFramework: Flask / Streamlit\nLibraries:\nPandas\nNumPy\nScikit-learn\nMatplotlib\nJoblib\nMachine Learning Algorithm: Linear Regression (Calibrated against Random Forest, Gradient Boosting, XGBoost)\nFeature Processing Technique: StandardScaler and OneHotEncoder", is_passage=False)
+    
+    add_heading("Technical Feasibility Result")
+    add_para("The required hardware and software are easily available. Python and the required data science and web libraries are open-source and can run efficiently on a normal commodity computer. Therefore, the proposed system is technically feasible.")
+    
+    add_heading("Economic Feasibility")
+    add_para("Economic feasibility determines whether the project can be developed within a reasonable cost.")
+    add_para("The proposed system mainly uses open-source software and freely available tools. No expensive hardware or licensed software is required.")
+    
+    # Economic Feasibility Table: All borders, Black text, No background color
+    tbl_econ = doc.add_table(rows=9, cols=2)
     tbl_econ.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_econ)
-    econ_data = [
-        ("Resource / Component", "Cost (INR / USD)"),
-        ("Python 3.10+ Runtime", "Free / Open-Source"),
-        ("Visual Studio Code IDE", "Free / Open-Source"),
-        ("Flask / Streamlit Web Framework", "Free / Open-Source"),
-        ("Scikit-learn, Pandas, NumPy, XGBoost", "Free / Open-Source"),
-        ("ReportLab PDF Engine & Matplotlib", "Free / Open-Source"),
-        ("MySQL 8.0 / SQLite Database", "Free / Community Edition"),
-        ("Health Insurance Dataset (8,000 Records)", "Free Open Actuarial Data"),
-        ("Development Hardware", "Existing College/Personal Laptop"),
-        ("Git & GitHub Cloud Hosting", "Free Public Tier")
+    set_table_borders(tbl_econ, color="000000", sz="4", val="single")
+    econ_rows = [
+        ("Resource", "Cost"),
+        ("Python", "Free"),
+        ("VS Code", "Free"),
+        ("Flask / Streamlit", "Free"),
+        ("Scikit-learn", "Free"),
+        ("Pandas & NumPy", "Free"),
+        ("Matplotlib & Joblib", "Free"),
+        ("Dataset", "Free/Available dataset (8,000 records)"),
+        ("Hardware", "Existing computer/laptop")
     ]
-    for r_idx, (c1, c2) in enumerate(econ_data):
+    for r_idx, (c1, c2) in enumerate(econ_rows):
         row = tbl_econ.rows[r_idx]
-        row.cells[0].text = c1
-        row.cells[1].text = c2
+        row.cells[0].width = Inches(3.2)
+        row.cells[1].width = Inches(3.0)
         set_cell_margins(row.cells[0])
         set_cell_margins(row.cells[1])
-        if r_idx == 0:
-            set_cell_shading(row.cells[0], "1E3A8A")
-            set_cell_shading(row.cells[1], "1E3A8A")
-            row.cells[0].paragraphs[0].runs[0].font.bold = True
-            row.cells[0].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-            row.cells[1].paragraphs[0].runs[0].font.bold = True
-            row.cells[1].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
+        row.cells[0].text = c1
+        row.cells[1].text = c2
+        for cell in row.cells:
+            p = cell.paragraphs[0]
+            p.runs[0].font.name = 'Times New Roman'
+            p.runs[0].font.size = Pt(12)
+            p.runs[0].font.color.rgb = BLACK
+            if r_idx == 0:
+                p.runs[0].font.bold = True
+                
+    add_heading("Economic Feasibility Result")
+    add_para("Since most of the software tools and libraries are freely available, the development cost is very low. Therefore, the proposed system is economically feasible.")
     
-    doc.add_paragraph("\n• Economic Feasibility Result:\n  Because all development tools, compilers, machine learning packages, and databases are completely free and open-source, the total development expenditure is virtually zero. Therefore, the proposed system is economically feasible.")
+    add_heading("Operational Feasibility")
+    add_para("Operational feasibility determines whether the proposed system can be easily used by its intended users.")
+    add_para("The system provides a simple user interface where the user can enter demographic, biometric, and lifestyle attributes. The system processes the underwriting parameters and displays the predicted annual premium along with Explainable AI feature attributions.")
     
-    add_sub_h("3. Operational Feasibility")
-    doc.add_paragraph("Operational feasibility verifies whether the target end-users (policy applicants, insurance agents, underwriting officers) can easily adopt, navigate, and utilize the application without complex training.")
-    doc.add_paragraph("• Working Process:\n  Applicant inputs demographic & biometric parameters (Age, Height, Weight, Dependents, Smoker, Region, Liquor, Salary) → Client-side validation → Real-time BMI calculation → ML Preprocessing & Feature Transformation → Model Inference → Instant Annual Premium (INR/year) with XAI feature contributions → Filtered multi-insurer policy recommendations → Downloadable PDF quote.")
-    doc.add_paragraph("• Operational Feasibility Result:\n  The user interface is designed with clear visual cues, interactive What-If scenario sliders, and trilingual support (English, Tamil, Hindi). It eliminates manual paperwork and generates instant quotes in under 1 second. Therefore, the proposed system is operationally feasible.")
+    add_heading("Working Process")
+    add_para("User enters biometric and lifestyle data → Input validation → BMI computation → Feature encoding and scaling → Machine Learning model → Premium prediction → Result displayed", is_passage=False)
+    add_para("The system does not require advanced technical knowledge from the user. It can be used by prospective policyholders, insurance sales agents, underwriting officers, and actuarial analysts who need to determine transparent premium estimations.")
     
-    add_result("Thus, the real-world healthcare financing problem was clearly identified and the feasibility study was conducted successfully. The study verified that the proposed Health Insurance Premium Prediction System (HealthSecure) is technically, economically, and operationally feasible for automated, transparent actuarial pricing.")
+    add_heading("Operational Feasibility Result")
+    add_para("The system is simple, user-friendly, and easy to operate. It reduces the time required for manual underwriting analysis and provides quick, scientifically grounded results in under one second. Therefore, the proposed system is operationally feasible.")
+    
+    add_result_block("Thus, the problem was identified and the feasibility study was completed successfully. The study confirmed that the proposed system is technically, economically, and operationally feasible for automatically evaluating applicant risk factors and estimating fair, transparent health insurance premiums.")
 
-    # ==========================================
-    # EX NO 2
-    # ==========================================
+    # =========================================================================
+    # EX NO 2: Software Requirement Specification (SRS)
+    # =========================================================================
     add_ex_header("02", "Software Requirement Specification (SRS)")
-    add_section_h("AIM:")
-    doc.add_paragraph("To prepare a comprehensive Software Requirement Specification (SRS) document for the Health Insurance Premium Prediction System using Python, Machine Learning, and Web Technologies.")
+    add_heading("AIM:")
+    add_para("To develop a Health Insurance Premium Prediction System using Python and Machine Learning to estimate annual insurance premiums and recommend matching policies based on applicant risk attributes.")
     
-    add_section_h("ALGORITHM:")
+    add_heading("ALGORITHM:")
     srs_steps = [
-        "Step 1: Identify the clinical, demographic, and financial requirements for insurance underwriting.",
-        "Step 2: Collect and analyze functional and non-functional requirements from stakeholders (applicants, underwriters).",
-        "Step 3: Define hardware, software, and runtime dependencies for the ML pipeline and web deployment.",
-        "Step 4: Specify user input parameters: age, gender, height, weight, children, smoking, alcohol, region, and salary.",
-        "Step 5: Define system outputs: annual premium amount (INR), BMI classification, XAI feature impacts, and policy recommendations.",
-        "Step 6: Formulate non-functional benchmarks covering latency (<1 second), reliability (deterministic output), usability, and data security.",
-        "Step 7: Document all functional, non-functional, and interface requirements adhering to IEEE 830 standards.",
-        "Step 8: Review and finalize the SRS specification for architecture and implementation."
+        "Step 1: Identify the requirements of the Health Insurance Premium Prediction System.",
+        "Step 2: Collect the functional and non-functional requirements of the system.",
+        "Step 3: Identify the software and hardware requirements needed to develop the system.",
+        "Step 4: Define the system features, such as biometric input, dynamic BMI calculation, feature scaling, and premium prediction.",
+        "Step 5: Specify the input and output requirements of the system.",
+        "Step 6: Define the system performance, reliability, usability, and security requirements.",
+        "Step 7: Document all the gathered requirements in the SRS document adhering to IEEE standards.",
+        "Step 8: Review and finalize the SRS document for system development."
     ]
     for s in srs_steps:
-        doc.add_paragraph(s)
+        add_para(s, is_passage=False)
         
-    add_section_h("PREPARE SRS DOCUMENT WITH FUNCTIONAL & NON-FUNCTIONAL REQUIREMENTS:")
-    add_sub_h("1. Functional Requirements")
-    fr_list = [
-        "FR-1: The system shall accept applicant demographic, biometric, and financial inputs including Age (18-100), Biological Sex, Height & Weight (or dynamic BMI), Number of Children (0-5), Smoking Status, Region/State, Alcohol Habits, and Annual Salary.",
-        "FR-2: The system shall automatically compute dynamic Body Mass Index (BMI = Weight_kg / Height_m²) and categorize applicants into standard WHO weight bands (Underweight, Normal, Overweight, Obese).",
-        "FR-3: The system shall preprocess categorical variables via One-Hot Encoding and scale continuous numerical features using pre-trained StandardScaler transforms.",
-        "FR-4: The system shall strictly prevent data leakage by isolating historical claim amounts from the inference feature matrix.",
-        "FR-5: The system shall execute the trained Linear Regression pipeline to predict estimated Annual Premium in Indian Rupees (INR/year).",
-        "FR-6: The system shall provide Explainable AI (XAI) feature attribution quantifying how each attribute positively or negatively alters the baseline quote.",
-        "FR-7: The system shall match applicants against an active repository of 118 multi-insurer health policies based on budget and coverage.",
-        "FR-8: The system shall allow users to adjust inputs dynamically via What-If scenario sliders and instantly observe updated premium quotes.",
-        "FR-9: The system shall generate and export publication-grade PDF underwriting quotation summaries."
+    add_heading("Prepare SRS document with functional & non-functional requirements")
+    add_heading("Functional Requirements")
+    frs = [
+        "• The system should accept applicant risk parameters from users (Age, Gender, Height, Weight, Children, Smoking Status, Region, Alcohol Habits, Annual Salary).",
+        "• The system should dynamically calculate Body Mass Index (BMI = Weight_kg / Height_m²) and categorize applicants into standard WHO weight categories.",
+        "• The system should preprocess categorical features using OneHotEncoder and continuous features using StandardScaler.",
+        "• The system should prevent data leakage by isolating historical claim amounts from the feature inputs.",
+        "• The system should predict the estimated annual premium in Indian Rupees (INR/year) using the trained machine learning model.",
+        "• The system should display Explainable AI (XAI) feature impact breakdowns indicating additions and deductions.",
+        "• The system should recommend matching insurance policies from the active repository of 118 policies.",
+        "• The system should provide an interactive What-If scenario simulation slider tool.",
+        "• The system should generate and allow download of a formal PDF underwriting quote."
     ]
-    for fr in fr_list:
-        doc.add_paragraph(fr)
+    for f in frs:
+        add_para(f, is_passage=False)
         
-    add_sub_h("2. Non-Functional Requirements")
-    nfr_list = [
-        "• Performance: Prediction inference latency shall not exceed 1.0 second per single-applicant query.",
-        "• Usability: The web interface shall be responsive across mobile and desktop devices and support trilingual localization (English, Tamil, Hindi).",
-        "• Reliability: The system shall produce identical, deterministic premium outputs for identical input parameters.",
-        "• Maintainability: Modular decoupled architecture separating preprocessing, regression inference, policy ranking, and presentation.",
-        "• Security: Strict input validation to prevent SQL injection and cross-site scripting (XSS); secure environment variables for secret keys.",
-        "• Scalability: Capable of handling concurrent underwriting queries utilizing lightweight scikit-learn serialized pipelines."
+    add_heading("Non-Functional Requirements")
+    nfrs = [
+        "• Performance: The system should provide premium predictions in less than 1.0 second.",
+        "• Usability: The interface should be simple, responsive across devices, and offer trilingual localization (English, Tamil, Hindi).",
+        "• Reliability: The system should provide consistent, deterministic results for identical input parameters.",
+        "• Maintainability: The codebase should be modular, separating preprocessing, model inference, and web presentation.",
+        "• Security: Form inputs must be validated to prevent SQL injection and cross-site scripting attacks.",
+        "• Compatibility: The system should run on Windows or Linux environments with standard Python 3.10+ runtimes."
     ]
-    for nfr in nfr_list:
-        doc.add_paragraph(nfr)
+    for n in nfrs:
+        add_para(n, is_passage=False)
         
-    add_sub_h("3. Hardware Requirements")
-    doc.add_paragraph("• Processor: Dual-Core 2.0 GHz or higher (Intel Core i3/i5/AMD Ryzen)\n• RAM: Minimum 4 GB RAM (8 GB recommended)\n• Storage: Minimum 10 GB available HDD/SSD space\n• Display: Standard 1280x720 or 1920x1080 display")
+    add_heading("Hardware Requirements")
+    add_para("Computer or laptop\nMinimum 4 GB RAM\nSufficient storage space (Minimum 10 GB free)\nInternet connection for installing software and downloading datasets", is_passage=False)
     
-    add_sub_h("4. Software Requirements")
-    doc.add_paragraph("• Operating System: Windows 10/11, macOS, or Linux (Ubuntu 20.04+)\n• Programming Language: Python 3.10+\n• Development Environment: Visual Studio Code\n• Web Framework: Flask 3.1 / Streamlit\n• ML Libraries: Scikit-learn 1.4+, Pandas 2.1+, NumPy 1.26+, XGBoost 2.0+\n• Serialization: Joblib 1.3+\n• Reporting: ReportLab 4.0+\n• Database: SQLite 3 / MySQL 8.0")
+    add_heading("Software Requirements")
+    add_para("Operating System: Windows or Linux\nProgramming Language: Python 3.10+\nIDE: Visual Studio Code\nFramework: Flask / Streamlit\nLibraries: Pandas, NumPy, Scikit-learn, XGBoost, Joblib, Matplotlib, ReportLab\nFeature Processing Technique: ColumnTransformer (StandardScaler, OneHotEncoder)\nMachine Learning Algorithm: Linear Regression (Production), Random Forest, XGBoost\nDatabase: SQLite / MySQL", is_passage=False)
     
-    add_result("Thus, the Software Requirement Specification (SRS) document was prepared successfully. All functional, non-functional, hardware, and software requirements were defined to establish a solid foundation for the development of HealthSecure.")
+    add_result_block("Thus, the functional, non-functional, hardware, and software requirements of the Health Insurance Premium Prediction System were identified successfully. The system is designed to provide fast, reliable, transparent, and user-friendly premium estimations.")
 
-    # ==========================================
-    # EX NO 3
-    # ==========================================
+    # =========================================================================
+    # EX NO 3: UML Diagrams – Use Case Diagram
+    # =========================================================================
     add_ex_header("03", "UML Diagrams – Use Case Diagram")
-    add_section_h("AIM:")
-    doc.add_paragraph("To design a UML Use Case Diagram representing the primary actors, functional use cases, and system interactions within the Health Insurance Premium Prediction System.")
+    add_heading("AIM:")
+    add_para("To design a UML Use Case Diagram that represents the interaction between the user, administrator, machine learning engine, and the Health Insurance Premium Prediction System.")
     
-    add_section_h("ALGORITHM:")
+    add_heading("ALGORITHM:")
     uc_steps = [
-        "Step 1: Identify system actors: Policy Applicant (User), Insurance Administrator (Actuary), and Machine Learning Inference Engine.",
-        "Step 2: Identify core functional use cases: Enter Biometrics, Calculate BMI, Predict Premium, View XAI Breakdown, Compare Policies, Simulate What-If Scenarios, Download PDF Quote, and Retrain Models.",
-        "Step 3: Establish system boundary defining client-side actions versus backend ML operations.",
-        "Step 4: Connect the Policy Applicant actor with profile entry, prediction requests, and comparison views.",
-        "Step 5: Connect the Insurance Administrator actor with model evaluation monitoring and policy catalogue management.",
-        "Step 6: Define <<include>> relationships: Predict Premium includes Validate Inputs and Calculate BMI.",
-        "Step 7: Define <<extend>> relationships: Download PDF Quote extends View Policy Comparison.",
-        "Step 8: Construct and verify the UML Use Case Diagram using standard UML notation."
+        "Step 1: Identify the actors involved in the system, such as Policy Applicant (User), Insurance Administrator (Actuary), and ML Inference Subsystem.",
+        "Step 2: Identify the main use cases of the system.",
+        "Step 3: Define user activities, such as entering demographic and biometric parameters.",
+        "Step 4: Connect the User actor with the profile input, prediction request, and comparison use cases.",
+        "Step 5: Connect the system inference engine with the feature scaling and premium prediction use cases.",
+        "Step 6: Define include relationships (Predict Premium includes Validate Inputs and Calculate BMI).",
+        "Step 7: Represent relationships between actors and use cases using standard UML symbols.",
+        "Step 8: Draw and verify the Use Case Diagram."
     ]
     for s in uc_steps:
-        doc.add_paragraph(s)
+        add_para(s, is_passage=False)
         
-    add_section_h("MODEL SYSTEM ACTORS AND INTERACTIONS:")
-    doc.add_paragraph("The Use Case Diagram depicts the functional interactions between human users, administrative managers, and the automated machine learning engine.")
+    add_heading("Model system actors and interactions:")
+    add_para("A Use Case Diagram represents the interaction between external actors and the system boundaries.")
     
-    img_uc = DIAGRAMS_DIR / "03_use_case_diagram.png"
-    if img_uc.exists():
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run("Figure 3.1: UML Use Case Diagram for HealthSecure\n").font.bold = True
-        doc.add_picture(str(img_uc), width=Inches(6.2))
-        doc.add_paragraph().paragraph_format.space_after = Pt(6)
+    add_image_figure(DIAGRAMS_DIR / "03_use_case_diagram.png", "Figure 3.1: UML Use Case Diagram for Health Insurance Premium Prediction System")
+    
+    add_heading("Actors:")
+    add_para("• User (Policy Applicant): Enters demographic and biometric details, views predicted premium, simulates scenarios, and downloads PDF quotes.\n• System Administrator (Actuary): Manages insurer policy datasets and monitors model evaluation metrics (MAE, RMSE, R²).\n• ML Inference Subsystem: Preprocesses raw inputs, executes Linear Regression inference, and computes feature attributions.", is_passage=False)
+    
+    add_heading("Use Cases:")
+    add_para("• Enter Biometric and Demographic Profile\n• Validate Form Inputs\n• Calculate Dynamic BMI and WHO Category\n• Preprocess and Scale Features\n• Predict Annual Premium using Linear Regression Pipeline\n• View Explainable AI (XAI) Feature Contributions\n• Compare Multi-Insurer Policies (118 Plans)\n• Simulate What-If Scenarios\n• Generate and Download PDF Quotation\n• Monitor Model Performance and Retrain Pipeline", is_passage=False)
+    
+    add_result_block("Thus, the Use Case Diagram was designed successfully to represent the user activities, administrative functions, and core machine learning capabilities of the Health Insurance Premium Prediction System.")
 
-    add_sub_h("Actors:")
-    doc.add_paragraph("1. Policy Applicant / User: Enters demographic, biometric, and financial details; requests premium quotes; tests What-If scenarios; views XAI explanations; downloads PDF quotes.\n2. Insurance Administrator / Actuary: Manages insurer policy datasets, reviews model evaluation metrics (MAE, RMSE, R²), updates actuarial baseline parameters.\n3. ML Inference Engine (System Actor): Preprocesses raw inputs, executes Linear Regression pipeline, computes feature attributions, and returns calibrated premium results.")
-    
-    add_sub_h("Core Use Cases:")
-    doc.add_paragraph("• Enter Demographic & Biometric Data\n• Calculate Dynamic BMI & WHO Category\n• Predict Annual Premium Amount (INR)\n• View Explainable AI (XAI) Feature Contribution\n• Compare Multi-Insurer Policies (118 Plans)\n• Simulate What-If Scenarios\n• Export & Download PDF Underwriting Quote\n• Monitor Model Performance & Evaluation Metrics")
-    
-    add_result("Thus, the UML Use Case Diagram was designed successfully, modeling all functional requirements, actor boundaries, and interactions for the Health Insurance Premium Prediction System.")
-
-    # ==========================================
-    # EX NO 4
-    # ==========================================
+    # =========================================================================
+    # EX NO 4: UML Diagrams – Class Diagram
+    # =========================================================================
     add_ex_header("04", "UML Diagrams – Class Diagram")
-    add_section_h("AIM:")
-    doc.add_paragraph("To design a UML Class Diagram modeling the static structure, classes, attributes, methods, and relationships of the Health Insurance Premium Prediction System.")
+    add_heading("AIM:")
+    add_para("To design a UML Class Diagram representing the classes, attributes, methods, and relationships of the Health Insurance Premium Prediction System.")
     
-    add_section_h("ALGORITHM:")
+    add_heading("ALGORITHM:")
     cd_steps = [
-        "Step 1: Identify domain entities: User, ApplicantProfile, DataPreprocessor, PremiumPredictor, PolicyPlan, and QuoteReport.",
-        "Step 2: Define attributes for User (user_id, username, email, password_hash) and ApplicantProfile (age, sex, height, weight, bmi, children, smoker, region, liquor, salary).",
-        "Step 3: Define methods for DataPreprocessor (clean_data(), encode_categorical(), scale_numerical()).",
-        "Step 4: Define methods for PremiumPredictor (load_model(), predict_premium(), explain_prediction()).",
-        "Step 5: Define methods for PolicyPlan (filter_by_budget(), rank_policies()) and QuoteReport (generate_pdf(), export_quote()).",
-        "Step 6: Establish relationships: Composition between User and ApplicantProfile; Dependency between ApplicantProfile and DataPreprocessor; Association between PremiumPredictor and PolicyPlan.",
-        "Step 7: Represent multiplicities (1 to 1, 1 to many) and access specifiers (+ public, - private).",
-        "Step 8: Construct and verify the UML Class Diagram."
+        "Step 1: Identify the main classes required for the system, such as User, ApplicantProfile, DataPreprocessor, PremiumPredictor, PolicyPlan, and QuoteReport.",
+        "Step 2: Define attributes for each class.",
+        "Step 3: Define methods and operations for each class.",
+        "Step 4: Create the User and ApplicantProfile classes to manage user authentication and underwriting attributes.",
+        "Step 5: Create the DataPreprocessor class to calculate BMI and apply OneHotEncoder and StandardScaler transforms.",
+        "Step 6: Create the PremiumPredictor class to execute regression inference and calculate XAI feature attributions.",
+        "Step 7: Create the PolicyPlan and QuoteReport classes to manage policy filtering and PDF rendering.",
+        "Step 8: Establish associations, compositions, and dependencies between classes and draw the Class Diagram."
     ]
     for s in cd_steps:
-        doc.add_paragraph(s)
+        add_para(s, is_passage=False)
         
-    add_section_h("DESIGN SYSTEM STRUCTURE WITH CLASSES AND RELATIONSHIPS:")
-    doc.add_paragraph("The Class Diagram illustrates the object-oriented structure of the software, showing encapsulated attributes and functional operations.")
+    add_heading("Design system structure with classes and relationships")
+    add_para("A Class Diagram represents the object-oriented structure of the Health Insurance Premium Prediction System by detailing its classes, attributes, operations, and relationships.")
     
-    img_cd = DIAGRAMS_DIR / "04_class_diagram.png"
-    if img_cd.exists():
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run("Figure 4.1: UML Class Diagram for HealthSecure\n").font.bold = True
-        doc.add_picture(str(img_cd), width=Inches(6.2))
-        doc.add_paragraph().paragraph_format.space_after = Pt(6)
+    add_image_figure(DIAGRAMS_DIR / "04_class_diagram.png", "Figure 4.1: UML Class Diagram for Health Insurance Premium Prediction System")
+    
+    add_heading("Classes and Their Functions:")
+    add_para("• User: Manages user account credentials, authentication, and saved quotation history.\n• ApplicantProfile: Stores biometric and lifestyle attributes (age, sex, height, weight, bmi, children, smoker, region, liquor, salary).\n• DataPreprocessor: Cleans raw values, computes dynamic BMI, and transforms features using ColumnTransformer.\n• PremiumPredictor: Loads the serialized scikit-learn pipeline, computes annual premium quotes, and derives feature importances.\n• PolicyPlan: Represents insurer policy catalog entities, supporting filtering by budget and coverage.\n• QuoteReport: Compiles underwriting details into downloadable PDF documents using ReportLab.", is_passage=False)
+    
+    add_heading("Relationships:")
+    add_para("• User has a 1-to-many relationship with ApplicantProfile.\n• ApplicantProfile supplies data to DataPreprocessor.\n• DataPreprocessor produces numerical feature vectors for PremiumPredictor.\n• PremiumPredictor passes predicted premium to PolicyPlan for recommendation matching.\n• PolicyPlan and PremiumPredictor collaborate with QuoteReport to render the final underwriting document.", is_passage=False)
+    
+    add_result_block("Thus, the Class Diagram was designed successfully to represent the system structure, encapsulated attributes, operations, and relationships between different domain classes.")
 
-    add_sub_h("Classes and Their Functions:")
-    doc.add_paragraph("1. User: Handles user authentication, profile associations, and quote history.\n2. ApplicantProfile: Encapsulates biometric, lifestyle, and financial attributes, including calculate_bmi().\n3. DataPreprocessor: Implements ColumnTransformer pipeline to one-hot encode categorical features and scale continuous variables.\n4. PremiumPredictor: Loads serialized scikit-learn pipeline, executes regression inference, and calculates XAI feature impact.\n5. PolicyPlan: Manages multi-insurer catalogue (118 policies), filtering plans matching applicant budget and coverage tier.\n6. QuoteReport: Formats and generates official PDF summary reports via ReportLab.")
-    
-    add_sub_h("Relationships:")
-    doc.add_paragraph("• User has a 1-to-many relationship with ApplicantProfile (a user can run multiple quotes).\n• ApplicantProfile supplies formatted inputs to DataPreprocessor.\n• DataPreprocessor outputs numerical feature vector to PremiumPredictor.\n• PremiumPredictor outputs predicted premium to PolicyPlan for policy matching.\n• PolicyPlan and PremiumPredictor collaborate with QuoteReport to render the final downloadable quote.")
-    
-    add_result("Thus, the UML Class Diagram was designed successfully, illustrating all classes, attributes, methods, and relationships of the Health Insurance Premium Prediction System.")
-
-    # ==========================================
-    # EX NO 5
-    # ==========================================
+    # =========================================================================
+    # EX NO 5: UML Diagrams – Sequence Diagram
+    # =========================================================================
     add_ex_header("05", "UML Diagrams – Sequence Diagram")
-    add_section_h("AIM:")
-    doc.add_paragraph("To design a UML Sequence Diagram modeling the chronological sequence of interactions and messages between system objects during a premium prediction query.")
+    add_heading("AIM:")
+    add_para("To design a UML Sequence Diagram representing the step-by-step chronological interaction between the user and system components during premium prediction and policy matching.")
     
-    add_section_h("ALGORITHM:")
+    add_heading("ALGORITHM:")
     sq_steps = [
-        "Step 1: Identify participating lifelines: Applicant (User), Web Interface (Browser), Controller (Flask/Streamlit), Preprocessor, ML Model Pipeline, and Database.",
-        "Step 2: User fills out biometric details and submits the underwriting form.",
-        "Step 3: Web Interface validates form inputs and dispatches HTTP POST request to Application Controller.",
-        "Step 4: Controller invokes Preprocessor to compute BMI and apply OneHotEncoder / StandardScaler transformations.",
-        "Step 5: Preprocessor returns normalized feature array to Controller.",
-        "Step 6: Controller transmits feature vector to ML Model Pipeline; model executes predict() and calculates feature attributions.",
-        "Step 7: Controller queries Database for eligible insurance policies matching the predicted premium threshold.",
-        "Step 8: Controller packages premium, XAI impacts, and policy list, returning structured response to Browser for user rendering."
+        "Step 1: Identify the objects involved in the system, such as User, Web Interface, Application Controller, Preprocessing Module, ML Regression Pipeline, and Database.",
+        "Step 2: The user opens the HealthSecure underwriting application.",
+        "Step 3: The system displays the biometric and lifestyle input form.",
+        "Step 4: The user fills out parameters (Age, Height, Weight, Children, Smoker, Region, Liquor, Salary) and clicks Calculate.",
+        "Step 5: The web interface dispatches the payload to the Application Controller.",
+        "Step 6: The controller instructs the preprocessing module to calculate BMI and scale the numerical and categorical features.",
+        "Step 7: The trained Linear Regression pipeline computes the estimated annual premium and feature impact values.",
+        "Step 8: The controller retrieves matching insurer plans from the database and displays the final quote and recommendations."
     ]
     for s in sq_steps:
-        doc.add_paragraph(s)
+        add_para(s, is_passage=False)
         
-    add_section_h("REPRESENT DYNAMIC BEHAVIOR OF THE SYSTEM:")
-    doc.add_paragraph("The Sequence Diagram captures the dynamic interaction flow over time, highlighting synchronous method calls and return messages.")
+    add_heading("Represent dynamic behavior of the system:")
+    add_para("A Sequence Diagram captures the dynamic behavior of the Health Insurance Premium Prediction System, illustrating message lifelines and execution timing across components.")
     
-    img_sq = DIAGRAMS_DIR / "05_sequence_diagram.png"
-    if img_sq.exists():
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run("Figure 5.1: UML Sequence Diagram for HealthSecure\n").font.bold = True
-        doc.add_picture(str(img_sq), width=Inches(6.2))
-        doc.add_paragraph().paragraph_format.space_after = Pt(6)
-
-    add_sub_h("Sequence Execution Flow:")
-    doc.add_paragraph("1. User enters Age, Sex, Height, Weight, Dependents, Smoker, Region, Liquor, and Salary on the Web UI.\n2. User clicks 'Calculate Insurance Premium'.\n3. Web UI validates fields and sends payload to Application Controller.\n4. Controller calls DataPreprocessor.transform(inputs).\n5. DataPreprocessor derives BMI and standardizes feature vector.\n6. Controller invokes PremiumModel.predict(features).\n7. PremiumModel computes ₹ Annual Premium and derives XAI feature attributions.\n8. PolicyRecommender queries database and ranks matching plans.\n9. Web UI displays the estimated premium, interactive What-If sliders, and policy cards to the applicant.")
+    add_image_figure(DIAGRAMS_DIR / "05_sequence_diagram.png", "Figure 5.1: UML Sequence Diagram for Health Insurance Premium Prediction System")
     
-    add_result("Thus, the UML Sequence Diagram was designed successfully, detailing the dynamic message exchange and execution timeline of the Health Insurance Premium Prediction System.")
+    add_heading("Sequence Flow")
+    add_para("1. User enters biometric and lifestyle details into the web form.\n2. Web application validates input constraints and dispatches an HTTP request.\n3. Application controller forwards input to the preprocessing module.\n4. Preprocessing module calculates BMI and normalizes features using OneHotEncoder and StandardScaler.\n5. Linear Regression pipeline predicts estimated annual premium in Indian Rupees.\n6. System derives Explainable AI (XAI) feature impact values.\n7. Controller queries the database to filter policies matching the applicant's risk and budget profile.\n8. Web interface renders the predicted annual premium, interactive What-If sliders, and policy recommendations.", is_passage=False)
+    
+    add_result_block("Thus, the Sequence Diagram was designed successfully to represent the dynamic behavior, chronological interactions, and message dispatch flow of the Health Insurance Premium Prediction System.")
 
-    # ==========================================
-    # EX NO 6
-    # ==========================================
+    # =========================================================================
+    # EX NO 6: Software Design – Architectural Design
+    # =========================================================================
     add_ex_header("06", "Software Design – Architectural Design")
-    add_section_h("AIM:")
-    doc.add_paragraph("To design a robust, maintainable multi-layered and client-server architecture for the Health Insurance Premium Prediction System.")
+    add_heading("AIM:")
+    add_para("To design a suitable layered and client-server architecture for the Health Insurance Premium Prediction System.")
     
-    add_section_h("ALGORITHM:")
-    arch_steps = [
-        "Step 1: Identify modular system responsibilities and architectural layers.",
-        "Step 2: Design the Presentation Layer (Frontend) providing responsive UI forms, interactive sliders, and chart visualizations.",
-        "Step 3: Design the Application Controller Layer (Backend) managing routing, session management, and business logic.",
-        "Step 4: Design the Data Preprocessing & Validation Layer implementing feature encoders and BMI calculators.",
-        "Step 5: Design the Machine Learning Inference Layer hosting serialized scikit-learn regression models.",
-        "Step 6: Design the Policy Matching & Reporting Layer ranking multi-insurer plans and compiling PDF quotes.",
-        "Step 7: Design the Data Persistence Layer storing applicant records, audit logs, and insurance policy catalogues.",
-        "Step 8: Connect all layers through clean API interfaces and verify loose coupling and high cohesion."
+    add_heading("ALGORITHM:")
+    ar_steps = [
+        "Step 1: Identify the main structural components and operational responsibilities of the system.",
+        "Step 2: Design the Presentation Layer to provide a responsive user interface using HTML5, Bootstrap, and Streamlit.",
+        "Step 3: Design the Application Layer to receive user inputs, manage routing, and enforce business rules.",
+        "Step 4: Design the Preprocessing Layer to compute BMI and apply OneHotEncoder and StandardScaler transformations.",
+        "Step 5: Design the Machine Learning Layer hosting the serialized Linear Regression pipeline to predict annual premiums.",
+        "Step 6: Design the Policy Recommendation Layer to query and rank policies from the 118-plan insurance repository.",
+        "Step 7: Design the Data Layer to store user profiles, quotation records, and policy catalogs in MySQL / SQLite.",
+        "Step 8: Connect all layers and verify end-to-end communication and modular decoupling."
     ]
-    for s in arch_steps:
-        doc.add_paragraph(s)
+    for s in ar_steps:
+        add_para(s, is_passage=False)
         
-    add_section_h("DEVELOP ARCHITECTURE (LAYERED / CLIENT-SERVER):")
-    doc.add_paragraph("HealthSecure adopts a 4-Tier Layered Architecture with Model-View-Controller (MVC) principles, ensuring separation of concerns, scalability, and ease of testing.")
+    add_heading("Develop architecture (Layered / Client-Server):")
+    add_para("The Health Insurance Premium Prediction System follows a 4-Tier Layered Architecture with a Client-Server design. This architecture ensures high cohesion, loose coupling, and straightforward maintainability.")
     
-    img_arch = DIAGRAMS_DIR / "06_architectural_design.png"
-    if img_arch.exists():
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run("Figure 6.1: Architectural Design Diagram for HealthSecure\n").font.bold = True
-        doc.add_picture(str(img_arch), width=Inches(6.2))
-        doc.add_paragraph().paragraph_format.space_after = Pt(6)
+    add_image_figure(DIAGRAMS_DIR / "06_architectural_design.png", "Figure 6.1: Architectural Design Diagram for Health Insurance Premium Prediction System")
+    
+    add_heading("Layers and Their Functions")
+    add_para("• Presentation Layer: Provides the web interface for biometric inputs, interactive What-If scenario sliders, and trilingual display (English, Tamil, Hindi).\n• Application Layer: Handles HTTP requests, enforces input boundary validation, manages user sessions, and coordinates processing workflow.\n• Preprocessing & ML Layer: Computes dynamic BMI, applies ColumnTransformer feature transformations, and executes Linear Regression inference.\n• Data Layer: Persists user profiles, historical quotation logs, and the 118 multi-insurer health policy catalog in relational storage.", is_passage=False)
+    
+    add_heading("Working Process")
+    add_para("User inputs biometrics on Presentation Layer → Application Layer validates data → Preprocessing Layer encodes and scales features → Machine Learning Layer predicts annual premium → Data Layer matches insurance policies → Complete quotation and recommendation view displayed.", is_passage=False)
+    
+    add_result_block("Thus, the architectural design was completed successfully by dividing the system into distinct operational layers for superior organization, robust performance, and simplified maintenance.")
 
-    add_sub_h("Layers and Their Functions:")
-    doc.add_paragraph("1. Presentation Layer (Frontend): Rendered in HTML5/Bootstrap/Streamlit. Collects biometric inputs, displays premium cards, interactive What-If scenario adjustments, and localized content (English, Tamil, Hindi).\n2. Application Controller Layer (Backend): Powered by Flask. Validates incoming requests, authenticates users, and orchestrates calls between preprocessors, models, and databases.\n3. Preprocessing & ML Inference Layer: Houses the ColumnTransformer (OneHotEncoder + StandardScaler) and trained Linear Regression estimator. Computes premium predictions and feature attributions in real time.\n4. Data Persistence Layer: Stores 8,000 underwriting benchmark records, 118 insurer policy details, user accounts, and saved quotes in MySQL / SQLite database.")
-    
-    add_sub_h("Working Process:")
-    doc.add_paragraph("User inputs biometrics on Presentation Layer → Controller validates inputs → Preprocessing layer standardizes features → ML Engine outputs calibrated premium → Policy Recommender queries Data Layer → Results returned and rendered seamlessly.")
-    
-    add_result("Thus, the software architectural design was completed successfully, establishing a robust, decoupled, and maintainable layered architecture for the Health Insurance Premium Prediction System.")
-
-    # ==========================================
-    # EX NO 7
-    # ==========================================
+    # =========================================================================
+    # EX NO 7: UI/UX Design
+    # =========================================================================
     add_ex_header("07", "UI/UX Design")
-    add_section_h("AIM:")
-    doc.add_paragraph("To design an intuitive, accessible, and responsive user interface for the Health Insurance Premium Prediction System adhering to UI/UX design standards.")
+    add_heading("AIM:")
+    add_para("To design a simple, intuitive, and user-friendly interface for the Health Insurance Premium Prediction System using UI/UX design principles.")
     
-    add_section_h("ALGORITHM:")
+    add_heading("ALGORITHM:")
     ui_steps = [
-        "Step 1: Identify target user personas: prospective policyholders, insurance brokers, and underwriters.",
-        "Step 2: Design wireframe layouts for the landing page, biometric input dashboard, and results screen.",
-        "Step 3: Create input controls (sliders, radio buttons, dropdowns) with input validation cues.",
-        "Step 4: Design high-impact visual metric cards to highlight Estimated Annual Premium in prominent typography.",
-        "Step 5: Incorporate Explainable AI (XAI) bar charts illustrating feature impact on premium quotes.",
-        "Step 6: Build interactive What-If scenario sliders enabling real-time quote updates without page reload.",
-        "Step 7: Provide multi-insurer policy recommendation cards with coverage details and 'Buy Now' / 'Download Quote' actions.",
-        "Step 8: Implement responsive design and trilingual localization (English, Tamil, Hindi) for enhanced accessibility."
+        "Step 1: Identify the user interface requirements and target user personas (policyholders, insurance agents).",
+        "Step 2: Design the home dashboard with prominent title branding and trilingual language toggle options.",
+        "Step 3: Create input panels organized into Demographic, Clinical, and Lifestyle sections.",
+        "Step 4: Add real-time input validation to prevent invalid entries (e.g., negative age or height).",
+        "Step 5: Design high-impact visual result cards displaying estimated annual premium, monthly breakdown, and BMI status.",
+        "Step 6: Display Explainable AI (XAI) feature impact bars illustrating individual premium additions and deductions.",
+        "Step 7: Provide interactive What-If scenario sliders to simulate lifestyle changes in real time.",
+        "Step 8: Test the interface across multiple screen viewports to ensure responsive, accessible operation."
     ]
     for s in ui_steps:
-        doc.add_paragraph(s)
+        add_para(s, is_passage=False)
         
-    add_section_h("DESIGN USER INTERFACE (WIREFRAMES & PROTOTYPES):")
-    doc.add_paragraph("UI/UX Design focuses on simplicity, clear visual hierarchy, immediate feedback, and accessibility across devices.")
+    add_heading("Design user interface (wireframes/prototypes using tools like Figma)")
+    add_para("UI/UX Design focuses on simplicity, immediate visual feedback, and effortless navigation for entering underwriting parameters and interpreting actuarial predictions.")
     
-    img_ui = DIAGRAMS_DIR / "07_ui_ux_wireframes.png"
-    if img_ui.exists():
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run("Figure 7.1: UI/UX Wireframe and Dashboard Layout for HealthSecure\n").font.bold = True
-        doc.add_picture(str(img_ui), width=Inches(6.2))
-        doc.add_paragraph().paragraph_format.space_after = Pt(6)
+    add_image_figure(DIAGRAMS_DIR / "07_ui_ux_wireframes.png", "Figure 7.1: UI/UX Wireframes and Dashboard Layout for HealthSecure")
+    
+    add_heading("Main Interface Components")
+    add_para("• Home Page & Navigation: Displays brand logo, trilingual language selector (English, Tamil, Hindi), and theme controls.\n• Input Panels: Biometric inputs (Height, Weight, Age), Demographic selectors (Gender, Region, Children), and Lifestyle controls (Smoking, Alcohol, Salary).\n• Calculate Button: Triggers form validation and model inference.\n• Prediction Showcase Card: Displays estimated Annual Premium (INR/year) with monthly breakdown (INR/month).\n• XAI Feature Impact Breakdown: Visual bar chart illustrating exact rupee additions (e.g., Smoker: +₹4,500, BMI: +₹1,250).\n• What-If Simulator: Interactive sliders for adjusting BMI, smoking status, or coverage limits.\n• Multi-Insurer Plan Cards: Grid of eligible insurance plans from Star Health, HDFC ERGO, and Care Health with PDF export options.", is_passage=False)
+    
+    add_heading("Tools Used")
+    add_para("• Figma: Wireframe structuring, UI layout planning, and accessibility color contrast design.\n• HTML5, CSS3, Bootstrap 5, Streamlit: Building responsive user interface components.\n• Matplotlib / Chart.js: Dynamic client-side visualization of feature importance charts.", is_passage=False)
+    
+    add_result_block("Thus, the UI/UX design was completed successfully by planning the application layout and creating an intuitive, accessible interface for entering underwriting data and viewing premium estimations.")
 
-    add_sub_h("Main Interface Components:")
-    doc.add_paragraph("• Navigation Header: Brand identity, trilingual language switcher (EN / TA / HI), theme toggle (Light / Dark).\n• Biometric & Lifestyle Input Panel: Organized into Demographics (Age, Sex, Region), Clinical (Height, Weight, BMI), and Habits (Smoking, Alcohol, Salary).\n• Premium Prediction Showcase Card: Prominently displays estimated annual premium (e.g., ₹14,250/yr) with monthly breakdown (₹1,188/mo) and risk tier.\n• Explainable AI (XAI) Attribution Chart: Visual bar chart illustrating how individual factors (e.g., Tobacco: +₹4,500, BMI: +₹1,250) contribute to the base rate.\n• What-If Scenario Simulator: Sliders allowing users to simulate reducing BMI, quitting smoking, or changing sum insured in real time.\n• Multi-Insurer Recommendation Grid: Card-based listing of matched policies (Star Health, HDFC ERGO, Care Insurance) with one-click PDF quote export.")
-    
-    add_sub_h("Tools Used:")
-    doc.add_paragraph("• Figma: Wireframing, color palette selection (#1E3A8A primary, #10B981 success, #EF4444 risk), and component prototyping.\n• Bootstrap 5 / Streamlit: Frontend layout, responsive grid system, and interactive widgets.\n• Matplotlib / Chart.js: Dynamic rendering of feature importance and scenario comparison charts.")
-    
-    add_result("Thus, the UI/UX design was completed successfully, establishing an intuitive, accessible, and user-centric dashboard for health insurance premium prediction and policy matching.")
-
-    # ==========================================
-    # EX NO 8
-    # ==========================================
+    # =========================================================================
+    # EX NO 8: Implementation using Version Control
+    # =========================================================================
     add_ex_header("08", "Implementation using Version Control")
-    add_section_h("AIM:")
-    doc.add_paragraph("To implement the core premium prediction module in Python and manage the software repository using Git and GitHub version control.")
+    add_heading("AIM:")
+    add_para("To develop the core premium prediction module and manage the project source code using Git version control.")
     
-    add_section_h("ALGORITHM:")
+    add_heading("ALGORITHM:")
     vc_steps = [
-        "Step 1: Install Git and configure user identity: user.name and user.email.",
-        "Step 2: Initialize a local Git repository in the project workspace using 'git init'.",
-        "Step 3: Create a .gitignore file to exclude virtual environments (.venv), credentials (.env), and caches (__pycache__).",
-        "Step 4: Develop the core machine learning inference and preprocessing module in Python.",
-        "Step 5: Stage modified files using 'git add .' and verify repository status using 'git status'.",
-        "Step 6: Commit changes with descriptive messages using 'git commit -m'.",
-        "Step 7: Connect the local repository to remote GitHub repository using 'git remote add origin <URL>'.",
-        "Step 8: Push project commits to remote GitHub repository using 'git push -u origin main'."
+        "Step 1: Install Git and configure the Git username and email.",
+        "Step 2: Create a project folder for the Health Insurance Premium Prediction System.",
+        "Step 3: Initialize the Git repository using the git init command.",
+        "Step 4: Add the project files, such as app.py, model.py, train.py, and insurance.csv.",
+        "Step 5: Track the project files using the git add command.",
+        "Step 6: Save changes using the git commit command with meaningful commit messages.",
+        "Step 7: Create a GitHub remote repository and connect it using git remote add origin.",
+        "Step 8: Upload project source files to GitHub using the git push command."
     ]
     for s in vc_steps:
-        doc.add_paragraph(s)
+        add_para(s, is_passage=False)
         
-    add_section_h("DEVELOP A SMALL MODULE AND MANAGE CODE USING GIT:")
-    add_sub_h("Core Module Implementation (Python / Machine Learning Inference Service):")
+    add_heading("Develop a small module and manage code using Git:")
+    add_heading("Implementation Using Version Control:")
+    add_para("Version control is used to manage source code changes, track historical updates, and support collaborative development. Git and GitHub are used to maintain and manage the Health Insurance Premium Prediction System.")
     
-    code_text = (
+    add_heading("Small Module Implementation:")
+    add_para("The premium prediction service accepts applicant biometric details, calculates dynamic BMI, applies pre-trained ColumnTransformer scaling, and predicts estimated annual premium using the trained Linear Regression model.")
+    
+    add_heading("Sample Python Code:")
+    sample_code = (
         "import joblib\n"
-        "import numpy as np\n"
         "import pandas as pd\n\n"
         "# Load pre-trained machine learning pipeline\n"
-        "MODEL_PATH = 'models/premium_model.joblib'\n"
-        "pipeline = joblib.load(MODEL_PATH)\n\n"
-        "def predict_insurance_premium(age, sex, height_cm, weight_kg, children, smoker, region, liquor, salary):\n"
-        "    '''Computes BMI, preprocesses inputs, and predicts annual health insurance premium.'''\n"
-        "    # Dynamic BMI Calculation\n"
+        "model_pipeline = joblib.load('models/premium_model.joblib')\n\n"
+        "def predict_health_premium(age, sex, height_cm, weight_kg, children, smoker, region, liquor, salary):\n"
+        "    # Compute Body Mass Index (BMI)\n"
         "    height_m = height_cm / 100.0\n"
-        "    bmi = weight_kg / (height_m ** 2)\n"
+        "    bmi = round(weight_kg / (height_m ** 2), 2)\n"
         "    \n"
-        "    # Construct applicant DataFrame with exact 8 predictive features\n"
-        "    input_data = pd.DataFrame([{\n"
+        "    # Format inputs into single-row DataFrame\n"
+        "    applicant_data = pd.DataFrame([{\n"
         "        'age': int(age),\n"
         "        'sex': str(sex).lower(),\n"
-        "        'bmi': float(round(bmi, 2)),\n"
+        "        'bmi': float(bmi),\n"
         "        'children': int(children),\n"
         "        'smoker': str(smoker).lower(),\n"
         "        'region': str(region).lower(),\n"
@@ -520,299 +529,368 @@ def create_document():
         "        'salary': float(salary)\n"
         "    }])\n"
         "    \n"
-        "    # Predict annual premium (INR)\n"
-        "    predicted_premium = pipeline.predict(input_data)[0]\n"
-        "    calibrated_premium = max(2500.0, float(round(predicted_premium, 2)))\n"
+        "    # Predict annual premium in INR\n"
+        "    predicted_premium = model_pipeline.predict(applicant_data)[0]\n"
+        "    annual_premium = max(2500.0, round(float(predicted_premium), 2))\n"
+        "    monthly_premium = round(annual_premium / 12.0, 2)\n"
         "    \n"
         "    return {\n"
-        "        'bmi': round(bmi, 2),\n"
-        "        'annual_premium_inr': calibrated_premium,\n"
-        "        'monthly_premium_inr': round(calibrated_premium / 12.0, 2)\n"
+        "        'bmi': bmi,\n"
+        "        'annual_premium_inr': annual_premium,\n"
+        "        'monthly_premium_inr': monthly_premium\n"
         "    }\n"
     )
-    p_c = doc.add_paragraph()
-    r_c = p_c.add_run(code_text)
-    r_c.font.name = "Consolas"
-    r_c.font.size = Pt(9)
-    r_c.font.color.rgb = RGBColor(30, 41, 59)
+    p_code = doc.add_paragraph()
+    p_code.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    p_code.paragraph_format.first_line_indent = Inches(0)
+    p_code.paragraph_format.line_spacing = 1.0
+    r_code = p_code.add_run(sample_code)
+    r_code.font.name = 'Consolas'
+    r_code.font.size = Pt(10)
+    r_code.font.color.rgb = BLACK
     
-    img_git = DIAGRAMS_DIR / "08_git_version_control.png"
-    if img_git.exists():
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run("Figure 8.1: Git Version Control Workflow for HealthSecure\n").font.bold = True
-        doc.add_picture(str(img_git), width=Inches(6.2))
-        doc.add_paragraph().paragraph_format.space_after = Pt(6)
-
-    add_sub_h("Git Commands Used:")
-    tbl_git = doc.add_table(rows=8, cols=2)
+    add_image_figure(DIAGRAMS_DIR / "08_git_version_control.png", "Figure 8.1: Git Version Control Workflow for HealthSecure")
+    
+    add_heading("Git Commands:")
+    add_para("The following Git commands are used to manage the project repository:")
+    
+    tbl_git = doc.add_table(rows=7, cols=2)
     tbl_git.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_git)
-    git_cmds = [
-        ("Git Command", "Purpose / Action in Project"),
-        ("git init", "Initializes local Git version control repository"),
-        ("git add .", "Stages all project source files, models, and templates"),
-        ("git commit -m 'message'", "Commits staged changes with semantic commit history"),
-        ("git status", "Inspects tracked, untracked, and modified working tree files"),
-        ("git log --oneline", "Displays chronological commit hash history"),
-        ("git remote add origin <URL>", "Connects local repository to GitHub cloud remote"),
-        ("git push -u origin main", "Uploads all project commits to remote GitHub repository")
+    set_table_borders(tbl_git, color="000000", sz="4", val="single")
+    git_rows = [
+        ("Git Command", "Purpose"),
+        ("git init", "Initialize local repository"),
+        ("git add .", "Add all project files to staging area"),
+        ("git commit -m 'Initial commit'", "Save staged changes with commit description"),
+        ("git status", "Check status of working tree and tracked files"),
+        ("git log --oneline", "View abbreviated commit history"),
+        ("git push -u origin main", "Upload project commits to remote GitHub repository")
     ]
-    for r_idx, (c1, c2) in enumerate(git_cmds):
+    for r_idx, (c1, c2) in enumerate(git_rows):
         row = tbl_git.rows[r_idx]
-        row.cells[0].text = c1
-        row.cells[1].text = c2
+        row.cells[0].width = Inches(2.8)
+        row.cells[1].width = Inches(3.4)
         set_cell_margins(row.cells[0])
         set_cell_margins(row.cells[1])
-        if r_idx == 0:
-            set_cell_shading(row.cells[0], "1E3A8A")
-            set_cell_shading(row.cells[1], "1E3A8A")
-            row.cells[0].paragraphs[0].runs[0].font.bold = True
-            row.cells[0].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-            row.cells[1].paragraphs[0].runs[0].font.bold = True
-            row.cells[1].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-            
-    doc.add_paragraph("\nRemote Repository URL:\nhttps://github.com/ganeshganesh06092005-a11y/Health_Insurance_Premium_Prediction.git")
-    
-    add_result("Thus, the core machine learning premium prediction module was implemented successfully in Python, and Git version control was effectively used to track, commit, and push project code to GitHub.")
-
-    # ==========================================
-    # EX NO 9
-    # ==========================================
-    add_ex_header("09", "Software Testing")
-    add_section_h("AIM:")
-    doc.add_paragraph("To systematically test the Health Insurance Premium Prediction System using Unit Testing, Integration Testing, Black-Box Testing, and White-Box Testing to detect defects and verify functional correctness.")
-    
-    add_section_h("ALGORITHM:")
-    test_steps = [
-        "Step 1: Identify critical software units and integration endpoints to test.",
-        "Step 2: Prepare test cases covering boundary values, invalid inputs, and normal ranges.",
-        "Step 3: Perform Unit Testing on BMI computation, data preprocessing transforms, and model loading.",
-        "Step 4: Perform Integration Testing on UI form dispatch, ML pipeline execution, policy matching, and PDF generation.",
-        "Step 5: Conduct Black-Box Testing (Equivalence Partitioning and Boundary Value Analysis) to evaluate user-facing outputs.",
-        "Step 6: Conduct White-Box Testing (Statement and Branch Coverage) on model inference and error-handling conditions.",
-        "Step 7: Record actual outputs versus expected outputs and document test pass/fail status.",
-        "Step 8: Verify model predictive performance metrics (MAE = ₹2,615.84, R² = 0.6492) against baseline benchmarks."
-    ]
-    for s in test_steps:
-        doc.add_paragraph(s)
-        
-    add_section_h("A. TEST CASES – UNIT TESTING:")
-    tbl_ut = doc.add_table(rows=9, cols=4)
-    tbl_ut.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_ut)
-    ut_data = [
-        ("Test ID", "Test Scenario", "Expected Result", "Status"),
-        ("UT01", "Dynamic BMI calculation (H=175cm, W=70kg)", "BMI = 22.86 (Normal category)", "PASS"),
-        ("UT02", "Underweight BMI boundary (H=180cm, W=50kg)", "BMI = 15.43 (Underweight category)", "PASS"),
-        ("UT03", "Obese BMI surcharge boundary (H=165cm, W=90kg)", "BMI = 33.06 (Obese surcharge triggered)", "PASS"),
-        ("UT04", "Smoker surcharge attribution", "Quote reflects ~₹4,500 smoker risk premium", "PASS"),
-        ("UT05", "Alcohol consumption attribution", "Quote reflects ~₹1,200 liquor risk premium", "PASS"),
-        ("UT06", "Empty / Missing required field submission", "Validation error displayed, form blocked", "PASS"),
-        ("UT07", "Extreme negative age input (Age = -5)", "Rejected: Error 'Age must be between 18 and 100'", "PASS"),
-        ("UT08", "Joblib model artifact deserialization", "Pipeline loads OneHotEncoder + LinearRegression", "PASS")
-    ]
-    for r_idx, row_vals in enumerate(ut_data):
-        row = tbl_ut.rows[r_idx]
-        for c_idx, val in enumerate(row_vals):
-            row.cells[c_idx].text = val
-            set_cell_margins(row.cells[c_idx])
+        row.cells[0].text = c1
+        row.cells[1].text = c2
+        for cell in row.cells:
+            p = cell.paragraphs[0]
+            p.runs[0].font.name = 'Times New Roman'
+            p.runs[0].font.size = Pt(12)
+            p.runs[0].font.color.rgb = BLACK
             if r_idx == 0:
-                set_cell_shading(row.cells[c_idx], "1E3A8A")
-                row.cells[c_idx].paragraphs[0].runs[0].font.bold = True
-                row.cells[c_idx].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-            elif c_idx == 3:
-                row.cells[c_idx].paragraphs[0].runs[0].font.bold = True
-                row.cells[c_idx].paragraphs[0].runs[0].font.color.rgb = RGBColor(16, 185, 129)
+                p.runs[0].font.bold = True
                 
-    add_section_h("B. INTEGRATION TESTING:")
-    tbl_it = doc.add_table(rows=6, cols=4)
-    tbl_it.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_it)
-    it_data = [
-        ("Test ID", "Integration Scenario", "Expected Result", "Status"),
-        ("IT01", "Web UI input submission → Flask Controller", "Controller receives 8 features and parses data", "PASS"),
-        ("IT02", "Controller → Preprocessor → ML Pipeline", "Feature array encoded, scaled, and scored in <100ms", "PASS"),
-        ("IT03", "Predicted Premium → Policy Recommender", "Queries 118 policies and filters matching plans", "PASS"),
-        ("IT04", "Policy Selection → ReportLab PDF Generator", "Generates downloadable branded PDF quotation", "PASS"),
-        ("IT05", "What-If Slider change → Dynamic UI update", "Re-calculates quote instantly without page reload", "PASS")
-    ]
-    for r_idx, row_vals in enumerate(it_data):
-        row = tbl_it.rows[r_idx]
-        for c_idx, val in enumerate(row_vals):
-            row.cells[c_idx].text = val
-            set_cell_margins(row.cells[c_idx])
-            if r_idx == 0:
-                set_cell_shading(row.cells[c_idx], "1E3A8A")
-                row.cells[c_idx].paragraphs[0].runs[0].font.bold = True
-                row.cells[c_idx].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-            elif c_idx == 3:
-                row.cells[c_idx].paragraphs[0].runs[0].font.bold = True
-                row.cells[c_idx].paragraphs[0].runs[0].font.color.rgb = RGBColor(16, 185, 129)
-
-    add_section_h("C. BLACK-BOX TESTING:")
-    doc.add_paragraph("Black-box testing assessed end-to-end functionality without internal code inspection.\n• Test Case 1: Enter standard healthy applicant (Age 25, Non-smoker, BMI 22, 0 kids) → System outputs accurate baseline quote (~₹10,500/yr).\n• Test Case 2: Enter high-risk applicant (Age 55, Smoker, BMI 32, 2 kids) → System outputs appropriately elevated quote (~₹25,800/yr).\n• Test Case 3: Test trilingual language toggle → System translates all labels to Tamil and Hindi accurately.\n• Result: All black-box test scenarios functioned strictly according to user specifications.")
-
-    add_section_h("D. WHITE-BOX TESTING:")
-    doc.add_paragraph("White-box testing verified internal execution paths, mathematical bounds, and exception handlers.\n• Test Case 1: Inspect calculate_bmi() logic: verify division by zero exception when height = 0.\n• Test Case 2: Check actuarial floor condition: verify max(2500.0, premium) prevents negative quotes.\n• Test Case 3: Check OneHotEncoder categories: verify unknown categorical inputs handle gracefully.\n• Result: 100% statement and condition coverage verified with zero unhandled exceptions.")
-
-    img_test = DIAGRAMS_DIR / "09_software_testing.png"
-    if img_test.exists():
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run("Figure 9.1: Software Testing Suite and Results for HealthSecure\n").font.bold = True
-        doc.add_picture(str(img_test), width=Inches(6.2))
-        doc.add_paragraph().paragraph_format.space_after = Pt(6)
-
-    add_section_h("E. OVERALL TESTING RESULT:")
-    doc.add_paragraph("• Total Test Cases Executed: 18\n• Passed Test Cases: 18 (100% Pass Rate)\n• Model Performance Verified on Held-Out Test Data (1,600 samples):\n  - Mean Absolute Error (MAE): ₹2,615.84\n  - Root Mean Squared Error (RMSE): ₹3,418.62\n  - Coefficient of Determination (R²): 0.6492 (64.92% variance explained)\n  - Data Leakage Check: Passed (historical total_claim_amount fully isolated from inputs)")
-
-    add_result("Thus, the Health Insurance Premium Prediction System was thoroughly evaluated using Unit, Integration, Black-Box, and White-Box testing methodologies. All test cases passed successfully, confirming high precision, reliability, and robust software quality.")
-
-    # ==========================================
-    # EX NO 10
-    # ==========================================
-    add_ex_header("10", "MINI PROJECT WITH DOCUMENTATION")
-    add_section_h("AIM:")
-    doc.add_paragraph("To develop a comprehensive, production-ready Health Insurance Premium Prediction and Policy Recommendation System by integrating all phases of the Software Development Life Cycle (SDLC): SRS, Design, Coding, Testing, and Documentation.")
+    add_heading("Version Control Process:")
+    add_para("1. Create local project folder.\n2. Initialize Git using git init.\n3. Add source code using git add .\n4. Commit changes using git commit -m.\n5. Connect to remote repository using git remote add origin.\n6. Upload the project to GitHub using git push.", is_passage=False)
     
-    add_section_h("ALGORITHM:")
+    add_result_block("Thus, the core premium prediction module was implemented successfully in Python, and Git version control was used to track, commit, and manage project code changes.")
+
+    # =========================================================================
+    # EX NO 9: Software Testing
+    # =========================================================================
+    add_ex_header("09", "Software Testing")
+    add_heading("AIM:")
+    add_para("To test the Health Insurance Premium Prediction System using Unit Testing, Integration Testing, Black-Box Testing, and White-Box Testing to identify errors and ensure the application works correctly.")
+    
+    add_heading("ALGORITHM:")
+    st_steps = [
+        "Step 1: Identify the modules and functionalities to be tested in the system.",
+        "Step 2: Prepare test cases for entering applicant demographic, biometric, and lifestyle inputs.",
+        "Step 3: Perform input validation to check whether values are within valid actuarial ranges.",
+        "Step 4: Test dynamic BMI computation logic for standard, underweight, and obese boundary conditions.",
+        "Step 5: Test the ColumnTransformer feature scaling and OneHotEncoder process.",
+        "Step 6: Test the Linear Regression model to verify predicted annual premium values.",
+        "Step 7: Perform unit testing and integration testing to check individual functions and their module interactions.",
+        "Step 8: Verify output results across healthy and high-risk applicant profiles and correct any defects."
+    ]
+    for s in st_steps:
+        add_para(s, is_passage=False)
+        
+    add_heading("A. Test Cases – Unit Testing:")
+    add_para("Unit testing is used to test individual modules and functions of the application separately.")
+    
+    tbl_ut = doc.add_table(rows=8, cols=3)
+    tbl_ut.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_table_borders(tbl_ut, color="000000", sz="4", val="single")
+    ut_rows = [
+        ("TestCase ID", "Test Scenario", "Expected Result"),
+        ("UT01", "Calculate normal BMI (H=175cm, W=70kg)", "BMI = 22.86 (Normal weight category)"),
+        ("UT02", "Calculate underweight BMI (H=180cm, W=50kg)", "BMI = 15.43 (Underweight category)"),
+        ("UT03", "Calculate obese BMI (H=165cm, W=90kg)", "BMI = 33.06 (Obese surcharge triggered)"),
+        ("UT04", "Evaluate smoker surcharge attribution", "Display ~₹4,500 smoker risk premium addition"),
+        ("UT05", "Evaluate liquor consumption attribution", "Display ~₹1,200 alcohol risk premium addition"),
+        ("UT06", "Submit empty required input field", "Display input validation warning message"),
+        ("UT07", "Load saved joblib model artifact", "Model pipeline loads successfully into memory")
+    ]
+    for r_idx, (c1, c2, c3) in enumerate(ut_rows):
+        row = tbl_ut.rows[r_idx]
+        row.cells[0].width = Inches(1.3)
+        row.cells[1].width = Inches(2.6)
+        row.cells[2].width = Inches(2.5)
+        set_cell_margins(row.cells[0])
+        set_cell_margins(row.cells[1])
+        set_cell_margins(row.cells[2])
+        row.cells[0].text = c1
+        row.cells[1].text = c2
+        row.cells[2].text = c3
+        for cell in row.cells:
+            p = cell.paragraphs[0]
+            p.runs[0].font.name = 'Times New Roman'
+            p.runs[0].font.size = Pt(12)
+            p.runs[0].font.color.rgb = BLACK
+            if r_idx == 0:
+                p.runs[0].font.bold = True
+                
+    add_heading("B. Integration Testing:")
+    add_para("Integration testing checks whether different modules work together correctly.")
+    
+    tbl_it = doc.add_table(rows=6, cols=3)
+    tbl_it.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_table_borders(tbl_it, color="000000", sz="4", val="single")
+    it_rows = [
+        ("Test Case ID", "Test Scenario", "Expected Result"),
+        ("IT01", "Connect Web UI with Application Controller", "Controller receives all 8 features correctly"),
+        ("IT02", "Connect input validation with Preprocessing", "Features are converted and standardized"),
+        ("IT03", "Connect Preprocessing with Linear Regression", "Model predicts annual premium correctly"),
+        ("IT04", "Connect Prediction with Policy Recommender", "Matching plans are filtered and returned"),
+        ("IT05", "Connect Policy Selection with PDF Generator", "Generates downloadable PDF quote report")
+    ]
+    for r_idx, (c1, c2, c3) in enumerate(it_rows):
+        row = tbl_it.rows[r_idx]
+        row.cells[0].width = Inches(1.4)
+        row.cells[1].width = Inches(2.5)
+        row.cells[2].width = Inches(2.5)
+        set_cell_margins(row.cells[0])
+        set_cell_margins(row.cells[1])
+        set_cell_margins(row.cells[2])
+        row.cells[0].text = c1
+        row.cells[1].text = c2
+        row.cells[2].text = c3
+        for cell in row.cells:
+            p = cell.paragraphs[0]
+            p.runs[0].font.name = 'Times New Roman'
+            p.runs[0].font.size = Pt(12)
+            p.runs[0].font.color.rgb = BLACK
+            if r_idx == 0:
+                p.runs[0].font.bold = True
+                
+    add_heading("C. Black-Box Testing:")
+    add_para("Black-box testing checks application functionality without knowing its internal code logic.")
+    add_para("Test cases:\n• Enter a standard young healthy profile and verify baseline quote (~₹9,850/yr).\n• Enter an elderly smoker profile and verify elevated risk quote (~₹27,450/yr).\n• Click Calculate without entering required fields and verify error prompt.\n• Switch language toggle to Tamil and Hindi and verify UI translations.\n• Result: The application accepts valid inputs, rejects invalid inputs, and displays expected premium quotes.", is_passage=False)
+    
+    add_heading("D. White-Box Testing:")
+    add_para("White-box testing checks internal code structure, execution paths, and mathematical bounds.")
+    add_para("Test cases:\n• Check dynamic calculate_bmi() logic for zero-division safety when height = 0.\n• Check premium boundary condition: verify max(2500.0, predicted) prevents negative outputs.\n• Verify StandardScaler transforms and OneHotEncoder category alignment.\n• Check model.predict() output format and float rounding.\n• Result: Internal branches, conditions, and calculations execute without errors or exceptions.", is_passage=False)
+    
+    add_image_figure(DIAGRAMS_DIR / "09_software_testing.png", "Figure 9.1: Software Testing Suite and Results for HealthSecure")
+    
+    add_heading("E. Overall Testing Result:")
+    add_para("Testing completed successfully. The Health Insurance Premium Prediction System was thoroughly tested using unit testing, integration testing, black-box testing, and white-box testing. The application reliably calculates dynamic BMI, predicts personalized annual premiums, displays Explainable AI feature attributions, and exports official PDF quotes. On held-out test data (1,600 samples), the selected Linear Regression model achieved MAE = ₹2,615.84, RMSE = ₹3,418.62, and R² = 0.6492.")
+    
+    add_result_block("Thus, the Health Insurance Premium Prediction System was successfully tested. The application correctly estimates personalized health premiums and displays transparent feature contribution breakdowns.")
+
+    # =========================================================================
+    # EX NO 10: MINI PROJECT WITH DOCUMENTATION
+    # =========================================================================
+    add_ex_header("10", "MINI PROJECT WITH DOCUMENTATION")
+    add_heading("Aim:")
+    add_para("To develop a complete Health Insurance Premium Prediction System by integrating all phases of software development, including SRS, Design, Coding, Testing, and Documentation.")
+    
+    add_heading("Algorithm:")
     mini_steps = [
-        "Step 1: Conduct problem analysis and formulate the Software Requirement Specification (SRS) based on actuarial principles.",
-        "Step 2: Collect and clean the 8,000-record Indian health insurance dataset; strictly isolate total_claim_amount to prevent data leakage.",
-        "Step 3: Design the system architecture and construct UML diagrams (Use Case, Class, Sequence, Architecture).",
-        "Step 4: Develop the frontend user interface with responsive layouts, trilingual support, and What-If scenario sliders.",
-        "Step 5: Train and benchmark four regression algorithms (Linear Regression, Random Forest, Gradient Boosting, XGBoost); select optimal model.",
-        "Step 6: Implement Explainable AI (XAI) feature attribution, policy matching across 118 plans, and PDF quotation exports.",
-        "Step 7: Conduct rigorous Unit, Integration, Black-Box, and White-Box testing across normal and boundary conditions.",
-        "Step 8: Compile complete project documentation covering architecture, implementation, evaluation metrics, and future enhancements."
+        "Step 1: Identify the problem and prepare the Software Requirement Specification (SRS).",
+        "Step 2: Analyze the functional and non-functional requirements of the project.",
+        "Step 3: Design the system using UML diagrams such as Use Case Diagram, Class Diagram, and Sequence Diagram.",
+        "Step 4: Develop the system architecture and design the user interface using Flask / Streamlit.",
+        "Step 5: Write Python code to implement the Health Insurance Premium Prediction System.",
+        "Step 6: Train the machine learning model using StandardScaler, OneHotEncoder, and Linear Regression.",
+        "Step 7: Test the application using diverse applicant risk profiles and verify prediction results.",
+        "Step 8: Prepare complete project documentation, including SRS, Design, Implementation, Testing, Results, and Conclusion."
     ]
     for s in mini_steps:
-        doc.add_paragraph(s)
+        add_para(s, is_passage=False)
         
-    add_section_h("INTEGRATE ALL PHASES: SRS → DESIGN → CODING → TESTING → REPORT")
+    add_heading("Integrate all phases: SRS → Design → Coding → Testing → Report")
     
-    add_sub_h("1. Introduction")
-    doc.add_paragraph("Health insurance serves as a vital financial safeguard against unexpected medical emergencies and escalating hospitalization expenses. However, prospective buyers often face opaque pricing structures, complex actuarial jargon, and lengthy underwriting wait times. HealthSecure bridges this gap by applying supervised machine learning to predict personalized annual health insurance premiums based on applicant demographic, biometric, and lifestyle risk factors. In addition to premium estimation, the platform provides Explainable AI (XAI) transparency, interactive What-If scenario adjustments, and automated matching against 118 real-world insurance policies.")
-
-    add_sub_h("2. Objectives")
-    doc.add_paragraph("• Develop an automated, data-driven health insurance premium estimation engine.\n• Eliminate underwriting data leakage by isolating historical claim amounts during preprocessing.\n• Benchmark multiple regression models and deploy the optimal estimator (Linear Regression: MAE ₹2,615.84, R² 0.6492).\n• Provide transparent Explainable AI (XAI) feature attributions showing exact premium additions and deductions.\n• Implement dynamic What-If scenario simulations allowing real-time lifestyle impact exploration.\n• Match applicants against 118 active multi-insurer policies based on affordability and coverage.\n• Support trilingual localization (English, Tamil, Hindi) for widespread regional accessibility.\n• Enable one-click export of formal underwriting quotation summaries in PDF format.")
-
-    add_sub_h("3. Technologies Used")
+    add_heading("1. Introduction")
+    add_para("The Health Insurance Premium Prediction System (HealthSecure) is a machine learning-based application developed using Python. In contemporary healthcare financing, determining fair, accurate, and transparent health insurance premiums is a vital requirement. Prospective policyholders frequently encounter opaque rate calculations, lengthy underwriting waiting periods, and uncertainty regarding how their personal biometrics and lifestyle choices dictate required premium contributions.")
+    add_para("This project automatically evaluates applicant risk parameters (age, sex, BMI, dependents, smoking status, region, alcohol habits, and salary) and predicts personalized annual health insurance premiums in Indian Rupees (INR/year). Furthermore, it provides Explainable AI (XAI) feature transparency, interactive What-If scenario simulations, and automated matching against 118 real-world insurance policies.")
+    add_para("The application is developed with a responsive web interface supporting trilingual localization (English, Tamil, Hindi) for convenient access across regional demographics.")
+    
+    add_heading("2. Objectives")
+    objs = [
+        "• To develop an automated health insurance premium estimation system.",
+        "• To eliminate data leakage by isolating historical claim amounts during preprocessing.",
+        "• To predict annual premiums accurately using supervised machine learning algorithms.",
+        "• To apply standard scaling and one-hot encoding for robust numerical feature representation.",
+        "• To provide transparent Explainable AI (XAI) feature impact breakdowns.",
+        "• To offer interactive What-If scenario sliders for prospective lifestyle planning.",
+        "• To recommend suitable policies from an active repository of 118 health insurance plans.",
+        "• To provide a simple, accessible, and user-friendly interface with trilingual support.",
+        "• To generate publication-grade PDF quotation summaries for formal documentation."
+    ]
+    for ob in objs:
+        add_para(ob, is_passage=False)
+        
+    add_heading("3. Technologies Used")
     tbl_tech = doc.add_table(rows=10, cols=2)
     tbl_tech.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_tech)
-    tech_data = [
-        ("Technology / Framework", "Purpose & Role in HealthSecure"),
-        ("Python 3.10+", "Primary programming language for ML pipeline and backend"),
-        ("Flask 3.1 / Streamlit", "Full-stack web application framework and API routing"),
-        ("Scikit-learn 1.4+", "ColumnTransformer, OneHotEncoder, StandardScaler, Linear Regression"),
-        ("Pandas 2.1+ & NumPy 1.26+", "Dataset manipulation, array processing, and numerical calculations"),
-        ("XGBoost 2.0+ & Ensembles", "Comparative model evaluation benchmarks (Gradient Boosting, Random Forest)"),
-        ("Joblib 1.3+", "High-efficiency serialization and loading of trained model pipelines"),
-        ("ReportLab 4.0+", "Dynamic generation of downloadable PDF quotation summaries"),
-        ("Matplotlib 3.8+ / Chart.js", "Actuarial charts, residual plots, and XAI feature importance visualizations"),
-        ("Git & GitHub", "Distributed version control and remote code collaboration repository")
+    set_table_borders(tbl_tech, color="000000", sz="4", val="single")
+    tech_rows = [
+        ("Technology", "Purpose"),
+        ("Python", "Main programming language for data pipeline and web application"),
+        ("Flask / Streamlit", "Frontend and application controller framework"),
+        ("Pandas", "Dataset manipulation and tabular record handling"),
+        ("Scikit-learn", "Machine learning pipeline, OneHotEncoder, StandardScaler, Regression"),
+        ("Linear Regression", "Selected production regression algorithm for annual premium pricing"),
+        ("Joblib", "Saving and loading trained machine learning model artifacts"),
+        ("ReportLab", "Dynamic PDF underwriting quotation report generation"),
+        ("Matplotlib", "Plotting model evaluation graphs and XAI feature attributions"),
+        ("CSV & MySQL", "Underwriting dataset storage and user quote management")
     ]
-    for r_idx, (c1, c2) in enumerate(tech_data):
+    for r_idx, (c1, c2) in enumerate(tech_rows):
         row = tbl_tech.rows[r_idx]
-        row.cells[0].text = c1
-        row.cells[1].text = c2
+        row.cells[0].width = Inches(2.2)
+        row.cells[1].width = Inches(4.0)
         set_cell_margins(row.cells[0])
         set_cell_margins(row.cells[1])
-        if r_idx == 0:
-            set_cell_shading(row.cells[0], "1E3A8A")
-            set_cell_shading(row.cells[1], "1E3A8A")
-            row.cells[0].paragraphs[0].runs[0].font.bold = True
-            row.cells[0].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-            row.cells[1].paragraphs[0].runs[0].font.bold = True
-            row.cells[1].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-
-    add_sub_h("4. System Architecture")
-    doc.add_paragraph("The system is engineered as a 4-Tier Layered Architecture:\n1. Presentation Layer: Responsive user forms, What-If sliders, and trilingual interface.\n2. Business Logic Layer: Request routing, BMI computation, and data validation.\n3. ML Pipeline Layer: Feature encoding, scaling, and Linear Regression inference.\n4. Persistence Layer: 8,000 underwriting records, 118 insurance policies, and user accounts.")
-
-    add_sub_h("5. Working Process")
-    doc.add_paragraph("1. Applicant accesses HealthSecure web dashboard.\n2. User provides Age, Sex, Height, Weight, Children, Smoking habits, Region, Liquor habits, and Salary.\n3. System computes BMI = Weight / (Height²) and validates inputs.\n4. Pipeline encodes categorical fields and scales numerical values.\n5. Pre-trained Linear Regression model predicts estimated annual premium in INR.\n6. System computes feature attribution bars and identifies matching insurer policies.\n7. User adjusts What-If sliders to observe potential premium savings.\n8. User clicks 'Download Quote' to export an official PDF summary.")
-
-    add_sub_h("6. Machine Learning Model & Actuarial Calibration")
-    doc.add_paragraph("A fundamental innovation in this project is the prevention of data leakage. In raw insurance datasets, 'total_claim_amount' is a historical variable only available after claims occur. To price prospective policies fairly, total_claim_amount is strictly excluded from prediction features and utilized solely during preprocessing to calibrate the ground-truth target:")
-    doc.add_paragraph("Charges (INR/year) = 5000 + (Age × 180) + (Claim Exposure × 0.06) + (Smoker × 4500) + [max(BMI - 25, 0) × 250] + (Liquor × 1200) + (Children × 2200)")
-    doc.add_paragraph("Evaluation Results on 1,600 Held-Out Test Records:\n• Linear Regression: MAE = ₹2,615.84, RMSE = ₹3,418.62, R² = 0.6492 (Best production model)\n• XGBoost Regressor: MAE = ₹2,629.69, RMSE = ₹3,444.60, R² = 0.6439\n• Gradient Boosting: MAE = ₹2,640.68, RMSE = ₹3,451.29, R² = 0.6425\n• Random Forest: MAE = ₹2,776.21, RMSE = ₹3,642.49, R² = 0.6019")
-
-    add_sub_h("7. Project Workflow Diagram")
+        row.cells[0].text = c1
+        row.cells[1].text = c2
+        for cell in row.cells:
+            p = cell.paragraphs[0]
+            p.runs[0].font.name = 'Times New Roman'
+            p.runs[0].font.size = Pt(12)
+            p.runs[0].font.color.rgb = BLACK
+            if r_idx == 0:
+                p.runs[0].font.bold = True
+                
+    add_heading("4. System Architecture")
+    add_para("The project follows a layered architecture. Each layer performs a separate function in the insurance underwriting and premium prediction process.")
+    
+    add_image_figure(DIAGRAMS_DIR / "10_mini_project_lifecycle.png", "Figure 10.1: Full SDLC Lifecycle for Health Insurance Premium Prediction System")
+    
+    add_heading("Layers of the System:")
+    add_para("• User Interface Layer: Applicants input biometric and lifestyle information through the web application.\n• Preprocessing Layer: Cleans inputs, calculates dynamic BMI, and converts categorical and numerical features into standard representations.\n• Machine Learning Layer: Serialized Linear Regression model computes estimated annual premium in Indian Rupees.\n• Policy Recommender Layer: Filters and matches plans from 118 insurer policies based on applicant budget.\n• Output Layer: Displays predicted premium, monthly breakdown, XAI feature attribution charts, and downloadable PDF quote.", is_passage=False)
+    
+    add_heading("5. Working Process")
+    add_para("1. The user opens the Health Insurance Premium Prediction application.\n2. The user enters Age, Sex, Height, Weight, Dependents, Smoker, Region, Liquor, and Salary.\n3. The application receives and validates the input parameters.\n4. The preprocessing module calculates BMI = Weight / (Height²) and scales features.\n5. The trained Linear Regression model analyzes the input features.\n6. The model predicts the annual premium amount (INR/year).\n7. The application retrieves matching insurance policies from the active repository.\n8. The application displays the estimated premium, feature attributions, and policy cards.", is_passage=False)
+    
+    add_heading("6. Machine Learning Model")
+    add_para("This project uses Linear Regression, a supervised machine learning regression algorithm, benchmarked against Random Forest, Gradient Boosting, and XGBoost.")
+    add_para("A core actuarial principle implemented is data leakage prevention: historical total_claim_amount is strictly excluded from prediction-time feature inputs and used exclusively during preprocessing to formulate the ground-truth target:")
+    add_para("Charges (INR/year) = 5000 + (Age × 180) + (Claim Exposure × 0.06) + (Smoker × 4500) + [max(BMI - 25, 0) × 250] + (Liquor × 1200) + (Children × 2200)", is_passage=True)
+    add_para("Model Training Process:\n• Load the 8,000-record Indian health insurance dataset.\n• Isolate target charges from input features.\n• Split the dataset into 80% training data and 20% test data (1,600 samples).\n• Build ColumnTransformer with StandardScaler for numerical features and OneHotEncoder for categorical features.\n• Train Linear Regression, Random Forest, Gradient Boosting, and XGBoost models.\n• Evaluate model performance (Linear Regression achieved best test MAE = ₹2,615.84, R² = 0.6492).\n• Save the trained pipeline using Joblib.", is_passage=False)
+    
+    add_heading("7. Project Workflow Diagram")
     wf_text = (
-        "       [ Applicant Input Form ]\n"
-        "                  │\n"
-        "                  ▼\n"
-        "       [ Dynamic BMI Calculation ]\n"
-        "                  │\n"
-        "                  ▼\n"
-        "     [ OneHotEncoder & StandardScaler ]\n"
-        "                  │\n"
-        "                  ▼\n"
-        "     [ Linear Regression Pipeline ]\n"
-        "                  │\n"
-        "        ┌─────────┴─────────┐\n"
-        "        ▼                   ▼\n"
-        "[ Annual Premium (INR) ] [ XAI Feature Impacts ]\n"
-        "        │                   │\n"
-        "        └─────────┬─────────┘\n"
-        "                  ▼\n"
-        "    [ Multi-Insurer Policy Matcher ]\n"
-        "                  │\n"
-        "                  ▼\n"
-        "   [ Interactive What-If Simulator ]\n"
-        "                  │\n"
-        "                  ▼\n"
-        "       [ Download PDF Quote ]\n"
+        "        Start\n"
+        "          |\n"
+        "          v\n"
+        "   Load Insurance Dataset\n"
+        "          |\n"
+        "          v\n"
+        "   Data Preprocessing & BMI Calculation\n"
+        "          |\n"
+        "          v\n"
+        "   ColumnTransformer (Scaler & OneHotEncoder)\n"
+        "          |\n"
+        "          v\n"
+        "   Train Linear Regression Model\n"
+        "          |\n"
+        "          v\n"
+        "    Model Evaluation (MAE: ₹2,615.84, R²: 0.6492)\n"
+        "          |\n"
+        "          v\n"
+        "     Save Trained Pipeline\n"
+        "          |\n"
+        "          v\n"
+        "    User Enters Biometrics & Lifestyle\n"
+        "          |\n"
+        "          v\n"
+        "    Predict Annual Premium (INR)\n"
+        "          |\n"
+        "          v\n"
+        "  Display Quote & Policy Recommendations\n"
+        "          |\n"
+        "          v\n"
+        "         Stop\n"
     )
     p_wf = doc.add_paragraph()
+    p_wf.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    p_wf.paragraph_format.first_line_indent = Inches(0)
+    p_wf.paragraph_format.line_spacing = 1.0
     r_wf = p_wf.add_run(wf_text)
-    r_wf.font.name = "Consolas"
-    r_wf.font.size = Pt(9.5)
-
-    img_mini = DIAGRAMS_DIR / "10_mini_project_lifecycle.png"
-    if img_mini.exists():
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run("Figure 10.1: Full SDLC Lifecycle for HealthSecure\n").font.bold = True
-        doc.add_picture(str(img_mini), width=Inches(6.2))
-        doc.add_paragraph().paragraph_format.space_after = Pt(6)
-
-    add_sub_h("8. Sample Project Profiles & Output")
-    tbl_out = doc.add_table(rows=6, cols=5)
+    r_wf.font.name = 'Consolas'
+    r_wf.font.size = Pt(10)
+    r_wf.font.color.rgb = BLACK
+    
+    add_heading("8. Sample Project Output")
+    add_heading("Sample Input and Output Profiles:")
+    
+    tbl_out = doc.add_table(rows=6, cols=3)
     tbl_out.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_out)
-    out_data = [
-        ("Profile ID", "Demographics & Biometrics", "Lifestyle Habits", "Predicted Premium", "Recommended Plan"),
-        ("P101", "Age: 22, Male, BMI: 21.5 (Normal), 0 kids", "Non-smoker, No alcohol", "₹9,850 / year", "Star Health Young Star"),
-        ("P102", "Age: 35, Female, BMI: 24.2 (Normal), 1 kid", "Non-smoker, Occasional", "₹14,250 / year", "HDFC ERGO Optima Secure"),
-        ("P103", "Age: 42, Male, BMI: 28.5 (Overweight), 2 kids", "Smoker, Regular alcohol", "₹22,600 / year", "Care Health Supreme"),
-        ("P104", "Age: 58, Male, BMI: 32.1 (Obese), 0 kids", "Smoker, No alcohol", "₹27,450 / year", "Niva Bupa Senior First"),
-        ("P105", "Age: 29, Female, BMI: 19.8 (Normal), 0 kids", "Non-smoker, No alcohol", "₹10,200 / year", "ICICI Lombard Health Care")
+    set_table_borders(tbl_out, color="000000", sz="4", val="single")
+    out_rows = [
+        ("Sample Applicant Profile", "Predicted Premium", "Recommended Plan"),
+        ("Age: 22, Male, BMI: 21.5, Non-smoker, 0 kids", "₹9,850 / year", "Star Health Young Star"),
+        ("Age: 35, Female, BMI: 24.2, Non-smoker, 1 kid", "₹14,250 / year", "HDFC ERGO Optima Secure"),
+        ("Age: 42, Male, BMI: 28.5, Smoker, 2 kids", "₹22,600 / year", "Care Health Supreme"),
+        ("Age: 58, Male, BMI: 32.1, Smoker, 0 kids", "₹27,450 / year", "Niva Bupa Senior First"),
+        ("Age: 29, Female, BMI: 19.8, Non-smoker, 0 kids", "₹10,200 / year", "ICICI Lombard Health Care")
     ]
-    for r_idx, row_vals in enumerate(out_data):
+    for r_idx, (c1, c2, c3) in enumerate(out_rows):
         row = tbl_out.rows[r_idx]
-        for c_idx, val in enumerate(row_vals):
-            row.cells[c_idx].text = val
-            set_cell_margins(row.cells[c_idx])
+        row.cells[0].width = Inches(2.8)
+        row.cells[1].width = Inches(1.6)
+        row.cells[2].width = Inches(2.0)
+        set_cell_margins(row.cells[0])
+        set_cell_margins(row.cells[1])
+        set_cell_margins(row.cells[2])
+        row.cells[0].text = c1
+        row.cells[1].text = c2
+        row.cells[2].text = c3
+        for cell in row.cells:
+            p = cell.paragraphs[0]
+            p.runs[0].font.name = 'Times New Roman'
+            p.runs[0].font.size = Pt(12)
+            p.runs[0].font.color.rgb = BLACK
             if r_idx == 0:
-                set_cell_shading(row.cells[c_idx], "1E3A8A")
-                row.cells[c_idx].paragraphs[0].runs[0].font.bold = True
-                row.cells[c_idx].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-            elif c_idx == 3:
-                row.cells[c_idx].paragraphs[0].runs[0].font.bold = True
-                row.cells[c_idx].paragraphs[0].runs[0].font.color.rgb = RGBColor(30, 58, 138)
+                p.runs[0].font.bold = True
+                
+    add_heading("Sample Application Output:")
+    add_para("Health Insurance Premium Prediction System\nEnter your profile details:\nAge: 35 | Sex: Female | Height: 165 cm | Weight: 66 kg | BMI: 24.24 | Smoker: No | Region: Tamil Nadu | Salary: ₹7,50,000\nPredicted Annual Premium: ₹14,250 / year\nMonthly Breakdown: ₹1,187.50 / month\nTop Matching Policy: HDFC ERGO Optima Secure (Cover: ₹5,00,000)\nNote: Predicted results are based on supervised machine learning regression trained on 8,000 Indian health insurance records.", is_passage=False)
+    
+    add_heading("9. Advantages")
+    advs = [
+        "• Saves time by automatically calculating actuarially fair health insurance premiums in under one second.",
+        "• Eliminates underwriting data leakage by isolating historical claim amounts during preprocessing.",
+        "• Provides transparent Explainable AI (XAI) feature contribution breakdowns for prospective consumers.",
+        "• Supports interactive What-If scenario simulations encouraging healthier lifestyles.",
+        "• Matches applicants objectively against 118 multi-insurer health policies.",
+        "• Simple and accessible web interface with trilingual localization (English, Tamil, Hindi).",
+        "• Generates downloadable publication-grade PDF quotation reports for formal documentation."
+    ]
+    for ad in advs:
+        add_para(ad, is_passage=False)
+        
+    add_heading("10. Future Enhancements")
+    futs = [
+        "• Wearable Health Integration: Incorporate real-time daily step counts and heart rates from smartwatches.",
+        "• OCR Medical Records Parsing: Automatically scan and extract preexisting condition reports using Tesseract OCR.",
+        "• Deep Learning Survival Models: Implement longitudinal neural survival analysis for multi-year risk trajectories.",
+        "• Blockchain Policy Verification: Deploy smart contracts on Ethereum for tamper-proof policy issuance and instant claim settlements."
+    ]
+    for fu in futs:
+        add_para(fu, is_passage=False)
+        
+    # Final Result
+    add_heading("RESULT")
+    add_para("Thus, the complete Health Insurance Premium Prediction System (HealthSecure) was developed, integrated, tested, and documented across all phases of the Software Development Life Cycle (SDLC). The system accurately evaluates applicant risk factors, estimates personalized annual premiums, provides Explainable AI transparency, and dynamically matches optimal insurance policies.")
 
-    add_sub_h("9. Advantages")
-    doc.add_paragraph("• High Accuracy & Robustness: Produces reliable predictions with low error (MAE ₹2,615.84).\n• Zero Data Leakage: Strictly isolates historical claim payouts, enabling genuine prospective underwriting.\n• Explainable AI (XAI): Empowers consumers with transparent breakdowns of exact risk charges.\n• Interactive What-If Simulation: Encourages healthier lifestyles by demonstrating financial savings.\n• Automated Policy Matching: Eliminates broker bias by objectively filtering 118 policies from top Indian insurers.\n• Trilingual Inclusivity: Bridges linguistic barriers with English, Tamil, and Hindi language options.\n• Publication-Grade PDF Quotes: Produces instant downloadable quotes formatted for formal documentation.")
-
-    add_sub_h("10. Future Enhancements")
-    doc.add_paragraph("• IoT & Wearable Health Integration: Incorporate live health metrics (daily step count, resting heart rate) via smartwatches.\n• OCR Medical Document Processing: Enable automatic scanning and extraction of preexisting condition reports using Tesseract OCR.\n• Deep Learning Survival Models: Implement neural multi-task survival analysis for longitudinal risk trajectory forecasting.\n• Blockchain Policy Verification: Deploy smart contracts on Ethereum / Hyperledger for tamper-proof policy issuance and instant claim settlements.")
-
-    add_result("Thus, the complete Health Insurance Premium Prediction and Policy Recommendation System (HealthSecure) was developed, integrated, tested, and documented across all SDLC phases. The system successfully combines high-performance machine learning regression, actuarial fairness, Explainable AI transparency, and responsive web deployment.")
-
+    # Save DOCX
     doc.save(str(DOCX_PATH))
-    print(f"Document successfully created at: {DOCX_PATH}")
+    print(f"Generated clean black & white Word Document: {DOCX_PATH}")
 
-create_document()
+build_manual()
