@@ -198,7 +198,10 @@ def train_model() -> Pipeline:
 def load_or_train_model() -> Pipeline:
     source_mtime = max(Path(__file__).stat().st_mtime, DATA_PATH.stat().st_mtime if DATA_PATH.exists() else 0)
     if MODEL_PATH.exists() and MODEL_PATH.stat().st_mtime >= source_mtime:
-        return joblib.load(MODEL_PATH)
+        try:
+            return joblib.load(MODEL_PATH)
+        except Exception:
+            return train_model()
     return train_model()
 
 

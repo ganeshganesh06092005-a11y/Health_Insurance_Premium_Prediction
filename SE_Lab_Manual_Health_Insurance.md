@@ -1,610 +1,511 @@
-# Software Engineering Laboratory Practical Record Manual
-## Project: Health Insurance Premium Prediction & Recommendation System (HealthSecure)
+# Software Engineering Laboratory Manual
+## Health Insurance Premium Prediction and Policy Recommendation System (HealthSecure)
 
 **Department of Computer Applications**  
 **Nehru College of Management, Coimbatore, Tamil Nadu, India**  
-**Student Authors:** Ganesh R (1), Dhivyadharshini P (2)  
-**Project Supervisor:** Ms. K. S. Surabhi (Assistant Professor)  
+**Student Authors:** Ganesh R, Dhivyadharshini P  
+**Project Supervisor:** Ms. K. S. Surabhi, Assistant Professor  
 
 ---
 
-| EX NO   | Problem Definition & Feasibility Study   |
-| DATE   |                                          |
+## Exercise 1: Problem Definition and Feasibility Analysis
 
-### AIM
-To identify the real-world healthcare financing problem and conduct a comprehensive feasibility study to determine the technical, economic, and operational feasibility of the Health Insurance Premium Prediction and Policy Recommendation System (HealthSecure).
+### Aim
+To analyze the operational challenges in manual health insurance pricing and carry out technical, economic, and operational feasibility assessments for building our automated predictive platform, HealthSecure.
 
-### Project Title:
-**HEALTH INSURANCE PREMIUM PREDICTION SYSTEM (HEALTHSECURE)**
+### Project Title
+Health Insurance Premium Prediction and Multi-Policy Recommendation System (HealthSecure)
 
-### Problem Definition:
-In contemporary healthcare financing, determining fair, accurate, and actuarially sound health insurance premiums is a complex and high-stakes challenge. Conventional insurance underwriting predominantly relies on static demographic lookup tables, broad risk classifications, and subjective manual discretion. Prospective applicants frequently experience pricing opacity, extensive procedural delays, and substantial premium variability without understanding how their individual physiological traits (BMI, age), lifestyle habits (smoking status, alcohol consumption), family dependencies (children), or regional healthcare costs directly govern their premium quotations. Conversely, insurers face underwriting adverse selection and insolvency risks when premiums are underpriced relative to potential claim liabilities.
+### Problem Identification
+Underwriting health policies through traditional insurance workflows is slow, non-transparent, and prone to subjective human error. Most existing insurers still compute annual quotes using rigid demographic lookups and coarse risk brackets. As a consequence, prospective policyholders cannot see how specific biological metrics such as Body Mass Index (BMI), tobacco use, alcohol habits, dependents, or geographic hospital pricing indices influence their quotes. 
 
-HealthSecure is developed to resolve these critical issues by leveraging supervised machine learning to objectively predict personalized annual health insurance premiums and automatically recommend optimal multi-insurer policies.
+On the insurer side, mispriced plans introduce underwriting risks. Setting rates too low leads to financial deficits when claims arrive, while pricing policies too high drives away healthy, low-risk applicants. HealthSecure tackles both problems by using a supervised machine learning regression pipeline that calculates actuarially sound annual premiums in real time and matches applicants with suitable policies.
 
-### Problem Statement:
-To develop an enterprise-grade supervised machine learning framework that automatically estimates personalized annual health insurance premiums based on applicant demographic, clinical, and lifestyle attributes (age, sex, BMI, children, smoker, region, alcohol habits, and salary), strictly preventing data leakage from historical claim records while delivering transparent feature attribution and multi-insurer policy matching.
+### Problem Statement
+To build and deploy an end-to-end web system that accurately estimates annual medical insurance charges from eight core applicant attributes (age, sex, height, weight, dependent children, smoking status, alcohol use, region, and annual salary) while keeping training data strictly separated from past claims to prevent leakage, providing transparent factor breakdowns and matching available multi-insurer policies.
 
-### Feasibility Study:
+### Feasibility Study
 
 #### 1. Technical Feasibility
-Technical feasibility evaluates whether the necessary computing hardware, programming languages, algorithmic libraries, and software engineering frameworks are available to construct and deploy the machine learning system.
+Technical feasibility determines whether our target hardware, programming languages, libraries, and runtime frameworks can support development and local execution.
 
-- **Hardware Requirements:**
-  - Computer / Laptop: Minimum Intel Core i3/i5 or AMD Ryzen processor
-  - Minimum 4 GB RAM (8 GB recommended for training benchmarks)
-  - Minimum 10 GB free hard drive / SSD storage
-  - Internet connection for downloading Python dependencies and open datasets
-- **Software Requirements:**
-  - Operating System: Windows 10/11 or Linux (Ubuntu 22.04+)
-  - Programming Language: Python 3.10+
-  - IDE: Visual Studio Code / PyCharm
-  - Framework: Flask 3.1 / Streamlit Web Framework
-  - Core Libraries: Pandas, NumPy, Scikit-learn, XGBoost, Joblib, Matplotlib, ReportLab
-  - Machine Learning Algorithm: Linear Regression (Production), Random Forest, Gradient Boosting, XGBoost
-  - Preprocessing Techniques: Standard Scaling, One-Hot Encoding, Derived BMI Calculation
-- **Technical Feasibility Result:**
-  The required computing infrastructure and software frameworks are fully available and production-tested. Python and its open-source data science ecosystem provide robust, high-performance implementations that execute seamlessly on commodity hardware. Therefore, the proposed system is technically feasible.
+- **Hardware Specifications:**
+  - Standard laptop equipped with an Intel Core i3 or AMD Ryzen 3 processor (2.0 GHz or higher).
+  - 8 GB system RAM (4 GB minimum required).
+  - 10 GB of available hard disk space for repository files, libraries, and virtual environments.
+  - Standard internet connection for package management and dependencies.
+- **Software Specifications:**
+  - Operating System: 64-bit Windows 11 (fully compatible with Ubuntu 22.04 LTS).
+  - Core Language: Python 3.10 or newer (tested with Python 3.13).
+  - Primary Frameworks: Flask 3.1 and Jinja2 templating.
+  - Data Processing and Modeling: Pandas 2.2, NumPy 1.26, and Scikit-learn 1.6.
+  - Visualization and Exports: Matplotlib 3.8 and ReportLab 5.1 for compiling PDF reports.
+  - Relational Database: MySQL 8.0 community edition with SQLAlchemy ORM.
+- **Outcome:**  
+  All required runtime environments, libraries, and data science utilities are accessible, stable, and well-documented. System resource consumption during training and inference remains well within normal hardware thresholds, confirming complete technical feasibility.
 
 #### 2. Economic Feasibility
-Economic feasibility assesses whether the system can be developed, tested, and deployed within a practical and cost-effective budget.
+Economic feasibility assesses whether the project can be completed without exceeding budgetary boundaries.
 
-The entire platform is constructed utilizing open-source programming languages, freely distributed libraries, and open-access actuarial datasets. No proprietary licenses or specialized high-cost hardware accelerators are required.
+Our software stack relies exclusively on open-source packages and freely licensed developer tools. We trained and evaluated our models on an open-access actuarial dataset of 8,000 anonymized records. No commercial proprietary licenses, paid API keys, or specialized GPU cloud services were needed.
 
-| Resource / Component | Cost (INR / USD) |
-| :--- | :--- |
-| Python 3.10+ Runtime | Free / Open-Source |
-| Visual Studio Code IDE | Free / Open-Source |
-| Flask / Streamlit Web Framework | Free / Open-Source |
-| Scikit-learn, Pandas, NumPy, XGBoost | Free / Open-Source |
-| ReportLab PDF Engine & Matplotlib | Free / Open-Source |
-| MySQL 8.0 / SQLite Database | Free / Community Edition |
-| Health Insurance Dataset (8,000 Records) | Free Open Actuarial Data |
-| Development Hardware | Existing College / Personal Laptop |
-| Git & GitHub Cloud Hosting | Free Public Tier |
+| Component | License Model | Estimated Expenditure |
+| :--- | :--- | :--- |
+| Python 3.13 Runtime | Open Source (PSF License) | Rs. 0.00 |
+| Visual Studio Code Editor | Free Community License | Rs. 0.00 |
+| Flask Web Framework & Extensions | Open Source (BSD-3-Clause) | Rs. 0.00 |
+| Scikit-learn, Pandas, NumPy | Open Source (BSD License) | Rs. 0.00 |
+| MySQL 8.0 Community Server | Free GPL License | Rs. 0.00 |
+| ReportLab PDF Engine | Free Open-Source Edition | Rs. 0.00 |
+| Actuarial Training Dataset (8,000 rows) | Open Access Public Domain | Rs. 0.00 |
+| Development Machine | Personal Student Laptop | Rs. 0.00 |
 
-- **Economic Feasibility Result:**
-  Since all development tools, compilers, machine learning packages, and databases are completely free and open-source, the total development expenditure is virtually zero. Therefore, the proposed system is economically feasible.
+- **Outcome:**  
+  Because all compilers, frameworks, databases, and datasets carry zero licensing costs, the development budget is entirely manageable. The system is economically sound.
 
 #### 3. Operational Feasibility
-Operational feasibility verifies whether the target end-users (policy applicants, insurance agents, underwriting officers) can easily adopt, navigate, and utilize the application without complex technical training.
+Operational feasibility evaluates how comfortably end-users—including everyday applicants, insurance agents, and actuaries—can navigate the software without specialized coaching.
 
-- **Working Process:**  
-  User enters biometrics and lifestyle details (Age, Height, Weight, Dependents, Smoker, Region, Liquor, Salary) -> Client-side validation -> Real-time BMI calculation -> ML Preprocessing & Feature Transformation -> Model Inference -> Instant Annual Premium (INR/year) with XAI feature contributions -> Filtered multi-insurer policy recommendations -> Downloadable PDF quote.
-- **Operational Feasibility Result:**  
-  The user interface is designed with clear visual cues, interactive What-If scenario sliders, and trilingual support (English, Tamil, Hindi). It eliminates manual paperwork and generates instant quotes in under 1 second. Therefore, the proposed system is operationally feasible.
+- **Workflow Overview:**  
+  An applicant accesses the clean web interface, enters basic personal details along with height and weight, and views their computed Body Mass Index. The system runs client-side validations, transforms the feature values, queries the pre-trained regression model, and displays the estimated premium in under one second. Along with the price, users see visual breakdowns of risk contributors, alternative scenario sliders, and matched plans with downloadable PDF quotes.
+- **Outcome:**  
+  With clear form hints, instant validation messages, and localized interfaces, users can calculate premiums and compare options without technical guidance. The application is operationally viable.
 
-### RESULT
-Thus, the real-world healthcare financing problem was clearly identified and the feasibility study was conducted successfully. The study verified that the proposed Health Insurance Premium Prediction System (HealthSecure) is technically, economically, and operationally feasible for automated, transparent actuarial pricing.
-
----
-
-| EXNO:   | Software Requirement Specification (SRS)   |
-| DATE:   |                                            |
-
-### AIM:
-To prepare a comprehensive Software Requirement Specification (SRS) document for the Health Insurance Premium Prediction System using Python, Machine Learning, and Web Technologies.
-
-### ALGORITHM:
-- **Step 1:** Identify the clinical, demographic, and financial requirements for insurance underwriting.
-- **Step 2:** Collect and analyze functional and non-functional requirements from stakeholders (applicants, underwriters).
-- **Step 3:** Define hardware, software, and runtime dependencies for the ML pipeline and web deployment.
-- **Step 4:** Specify user input parameters: age, gender, height, weight, children, smoking, alcohol, region, and salary.
-- **Step 5:** Define system outputs: annual premium amount (INR), BMI classification, XAI feature impacts, and policy recommendations.
-- **Step 6:** Formulate non-functional benchmarks covering latency (<1 second), reliability (deterministic output), usability, and data security.
-- **Step 7:** Document all functional, non-functional, and interface requirements adhering to IEEE 830 standards.
-- **Step 8:** Review and finalize the SRS specification for architecture and implementation.
-
-### Prepare SRS Document with Functional & Non-Functional Requirements:
-
-#### 1. Functional Requirements
-1. **FR-1:** The system shall accept applicant demographic, biometric, and financial inputs including Age (18-100), Biological Sex, Height & Weight (or dynamic BMI), Number of Children (0-5), Smoking Status, Region/State, Alcohol Habits, and Annual Salary.
-2. **FR-2:** The system shall automatically compute dynamic Body Mass Index (BMI = Weight / Height^2) and categorize applicants into standard WHO weight bands (Underweight, Normal, Overweight, Obese).
-3. **FR-3:** The system shall preprocess categorical variables via One-Hot Encoding and scale continuous numerical features using pre-trained StandardScaler transforms.
-4. **FR-4:** The system shall strictly prevent data leakage by isolating historical claim amounts from the inference feature matrix.
-5. **FR-5:** The system shall execute the trained Linear Regression pipeline to predict estimated Annual Premium in Indian Rupees (INR/year).
-6. **FR-6:** The system shall provide Explainable AI (XAI) feature attribution quantifying how each attribute positively or negatively alters the baseline quote.
-7. **FR-7:** The system shall match applicants against an active repository of 118 multi-insurer health policies based on budget and coverage.
-8. **FR-8:** The system shall allow users to adjust inputs dynamically via What-If scenario sliders and instantly observe updated premium quotes.
-9. **FR-9:** The system shall generate and export publication-grade PDF underwriting quotation summaries.
-
-#### 2. Non-Functional Requirements
-- **Performance:** Prediction inference latency shall not exceed 1.0 second per single-applicant query.
-- **Usability:** The web interface shall be responsive across mobile and desktop devices and support trilingual localization (English, Tamil, Hindi).
-- **Reliability:** The system shall produce identical, deterministic premium outputs for identical input parameters.
-- **Maintainability:** Modular decoupled architecture separating preprocessing, regression inference, policy ranking, and presentation.
-- **Security:** Strict input validation to prevent SQL injection and cross-site scripting (XSS); secure environment variables for secret keys.
-- **Compatibility:** The system shall execute on any standard Python 3.10+ runtime across Windows, Linux, and macOS platforms.
-
-#### 3. Hardware Requirements
-- **Computer/Laptop:** Minimum Dual-Core 2.0 GHz or higher (Intel Core i3/i5 or AMD Ryzen)
-- **RAM:** Minimum 4 GB RAM (8 GB recommended)
-- **Storage:** Minimum 10 GB free disk space
-- **Display:** Standard 1280x720 or 1920x1080 display
-
-#### 4. Software Requirements
-- **Operating System:** Windows 10/11 or Linux (Ubuntu 20.04+)
-- **Programming Language:** Python 3.10+
-- **IDE:** Visual Studio Code
-- **Framework:** Flask 3.1 / Streamlit
-- **Libraries:** Pandas, NumPy, Scikit-learn, XGBoost, Joblib, ReportLab, Matplotlib
-- **Machine Learning Model:** Linear Regression (Production), Random Forest, XGBoost
-- **Database:** SQLite 3 / MySQL 8.0
-
-### RESULT
-Thus, the functional, non-functional, hardware, and software requirements of the Health Insurance Premium Prediction System were identified and specified successfully. The system is designed to provide fast, reliable, transparent, and user-friendly actuarial premium pricing.
+### Result
+The problem definition was documented and the feasibility evaluation confirmed that HealthSecure is technically practical, economically viable, and operationally straightforward to deploy.
 
 ---
 
-| EX.NO   | UML Diagrams – Use Case Diagram   |
-| DATE   |                                   |
+## Exercise 2: Software Requirements Specification (SRS)
 
-### AIM:
-To design a UML Use Case Diagram that represents the functional interactions between the actors and the Health Insurance Premium Prediction System.
+### Aim
+To write a structured Software Requirements Specification (SRS) document for HealthSecure following standard IEEE 830 guidelines.
 
-### ALGORITHM:
-- **Step 1:** Identify system actors: Policy Applicant (User), Insurance Administrator (Actuary), and Machine Learning Inference Engine.
-- **Step 2:** Identify core functional use cases: Enter Biometrics, Calculate BMI, Predict Premium, View XAI Breakdown, Compare Policies, Simulate What-If Scenarios, Download PDF Quote, and Retrain Models.
-- **Step 3:** Establish system boundary defining client-side actions versus backend ML operations.
-- **Step 4:** Connect the Policy Applicant actor with profile entry, prediction requests, and comparison views.
-- **Step 5:** Connect the Insurance Administrator actor with model evaluation monitoring and policy catalogue management.
-- **Step 6:** Define <<include>> relationships: Predict Premium includes Validate Inputs and Calculate BMI.
-- **Step 7:** Define <<extend>> relationships: Download PDF Quote extends View Policy Comparison.
-- **Step 8:** Construct and verify the UML Use Case Diagram using standard UML notation.
+### Procedure
+1. Identify the clinical, demographic, and financial data inputs needed for actuarial calculation.
+2. Outline specific functional requirements for data entry, validation, model scoring, and report exports.
+3. Establish non-functional criteria regarding speed, accuracy, data security, and platform stability.
+4. Detail hardware and software baseline requirements.
+5. Review requirements against user personas (applicants, system administrators, and underwriting review staff).
 
-### Model System Actors and Interactions:
-A Use Case Diagram depicts the functional interactions between human users, administrative managers, and the automated machine learning engine.
+### Functional Requirements (FR)
+- **FR-1 (Data Input):** The system must accept applicant data including age (18 to 100), biological sex, height in centimeters (50 to 250), weight in kilograms (20 to 250), number of dependent children (0 to 5), tobacco smoking status, regional state, alcohol drinking habits, and stated annual income.
+- **FR-2 (Dynamic BMI Computation):** The system must compute Body Mass Index on the fly using $\text{BMI} = \text{weight} / (\text{height} / 100)^2$ and assign the corresponding World Health Organization category (Underweight, Healthy, Overweight, or Obese).
+- **FR-3 (Data Transformation):** The inference engine must encode categorical text using pre-fitted One-Hot encoders and pass numerical attributes through pre-calibrated feature scalers.
+- **FR-4 (Data Leakage Isolation):** The pipeline must keep prospective underwriting inputs strictly isolated from retrospective variables, such as past total claim amounts, during feature construction.
+- **FR-5 (Actuarial Regression):** The backend must run our trained model pipeline to predict estimated annual premiums in Indian Rupees (INR).
+- **FR-6 (Explainable AI Attribution):** The system must provide percentage-based feature attribution, showing users how individual risk factors (such as tobacco use or elevated BMI) increase their premium relative to the baseline.
+- **FR-7 (Policy Recommendation):** The system must match the predicted quote against our database of 12 cataloged insurance tiers, highlighting the closest plans by minimum absolute price difference.
+- **FR-8 (Scenario Simulator):** The interface must provide interactive what-if controls so users can adjust habits (such as quitting smoking or lowering weight) and review projected savings immediately.
+- **FR-9 (PDF Summary Export):** The application must generate and download an official, formatted A4 PDF summary detailing inputs, estimated charges, plan recommendations, and disclaimers.
+
+### Non-Functional Requirements (NFR)
+- **Performance:** End-to-end model inference and page rendering must finish within one second under typical home broadband connections.
+- **Deterministic Reliability:** Given identical input parameters, the regression pipeline must consistently yield identical outputs without numerical drift.
+- **Security:** User passwords must be stored using `scrypt` hashing. SQL queries must use parameterized bindings through SQLAlchemy, with database connection credentials escaped to prevent URI injection.
+- **Maintainability:** Source modules must keep model training, HTTP routing, business logic, and UI templates clearly decoupled.
+- **Cross-Platform Compatibility:** The web application must render reliably across modern desktop and mobile browsers, including Google Chrome, Mozilla Firefox, Microsoft Edge, and Apple Safari.
+
+### Hardware Requirements
+- **Processor:** Intel Core i3 / AMD Ryzen 3 or higher.
+- **Memory:** 4 GB RAM (8 GB recommended for simultaneous development and local server runs).
+- **Storage:** 10 GB free space for virtual environments, dataset files, and database tables.
+- **Display Resolution:** $1366 \times 768$ minimum; $1920 \times 1080$ recommended.
+
+### Software Requirements
+- **Operating Environment:** Windows 10/11 or Ubuntu Linux 20.04+.
+- **Language & Runtime:** Python 3.10 through 3.13.
+- **Web Application Stack:** Flask 3.1, Jinja2, and Werkzeug.
+- **Scientific Libraries:** NumPy, Pandas, Scikit-learn, and Joblib.
+- **Database Engine:** MySQL 8.0 Community Server.
+- **Document Generation:** ReportLab 5.1.
+
+### Result
+The Software Requirements Specification was documented in accordance with IEEE 830 standards, establishing technical, operational, and interface targets for HealthSecure.
+
+---
+
+## Exercise 3: UML Use Case Modeling
+
+### Aim
+To construct a UML Use Case diagram mapping out the primary actors, system boundary, and core interaction use cases for HealthSecure.
+
+### Procedure
+1. Identify primary and secondary actors interacting with the system.
+2. Define the main use cases across user management, biometrics entry, ML estimation, plan matching, and administration.
+3. Set the system boundary separating browser actions from server-side ML and database tasks.
+4. Establish `<<include>>` relationships for mandatory functional steps.
+5. Establish `<<extend>>` relationships for optional user branches, such as what-if simulations or PDF downloads.
+6. Assemble and review the diagram following standard UML conventions.
+
+### Actors and Use Case Details
+- **Policy Applicant (Primary Actor):** An unregistered guest or registered member who inputs clinical metrics, runs quotes, reviews risk factors, and explores insurance policies.
+- **System Administrator (Secondary Actor):** Administrative staff responsible for managing accounts, reviewing system usage statistics, and checking model accuracy metrics.
+- **Machine Learning Subsystem (System Actor):** The background service that loads serialized regression pipelines, computes inference values, and calculates feature contributions.
+- **MySQL Database Subsystem (System Actor):** The relational persistence layer that records user profiles, historical estimates, and demo policy specifications.
 
 ![UML Use Case Diagram](lab_manual_diagrams/03_use_case_diagram.png)
 
-#### Actors:
-- **Policy Applicant / User:** Enters demographic and biometric details, requests premium quotes, tests What-If scenarios, views XAI explanations, and downloads PDF quotes.
-- **Insurance Administrator / Actuary:** Manages insurer policy datasets, reviews model evaluation metrics (MAE, RMSE, R²), and updates actuarial baseline parameters.
-- **ML Inference Engine (System Actor):** Preprocesses raw inputs, executes Linear Regression pipeline, computes feature attributions, and returns calibrated premium results.
+### Key Relationships
+- **`<<include>>` Dependencies:**
+  - *Predict Actuarial Premium* includes *Auto-Calculate BMI*, because the ML pipeline requires a valid BMI value before scoring.
+  - *Predict Actuarial Premium* includes *Explain Prediction (XAI)*, ensuring every quote displays transparent factor weights.
+  - *Predict Actuarial Premium* includes *Match Active Demo Plans*, linking every price estimate to existing coverage options.
+- **`<<extend>>` Extensions:**
+  - *Simulate What-If Scenarios* extends *Predict Actuarial Premium*, allowing users to test lifestyle changes against their baseline quote.
+  - *Download PDF Underwriting Report* extends *Predict Actuarial Premium*, creating an exportable summary only when requested by the applicant.
 
-#### Core Use Cases:
-1. Enter Demographic & Biometric Data
-2. Calculate Dynamic BMI & WHO Category
-3. Predict Annual Premium Amount (INR)
-4. View Explainable AI (XAI) Feature Contribution
-5. Compare Multi-Insurer Policies (118 Plans)
-6. Simulate What-If Scenarios
-7. Export & Download PDF Underwriting Quote
-8. Monitor Model Performance & Evaluation Metrics
-
-### RESULT:
-Thus, the UML Use Case Diagram was designed successfully, modeling all functional requirements, actor boundaries, and interactions for the Health Insurance Premium Prediction System.
+### Result
+The UML Use Case model was designed, detailing actor roles, system boundaries, and functional dependencies across the HealthSecure platform.
 
 ---
 
-| EXNO   | UML Diagrams – Class Diagram   |
-| DATE   |                                |
+## Exercise 4: UML Class Diagram
 
-### AIM:
-To design a UML Class Diagram representing the classes, attributes, methods, and relationships of the Health Insurance Premium Prediction System.
+### Aim
+To design an object-oriented UML Class diagram showing the classes, properties, method signatures, visibility markers, and structural relationships within HealthSecure.
 
-### ALGORITHM:
-- **Step 1:** Identify domain entities: User, ApplicantProfile, DataPreprocessor, PremiumPredictor, PolicyPlan, and QuoteReport.
-- **Step 2:** Define attributes for User (user_id, username, email, password_hash) and ApplicantProfile (age, sex, height, weight, bmi, children, smoker, region, liquor, salary).
-- **Step 3:** Define methods for DataPreprocessor (clean_data(), encode_categorical(), scale_numerical()).
-- **Step 4:** Define methods for PremiumPredictor (load_model(), predict_premium(), explain_prediction()).
-- **Step 5:** Define methods for PolicyPlan (filter_by_budget(), rank_policies()) and QuoteReport (generate_pdf(), export_quote()).
-- **Step 6:** Establish relationships: Composition between User and ApplicantProfile; Dependency between ApplicantProfile and DataPreprocessor; Association between PremiumPredictor and PolicyPlan.
-- **Step 7:** Represent multiplicities (1 to 1, 1 to many) and access specifiers (+ public, - private).
-- **Step 8:** Construct and verify the UML Class Diagram.
-
-### Design System Structure with Classes and Relationships:
-A Class Diagram represents the structure of the Health Insurance Premium Prediction System by showing its classes, attributes, methods, and relationships.
+### Procedure
+1. Identify key domain entities: `User`, `Prediction`, `InsurancePlan`, `Recommendation`, `MLModelEngine`, and `ReportGenerator`.
+2. Define data attributes, column data types, and primary/foreign key relationships.
+3. Specify public (`+`) and private (`-`) methods for user authentication, data transformations, regression scoring, and reporting.
+4. Model multiplicity constraints (e.g., one user to many predictions).
+5. Identify structural relationships, including composition for tightly coupled records and dependencies for service calls.
+6. Validate the class diagram against our SQLAlchemy models and service classes.
 
 ![UML Class Diagram](lab_manual_diagrams/04_class_diagram.png)
 
-#### Classes and Their Functions:
-- **User:** Manages user authentication, profile associations, and quote history.
-- **ApplicantProfile:** Encapsulates biometric, lifestyle, and financial attributes, including calculate_bmi().
-- **DataPreprocessor:** Implements ColumnTransformer pipeline to one-hot encode categorical features and scale continuous variables.
-- **PremiumPredictor:** Loads serialized scikit-learn pipeline, executes regression inference, and calculates XAI feature impact.
-- **PolicyPlan:** Manages multi-insurer catalogue (118 policies), filtering plans matching applicant budget and coverage tier.
-- **QuoteReport:** Formats and generates official PDF summary reports via ReportLab.
+### Class Overview and Responsibilities
+- **`User` (Entity):** Stores user identity data, email addresses, phone numbers, dates of birth, and `scrypt` password hashes, alongside role flags distinguishing regular members from administrators.
+- **`Prediction` (Entity):** The central actuarial record storing biometric inputs (age, height, weight, BMI), lifestyle choices (smoking, alcohol use), dependents, location, stated salary, calculated annual premium, and financial affordability metrics.
+- **`InsurancePlan` (Entity):** Catalogs available insurance policies, including plan names, base annual premiums, maximum coverage limits, policy terms, and covered medical benefits.
+- **`Recommendation` (Entity):** Stores policy coverage advice, compounded terms, and multi-year benefit estimates linked directly to a parent prediction record.
+- **`MLModelEngine` (Service):** Loads serialized pipelines (`premium_model.joblib`), feeds feature vectors into Scikit-learn regressors, and extracts tree or coefficient weights for Explainable AI output.
+- **`ReportGenerator` (Utility):** Translates prediction dictionaries, applicant profiles, and matched plan tables into formatted, printable A4 PDF documents.
 
-#### Relationships:
-- User has a 1-to-many relationship with ApplicantProfile (a user can run multiple quotes).
-- ApplicantProfile supplies formatted inputs to DataPreprocessor.
-- DataPreprocessor outputs numerical feature vector to PremiumPredictor.
-- PremiumPredictor outputs predicted premium to PolicyPlan for policy matching.
-- PolicyPlan and PremiumPredictor collaborate with QuoteReport to render the final downloadable quote.
+### Relationship Structure
+- **Composition (`Prediction` $\blacklozenge\kern-0.5em\longrightarrow$ `Recommendation`):** A recommendation record cannot exist without its associated prediction. If a prediction is deleted, all related recommendations are dropped via cascade rules (`cascade="all, delete-orphan"`).
+- **Association (`User` $1 \longrightarrow 0..*$ `Prediction`):** A registered user can generate and store multiple insurance estimates over time.
+- **Association (`InsurancePlan` $0..1 \longleftarrow 0..*$ `Prediction`):** Links each prediction to the demo policy with the closest matching premium.
+- **Dependency (`Prediction` $\dashrightarrow$ `MLModelEngine` and `ReportGenerator`):** The prediction workflow relies on the ML engine for scoring and the PDF generator for exports without persistent database ownership.
 
-### RESULT:
-Thus, the Class Diagram was designed successfully to represent the object-oriented system structure and relationships between different classes.
+### Result
+The static object model was designed and documented, specifying class responsibilities, attributes, methods, access levels, and multiplicity rules across the project.
 
 ---
 
-| EXNO   | UML Diagrams – Sequence Diagram   |
-| DATE   |                                   |
+## Exercise 5: UML Sequence Diagram
 
-### AIM:
-To design a UML Sequence Diagram representing the step-by-step dynamic interaction between the user and system components during premium prediction and policy recommendation.
+### Aim
+To create a UML Sequence diagram tracing the chronological message flow, activation windows, and component interactions during the premium prediction process.
 
-### ALGORITHM:
-- **Step 1:** Identify participating lifelines: Applicant (User), Web Interface (Browser), Controller (Flask/Streamlit), Preprocessor, ML Model Pipeline, and Database.
-- **Step 2:** User fills out biometric details and submits the underwriting form.
-- **Step 3:** Web Interface validates form inputs and dispatches HTTP POST request to Application Controller.
-- **Step 4:** Controller invokes Preprocessor to compute BMI and apply OneHotEncoder / StandardScaler transformations.
-- **Step 5:** Preprocessor returns normalized feature array to Controller.
-- **Step 6:** Controller transmits feature vector to ML Model Pipeline; model executes predict() and calculates feature attributions.
-- **Step 7:** Controller queries Database for eligible insurance policies matching the predicted premium threshold.
-- **Step 8:** Controller packages premium, XAI impacts, and policy list, returning structured response to Browser for user rendering.
-
-### Represent Dynamic Behavior of the System:
-A Sequence Diagram represents the dynamic behavior of the Health Insurance Premium Prediction System, showing how components interact over time.
+### Procedure
+1. Define participating lifelines: Applicant, Web View (`predict.html`), Controller (`app.py`), Input Validator (`parse_form`), Core ML Engine (`model.py`), MySQL Database, and the XAI/PDF Engine.
+2. Map the incoming HTTP `POST` submission carrying applicant biometric parameters.
+3. Trace internal steps: form validation, dynamic BMI derivation, Scikit-learn model inference, database queries, and explainability calculations.
+4. Model the commit phase for storing prediction records.
+5. Capture the final HTTP response returning the rendered results template.
 
 ![UML Sequence Diagram](lab_manual_diagrams/05_sequence_diagram.png)
 
-#### Sequence Execution Flow:
-1. User enters Age, Sex, Height, Weight, Dependents, Smoker, Region, Liquor, and Salary on the Web UI.
-2. User clicks 'Calculate Insurance Premium'.
-3. Web UI validates fields and sends payload to Application Controller.
-4. Controller calls DataPreprocessor.transform(inputs).
-5. DataPreprocessor derives BMI and standardizes feature vector.
-6. Controller invokes PremiumModel.predict(features).
-7. PremiumModel computes INR Annual Premium and derives XAI feature attributions.
-8. PolicyRecommender queries database and ranks matching plans.
-9. Web UI displays the estimated premium, interactive What-If sliders, and policy cards to the applicant.
+### Execution Trace
+1. **Form Submission:** The applicant enters demographic and health values on `predict.html` and submits the form.
+2. **Controller Routing:** The browser transmits an HTTP `POST /predict` request to `app.py`.
+3. **Data Sanitization:** The controller calls `parse_form()`, checking range limits (such as age between 18 and 100) and calculating BMI from height and weight.
+4. **Model Execution:** The controller passes the clean feature vector to `model.predict_premium()`, running the Scikit-learn pipeline to compute the annual charge in INR.
+5. **Policy Retrieval:** The controller queries active rows from `insurance_plans` and sorts them by absolute price difference to find the closest match.
+6. **Persistence:** The controller commits both `Prediction` and `Recommendation` entities into MySQL.
+7. **Attribution:** The controller calls `explain_prediction()`, computing factor impact weights and clinical explanations.
+8. **View Delivery:** The controller injects the prediction values, explanations, and matched policies into `result.html`, returning HTTP 200 OK.
 
-### RESULT:
-Thus, the Sequence Diagram was designed successfully to represent the dynamic behavior and interaction flow of the Health Insurance Premium Prediction System.
+### Result
+The dynamic execution sequence was documented, illustrating message passing, component lifelines, and database persistence states for the HealthSecure prediction workflow.
 
 ---
 
-| EXNO   | Software Design – Architectural Design   |
-| DATE   |                                          |
+## Exercise 6: Architectural Design
 
-### AIM:
-To design a suitable layered and client-server architecture with Model-View-Controller (MVC) principles for the Health Insurance Premium Prediction System.
+### Aim
+To design a 4-tier layered and Model-View-Controller (MVC) architecture for HealthSecure that provides clear separation of concerns, reliable data validation, and modular ML model integration.
 
-### ALGORITHM:
-- **Step 1:** Identify modular system responsibilities and architectural layers.
-- **Step 2:** Design the Presentation Layer (Frontend) providing responsive UI forms, interactive sliders, and chart visualizations.
-- **Step 3:** Design the Application Controller Layer (Backend) managing routing, session management, and business logic.
-- **Step 4:** Design the Data Preprocessing & Validation Layer implementing feature encoders and BMI calculators.
-- **Step 5:** Design the Machine Learning Inference Layer hosting serialized scikit-learn regression models.
-- **Step 6:** Design the Policy Matching & Reporting Layer ranking multi-insurer plans and compiling PDF quotes.
-- **Step 7:** Design the Data Persistence Layer storing applicant records, audit logs, and insurance policy catalogues.
-- **Step 8:** Connect all layers through clean API interfaces and verify loose coupling and high cohesion.
-
-### Develop Architecture (Layered / Client-Server):
-The Health Insurance Premium Prediction System follows a 4-Tier Layered Architecture with Model-View-Controller (MVC) principles to ensure separation of concerns, scalability, and ease of testing.
+### Procedure
+1. Identify functional domains across user interaction, server routing, machine learning inference, and data storage.
+2. Structure the presentation layer using Jinja2 templates and a clean CSS design system.
+3. Build the application controller layer using Flask routes, session protection, and validation routines.
+4. Implement the machine learning subsystem using Scikit-learn preprocessing pipelines and serialized estimators.
+5. Configure the data persistence layer using MySQL 8.0, connection pooling, and SQLAlchemy models.
+6. Connect all tiers through explicit APIs and verify system modularity.
 
 ![Architectural Design](lab_manual_diagrams/06_architectural_design.png)
 
-#### Layers and Their Functions:
-- **Presentation Layer (Frontend):** Rendered in HTML5/Bootstrap/Streamlit. Collects biometric inputs, displays premium cards, interactive What-If scenario adjustments, and localized content (English, Tamil, Hindi).
-- **Application Controller Layer (Backend):** Powered by Flask. Validates incoming requests, authenticates users, and orchestrates calls between preprocessors, models, and databases.
-- **Preprocessing & ML Inference Layer:** Houses the ColumnTransformer (OneHotEncoder + StandardScaler) and trained Linear Regression estimator. Computes premium predictions and feature attributions in real time.
-- **Data Persistence Layer:** Stores 8,000 underwriting benchmark records, 118 insurer policy details, user accounts, and saved quotes in MySQL / SQLite database.
+### Layer Descriptions
+1. **Presentation Layer (Frontend Client):**  
+   Built with semantic HTML5, custom responsive CSS3, and lightweight JavaScript. It collects applicant metrics, provides real-time BMI feedback, renders Chart.js factor charts, and displays matched policy options.
+2. **Application Controller Layer (Flask Backend):**  
+   Manages web routing, validates form data, manages session cookies, verifies roles (`user` vs `admin`), and computes financial ratios (such as annual premium relative to income).
+3. **Machine Learning Subsystem Layer:**  
+   Houses the `ColumnTransformer` preprocessing pipeline (using `OneHotEncoder` for categories like smoker status, region, and alcohol use) alongside the trained regressor (`LinearRegression` in production, with `RandomForest` and `XGBoost` for benchmarking). It also runs the XAI attribution logic.
+4. **Data Persistence Layer (MySQL Database):**  
+   Maintains four relational tables (`users`, `prediction`, `insurance_plans`, `recommendations`) designed in Third Normal Form (3NF). Handles foreign key constraints, indexing, and connection pooling through PyMySQL.
+5. **Export & Utility Services:**  
+   Integrates ReportLab Platypus to compile structured, multi-page A4 PDF policy summaries on demand.
 
-#### Working Process:
-User inputs biometrics on Presentation Layer -> Controller validates inputs -> Preprocessing layer standardizes features -> ML Engine outputs calibrated premium -> Policy Recommender queries Data Layer -> Results returned and rendered seamlessly.
-
-### RESULT:
-Thus, the architectural design was completed successfully by dividing the system into modular layers for optimal organization, high performance, and ease of maintenance.
+### Result
+The layered MVC architecture was designed and documented, separating concerns across presentation, routing logic, machine learning inference, and database persistence.
 
 ---
 
-| EXNO   | UI/UX Design   |
-| DATE   |                |
+## Exercise 7: User Interface and Experience (UI/UX) Design
 
-### AIM:
-To design a simple, intuitive, and accessible user interface for the Health Insurance Premium Prediction System using UI/UX design principles.
+### Aim
+To design clear, accessible, and responsive user interface wireframes and layout flows for the primary screens of HealthSecure.
 
-### ALGORITHM:
-- **Step 1:** Identify target user personas: prospective policyholders, insurance brokers, and underwriters.
-- **Step 2:** Design wireframe layouts for the landing page, biometric input dashboard, and results screen.
-- **Step 3:** Create input controls (sliders, radio buttons, dropdowns) with input validation cues.
-- **Step 4:** Design high-impact visual metric cards to highlight Estimated Annual Premium in prominent typography.
-- **Step 5:** Incorporate Explainable AI (XAI) bar charts illustrating feature impact on premium quotes.
-- **Step 6:** Build interactive What-If scenario sliders enabling real-time quote updates without page reload.
-- **Step 7:** Provide multi-insurer policy recommendation cards with coverage details and 'Buy Now' / 'Download Quote' actions.
-- **Step 8:** Implement responsive design and trilingual localization (English, Tamil, Hindi) for enhanced accessibility.
-
-### Design User Interface (Wireframes / Prototypes):
-UI/UX Design focuses on simplicity, clear visual hierarchy, immediate feedback, and accessibility across devices.
+### Procedure
+1. Identify primary user tasks: discovering plans, calculating premiums, reviewing risk factors, and testing hypothetical adjustments.
+2. Plan wireframe layouts for the landing page, prediction form, results summary, and scenario simulator.
+3. Establish a cohesive design system using healthcare-oriented color palettes (deep navy `#0a2540`, medical teal `#0d9488`, slate gray `#334155`).
+4. Add clear visual feedback, including dynamic BMI calculations and formatted risk badges.
+5. Ensure layouts adjust cleanly across standard desktop, tablet, and mobile screens.
 
 ![UI/UX Wireframes](lab_manual_diagrams/07_ui_ux_wireframes.png)
 
-#### Main Interface Components:
-- **Navigation Header:** Brand identity, trilingual language switcher (EN / TA / HI), theme toggle (Light / Dark).
-- **Biometric & Lifestyle Input Panel:** Organized into Demographics (Age, Sex, Region), Clinical (Height, Weight, BMI), and Habits (Smoking, Alcohol, Salary).
-- **Premium Prediction Showcase Card:** Prominently displays estimated annual premium (e.g., INR 14,250/yr) with monthly breakdown (INR 1,188/mo) and risk tier.
-- **Explainable AI (XAI) Attribution Chart:** Visual bar chart illustrating how individual factors (e.g., Tobacco: +INR 4,500, BMI: +INR 1,250) contribute to the base rate.
-- **What-If Scenario Simulator:** Sliders allowing users to simulate reducing BMI, quitting smoking, or changing sum insured in real time.
-- **Multi-Insurer Recommendation Grid:** Card-based listing of matched policies (Star Health, HDFC ERGO, Care Insurance) with one-click PDF quote export.
+### Screen Layouts
+- **Screen 1: Landing Page (`index.html`):**  
+  Features a top navigation bar, brand identity badge, hero section with a direct call to action, and a responsive grid showcasing available health insurance plans with annual pricing and coverage limits.
+- **Screen 2: Multi-Factor Calculator (`predict.html`):**  
+  Organized in a balanced two-column layout. Applicants enter height in centimeters and weight in kilograms to view their real-time calculated BMI alongside lifestyle toggles (tobacco, alcohol), state selections, and annual salary fields.
+- **Screen 3: Prediction Results & Plan Matching (`result.html`):**  
+  Displays the estimated annual premium in bold typography alongside an affordability ratio indicator. Below, the closest matching demo policy is highlighted with a "Very Close Match" badge ($\le 5\%$ difference), accompanied by an XAI bar chart showing risk weights.
+- **Screen 4: What-If Scenario Simulator (`what_if.html`):**  
+  Features an interactive comparison table contrasting baseline metrics against simulated changes. It shows immediate projected savings in Indian Rupees when users model quitting smoking or lowering their BMI.
 
-#### Tools Used:
-- **Figma:** Wireframing, color palette selection (#1E3A8A primary, #10B981 success, #EF4444 risk), and component prototyping.
-- **Bootstrap 5 / Streamlit:** Frontend layout, responsive grid system, and interactive widgets.
-- **Matplotlib / Chart.js:** Dynamic rendering of feature importance and scenario comparison charts.
-
-### RESULT:
-Thus, the UI/UX design was completed successfully by planning the application layout and designing an intuitive, accessible dashboard for entering biometrics and viewing personalized premium quotations.
+### Result
+The UI/UX layouts and interactive wireframe flows were produced, providing an accessible, responsive interface for premium prediction, plan evaluation, and scenario simulation.
 
 ---
 
-| EXNO   | Implementation using Version Control   |
-| DATE   |                                        |
+## Exercise 8: Software Implementation using Version Control
 
-### AIM:
-To develop the core premium prediction module in Python and manage the project source code using Git and GitHub version control.
+### Aim
+To develop the core machine learning inference and dynamic BMI module in Python and manage the repository using Git and GitHub version control.
 
-### ALGORITHM:
-- **Step 1:** Install Git and configure user identity: user.name and user.email.
-- **Step 2:** Initialize a local Git repository in the project workspace using 'git init'.
-- **Step 3:** Create a .gitignore file to exclude virtual environments (.venv), credentials (.env), and caches (__pycache__).
-- **Step 4:** Develop the core machine learning inference and preprocessing module in Python.
-- **Step 5:** Stage modified files using 'git add .' and verify repository status using 'git status'.
-- **Step 6:** Commit changes with descriptive messages using 'git commit -m'.
-- **Step 7:** Connect the local repository to remote GitHub repository using 'git remote add origin <URL>'.
-- **Step 8:** Push project commits to remote GitHub repository using 'git push -u origin main'.
+### Procedure
+1. Configure local Git identity (`user.name` and `user.email`).
+2. Initialize the project repository and set up a comprehensive `.gitignore` to exclude temporary environments and credential files (`.env`, `__pycache__`).
+3. Create feature branches to isolate new functional changes.
+4. Implement the dynamic BMI calculation and inference routine in Python.
+5. Stage and commit code changes with clear semantic messages.
+6. Push commits to the remote GitHub repository.
 
-### Develop a Small Module and Manage Code Using Git:
+![Git Version Control](lab_manual_diagrams/08_git_version_control.png)
 
-#### Core Module Implementation (Python / Machine Learning Inference Service):
+### Core Inference Module (`model.py` / `app.py`)
 ```python
+from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
 
-# Load pre-trained machine learning pipeline
-MODEL_PATH = 'models/premium_model.joblib'
-pipeline = joblib.load(MODEL_PATH)
+MODEL_PATH = Path("models/premium_model.joblib")
 
-def predict_insurance_premium(age, sex, height_cm, weight_kg, children, smoker, region, liquor, salary):
-    # Dynamic BMI Calculation
+def calculate_bmi(height_cm: float, weight_kg: float) -> float:
+    """Calculate Body Mass Index from metric height and weight."""
+    if not (50.0 <= height_cm <= 250.0):
+        raise ValueError("Height must fall between 50 cm and 250 cm.")
+    if not (20.0 <= weight_kg <= 250.0):
+        raise ValueError("Weight must fall between 20 kg and 250 kg.")
     height_m = height_cm / 100.0
-    bmi = weight_kg / (height_m ** 2)
+    return round(weight_kg / (height_m ** 2), 2)
+
+def predict_insurance_premium(applicant_data: dict) -> dict:
+    """Load model pipeline and generate calibrated premium prediction."""
+    if not MODEL_PATH.exists():
+        raise FileNotFoundError(f"Trained model not found at {MODEL_PATH}")
     
-    # Construct applicant DataFrame with exact 8 predictive features
-    input_data = pd.DataFrame([{
-        'age': int(age),
-        'sex': str(sex).lower(),
-        'bmi': float(round(bmi, 2)),
-        'children': int(children),
-        'smoker': str(smoker).lower(),
-        'region': str(region).lower(),
-        'liquor': str(liquor).lower(),
-        'salary': float(salary)
-    }])
-    
-    # Predict annual premium (INR)
-    predicted_premium = pipeline.predict(input_data)[0]
-    calibrated_premium = max(2500.0, float(round(predicted_premium, 2)))
+    pipeline = joblib.load(MODEL_PATH)
+    features_df = pd.DataFrame([applicant_data])
+    predicted_charge = float(pipeline.predict(features_df)[0])
+    calibrated_charge = max(2500.0, round(predicted_charge, 2))
     
     return {
-        'bmi': round(bmi, 2),
-        'annual_premium_inr': calibrated_premium,
-        'monthly_premium_inr': round(calibrated_premium / 12.0, 2)
+        "annual_premium_inr": calibrated_charge,
+        "monthly_premium_inr": round(calibrated_charge / 12.0, 2)
     }
 
-if __name__ == '__main__':
-    result = predict_insurance_premium(
-        age=30, sex='male', height_cm=175, weight_kg=72,
-        children=1, smoker='no', region='tamil nadu', liquor='no', salary=600000
-    )
-    print('HealthSecure Prediction Result:', result)
+if __name__ == "__main__":
+    bmi_val = calculate_bmi(height_cm=175.0, weight_kg=70.0)
+    sample_profile = {
+        "age": 28, "sex": "male", "bmi": bmi_val,
+        "children": 1, "smoker": "no", "region": "Maharashtra",
+        "liquor": "no", "salary": 750000.0
+    }
+    quote = predict_insurance_premium(sample_profile)
+    print(f"Computed BMI: {bmi_val} | Estimated Premium: Rs. {quote['annual_premium_inr']}/year")
 ```
 
-![Git Version Control](lab_manual_diagrams/08_git_version_control.png)
-
-#### Git Commands:
-| Git Command | Purpose / Action in Project |
+### Git Command Reference
+| Git Command | Functional Role in HealthSecure |
 | :--- | :--- |
-| `git init` | Initializes local Git version control repository |
-| `git add .` | Stages all project source files, models, and templates |
-| `git commit -m "Initial commit"` | Commits staged changes with semantic commit history |
-| `git status` | Inspects tracked, untracked, and modified working tree files |
-| `git log --oneline` | Displays chronological commit hash history |
-| `git remote add origin <URL>` | Connects local repository to GitHub cloud remote |
-| `git push -u origin main` | Uploads all project commits to remote GitHub repository |
+| `git init` | Initializes the local version control repository. |
+| `git checkout -b feature/dynamic-bmi` | Creates and activates an isolated branch for developing the BMI module. |
+| `git status` | Displays untracked, modified, and staged repository files. |
+| `git add app.py model.py` | Stages modified source files for the next commit. |
+| `git commit -m "feat: add dynamic BMI"` | Records an atomic snapshot of staged changes with a descriptive message. |
+| `git checkout main && git merge feature/...`| Merges verified feature work into the main production branch. |
+| `git push -u origin main` | Pushes local commit history to the remote GitHub repository. |
 
-**Remote Repository URL:**  
-`https://github.com/ganeshganesh06092005-a11y/Health_Insurance_Premium_Prediction.git`
+### Commit Audit Log
+```text
+* 0212d31 Enhance landing page light theme, single navbar, 12 demo plans, Indian states region
+* 058d179 Add height and weight dynamic BMI calculation and liquor drinking ML feature across stack
+* a8e335d feat: complete HealthSecure platform with modern landing page, XAI, simulator & demo matching
+* eb20ba7 Second commit: Scikit-learn regression models & Flask routing
+* 0dee44c Initial commit: Core project architecture & basic dataset setup
+```
 
-### RESULT:
-Thus, the core machine learning premium prediction module was implemented successfully in Python, and Git version control was effectively used to track, commit, and push project code to GitHub.
+### Result
+The core inference and BMI calculation module was implemented in Python and managed through Git version control, maintaining a clear, traceable commit history.
 
 ---
 
-| EXNO   | Software Testing   |
-| DATE   |                    |
+## Exercise 9: Software Testing and Quality Assurance
 
-### AIM:
-To test the Health Insurance Premium Prediction System using Unit Testing, Integration Testing, Black-Box Testing, and White-Box Testing to identify errors and ensure the application works correctly.
+### Aim
+To test the HealthSecure platform through White-Box Basis Path analysis, Black-Box Boundary Value Analysis, and automated integration tests.
 
-### ALGORITHM:
-- **Step 1:** Identify critical software units and integration endpoints to test.
-- **Step 2:** Prepare test cases covering boundary values, invalid inputs, and normal ranges.
-- **Step 3:** Perform Unit Testing on BMI computation, data preprocessing transforms, and model loading.
-- **Step 4:** Perform Integration Testing on UI form dispatch, ML pipeline execution, policy matching, and PDF generation.
-- **Step 5:** Conduct Black-Box Testing (Equivalence Partitioning and Boundary Value Analysis) to evaluate user-facing outputs.
-- **Step 6:** Conduct White-Box Testing (Statement and Branch Coverage) on model inference and error-handling conditions.
-- **Step 7:** Record actual outputs versus expected outputs and document test pass/fail status.
-- **Step 8:** Verify model predictive performance metrics (MAE = INR 2,615.84, R² = 0.6492) against baseline benchmarks.
-
-### A. Test Cases – Unit Testing:
-| Test ID | Test Scenario | Expected Result | Status |
-| :--- | :--- | :--- | :--- |
-| **UT01** | Dynamic BMI calculation (H=175cm, W=70kg) | BMI = 22.86 (Normal category) | PASS |
-| **UT02** | Underweight BMI boundary (H=180cm, W=50kg) | BMI = 15.43 (Underweight category) | PASS |
-| **UT03** | Obese BMI surcharge boundary (H=165cm, W=90kg) | BMI = 33.06 (Obese surcharge triggered) | PASS |
-| **UT04** | Smoker surcharge attribution | Quote reflects ~INR 4,500 smoker risk premium | PASS |
-| **UT05** | Alcohol consumption attribution | Quote reflects ~INR 1,200 liquor risk premium | PASS |
-| **UT06** | Empty / Missing required field submission | Validation error displayed, form blocked | PASS |
-| **UT07** | Extreme negative age input (Age = -5) | Rejected: Error 'Age must be between 18 and 100' | PASS |
-| **UT08** | Joblib model artifact deserialization | Pipeline loads OneHotEncoder + LinearRegression | PASS |
-
-### B. Integration Testing:
-| Test ID | Integration Scenario | Expected Result | Status |
-| :--- | :--- | :--- | :--- |
-| **IT01** | Web UI input submission -> Flask Controller | Controller receives 8 features and parses data | PASS |
-| **IT02** | Controller -> Preprocessor -> ML Pipeline | Feature array encoded, scaled, and scored in <100ms | PASS |
-| **IT03** | Predicted Premium -> Policy Recommender | Queries 118 policies and filters matching plans | PASS |
-| **IT04** | Policy Selection -> ReportLab PDF Generator | Generates downloadable branded PDF quotation | PASS |
-| **IT05** | What-If Slider change -> Dynamic UI update | Re-calculates quote instantly without page reload | PASS |
-
-### C. Black-Box Testing:
-Black-box testing evaluated end-to-end functionality without internal code inspection.
-- **Test Case 1:** Enter standard healthy applicant (Age 25, Non-smoker, BMI 22, 0 kids) -> System outputs accurate baseline quote (~INR 10,500/yr).
-- **Test Case 2:** Enter high-risk applicant (Age 55, Smoker, BMI 32, 2 kids) -> System outputs appropriately elevated quote (~INR 25,800/yr).
-- **Test Case 3:** Test trilingual language toggle -> System translates all labels to Tamil and Hindi accurately.
-- **Result:** All black-box test scenarios functioned strictly according to user specifications.
-
-### D. White-Box Testing:
-White-box testing verified internal execution paths, mathematical bounds, and exception handlers.
-- **Test Case 1:** Inspect `calculate_bmi()` logic: verify division by zero exception when height = 0.
-- **Test Case 2:** Check actuarial floor condition: verify `max(2500.0, premium)` prevents negative quotes.
-- **Test Case 3:** Check OneHotEncoder categories: verify unknown categorical inputs handle gracefully.
-- **Result:** 100% statement and condition coverage verified with zero unhandled exceptions.
+### Procedure
+1. Construct the Control Flow Graph (CFG) for the input parsing and validation function `parse_form()`.
+2. Compute the Cyclomatic Complexity $V(G)$ to determine the number of independent execution paths.
+3. Design test cases for each independent basis path.
+4. Apply Equivalence Class Partitioning and Boundary Value Analysis (BVA) to user input fields.
+5. Run the automated test suite across routing, regression scoring, database transactions, and PDF generation.
+6. Verify and document model performance metrics on unseen test data.
 
 ![Software Testing Suite](lab_manual_diagrams/09_software_testing.png)
 
-### E. Overall Testing Result:
-- **Total Test Cases Executed:** 18
-- **Passed Test Cases:** 18 (100% Pass Rate)
-- **Model Performance Verified on Held-Out Test Data (1,600 samples):**
-  - **Mean Absolute Error (MAE):** INR 2,615.84
-  - **Root Mean Squared Error (RMSE):** INR 3,418.62
-  - **Coefficient of Determination (R²):** 0.6492 (64.92% variance explained)
-  - **Data Leakage Check:** Passed (historical `total_claim_amount` fully isolated from inputs)
+### White-Box Testing: Control Flow Graph and Cyclomatic Complexity
+Let us analyze the validation function `parse_form()`:
+- **Node 1:** Function entry.
+- **Node 2:** Extract raw input values from the request dictionary.
+- **Node 3 (Predicate):** Check if both `height` and `weight` are provided.
+- **Node 4:** Check if `height` and `weight` fall within numerical bounds (50–250 cm, 20–250 kg).
+- **Node 5:** Calculate `bmi = weight / (height / 100)^2`.
+- **Node 6 (Predicate):** Check if an explicit `bmi` field exists in the form.
+- **Node 7:** Raise a `ValueError` for missing biometric inputs.
+- **Node 8 (Predicate):** Validate ranges for age, annual salary, smoker status, and state selection.
+- **Node 9:** Raise a `ValueError` for invalid categorical or numerical ranges.
+- **Node 10:** Function exit: return the sanitized feature dictionary.
 
-### RESULT:
-The Health Insurance Premium Prediction System was successfully tested using Unit Testing, Integration Testing, Black-Box Testing, and White-Box Testing. The application reliably predicts personalized premiums, displays transparent XAI attributions, and provides real-time policy recommendations.
+#### Cyclomatic Complexity Calculation
+$$V(G) = E - N + 2P$$
+Where:
+- $E = 13$ (Total edges in the graph)
+- $N = 10$ (Total nodes in the graph)
+- $P = 1$ (Single connected component)
+
+$$V(G) = 13 - 10 + 2(1) = 5$$
+
+Using the predicate node formula with $P_{\text{nodes}} = 4$:
+$$V(G) = P_{\text{nodes}} + 1 = 4 + 1 = 5$$
+
+#### Five Basis Paths
+- **Path 1:** $1 \to 2 \to 3 \to 4 \to 5 \to 8 \to 10$ (Nominal flow: valid height and weight provided).
+- **Path 2:** $1 \to 2 \to 3 \to 4 \to 9$ (Biometrics provided, but height out of bounds).
+- **Path 3:** $1 \to 2 \to 3 \to 6 \to 8 \to 10$ (Height and weight omitted, valid direct BMI provided).
+- **Path 4:** $1 \to 2 \to 3 \to 6 \to 7$ (Height, weight, and direct BMI all missing).
+- **Path 5:** $1 \to 2 \to 3 \to 4 \to 5 \to 8 \to 9$ (Valid biometrics, but applicant age below 18).
+
+### Black-Box Boundary Value Analysis (BVA)
+| Parameter | Valid Input Range | Lower Boundary Tests | Upper Boundary Tests | Test Output |
+| :--- | :--- | :--- | :--- | :--- |
+| **Age** | $18 \le \text{age} \le 100$ | $17$ (Reject), $18$ (Accept) | $100$ (Accept), $101$ (Reject) | Error / Accepted / Accepted / Error |
+| **Height** | $50 \le \text{height} \le 250$ cm | $49$ cm (Reject), $50$ cm (Accept) | $250$ cm (Accept), $251$ cm (Reject) | Error / Accepted / Accepted / Error |
+| **Weight** | $20 \le \text{weight} \le 250$ kg | $19$ kg (Reject), $20$ kg (Accept) | $250$ kg (Accept), $251$ kg (Reject) | Error / Accepted / Accepted / Error |
+| **BMI** | $10.0 \le \text{BMI} \le 60.0$ | $9.9$ (Reject), $10.0$ (Accept) | $60.0$ (Accept), $60.1$ (Reject) | Error / Accepted / Accepted / Error |
+| **Salary** | Rs. 1 Lakh to Rs. 1 Crore | Rs. 99,999 (Reject) | Rs. 1,00,00,001 (Reject) | Error / Accepted / Error |
+| **Smoker** | `'yes'`, `'no'` | Numerical inputs (Reject) | Arbitrary text (Reject) | Validation Error |
+
+### Automated Integration Test Results
+All 10 automated test cases completed successfully:
+1. `TC-01`: Public GET routes (`/`, `/health`, `/plans`) $\to$ **PASS** (HTTP 200 OK).
+2. `TC-02`: New user account registration and database persistence $\to$ **PASS** (`users` table updated).
+3. `TC-03`: Administrator authentication (`admin@healthsecure.com`) $\to$ **PASS** (Admin role confirmed).
+4. `TC-04`: Dynamic BMI calculation ($175\text{ cm}, 70\text{ kg} \to 22.86$) $\to$ **PASS** (Matches WHO formula).
+5. `TC-05`: Machine learning regression inference $\to$ **PASS** (Calibrated premium calculated).
+6. `TC-06`: Nearest demo policy matching (L1 distance) $\to$ **PASS** (Starter Shield selected).
+7. `TC-07`: Explainable AI factor contribution scoring $\to$ **PASS** (Tobacco risk weighted appropriately).
+8. `TC-08`: What-if simulation savings calculation $\to$ **PASS** (Premium delta matches expectation).
+9. `TC-09`: PDF underwriting summary compilation $\to$ **PASS** (Valid A4 document delivered).
+10. `TC-10`: Database connection with special password characters $\to$ **PASS** (`quote_plus` prevents parse errors).
+
+### Result
+Basis path testing confirmed a Cyclomatic Complexity of $V(G) = 5$. Boundary value checks verified input guards, and automated integration testing achieved a 100% pass rate.
 
 ---
 
-| EXNO   | MINI PROJECT WITH DOCUMENTATION   |
-| DATE   |                                   |
+## Exercise 10: Integrated Mini Project Documentation
 
-### Aim:
-To develop a complete, production-ready Health Insurance Premium Prediction and Policy Recommendation System by integrating all phases of software development, including SRS, Design, Coding, Testing, and Documentation.
+### Aim
+To assemble the complete project lifecycle documentation—spanning SRS, architectural design, modular implementation, multi-tier testing, and performance reporting—for HealthSecure.
 
-### Algorithm:
-- **Step 1:** Conduct problem analysis and formulate the Software Requirement Specification (SRS) based on actuarial principles.
-- **Step 2:** Collect and clean the 8,000-record Indian health insurance dataset; strictly isolate `total_claim_amount` to prevent data leakage.
-- **Step 3:** Design the system architecture and construct UML diagrams (Use Case, Class, Sequence, Architecture).
-- **Step 4:** Develop the frontend user interface with responsive layouts, trilingual support, and What-If scenario sliders.
-- **Step 5:** Train and benchmark four regression algorithms (Linear Regression, Random Forest, Gradient Boosting, XGBoost); select optimal model.
-- **Step 6:** Implement Explainable AI (XAI) feature attribution, policy matching across 118 plans, and PDF quotation exports.
-- **Step 7:** Conduct rigorous Unit, Integration, Black-Box, and White-Box testing across normal and boundary conditions.
-- **Step 8:** Compile complete project documentation covering architecture, implementation, evaluation metrics, and future enhancements.
+### Project Summary
+HealthSecure is an Explainable AI predictive platform developed to make retail health insurance underwriting transparent, fast, and accessible. In traditional insurance environments, applicants often face confusing actuarial jargon, unexplained pricing differences, and long underwriting delays. 
 
-### Integrate All Phases: SRS -> Design -> Coding -> Testing -> Report
+HealthSecure addresses this by using a calibrated Scikit-learn regression pipeline trained on 8,000 anonymized records. The platform calculates annual premiums in Indian Rupees, breaks down the impact of individual health factors using Explainable AI, simulates prospective savings through what-if adjustments, and pairs users with suitable policies from our catalog.
 
-#### 1. Introduction
-Health insurance serves as a vital financial safeguard against unexpected medical emergencies and escalating hospitalization expenses. However, prospective buyers often face opaque pricing structures, complex actuarial jargon, and lengthy underwriting wait times. HealthSecure bridges this gap by applying supervised machine learning to predict personalized annual health insurance premiums based on applicant demographic, biometric, and lifestyle risk factors. In addition to premium estimation, the platform provides Explainable AI (XAI) transparency, interactive What-If scenario adjustments, and automated matching against 118 real-world insurance policies.
+![Mini Project Lifecycle](lab_manual_diagrams/10_mini_project_lifecycle.png)
 
-#### 2. Objectives
-- Develop an automated, data-driven health insurance premium estimation engine.
-- Eliminate underwriting data leakage by isolating historical claim amounts during preprocessing.
-- Benchmark multiple regression models and deploy the optimal estimator (Linear Regression: MAE INR 2,615.84, R² 0.6492).
-- Provide transparent Explainable AI (XAI) feature attributions showing exact premium additions and deductions.
-- Implement dynamic What-If scenario simulations allowing real-time lifestyle impact exploration.
-- Match applicants against 118 active multi-insurer policies based on affordability and coverage.
-- Support trilingual localization (English, Tamil, Hindi) for widespread regional accessibility.
-- Enable one-click export of formal underwriting quotation summaries in PDF format.
+### Machine Learning Model Evaluation
+To prevent data leakage, historical claim amounts (`total_claim_amount`) were completely excluded from the training feature set and used solely to establish ground-truth labels during preprocessing. We benchmarked four regression algorithms on a held-out test split of 1,600 records (20%):
 
-#### 3. Technologies Used
-| Technology / Framework | Purpose & Role in HealthSecure |
-| :--- | :--- |
-| **Python 3.10+** | Primary programming language for ML pipeline and backend |
-| **Flask 3.1 / Streamlit** | Full-stack web application framework and API routing |
-| **Scikit-learn 1.4+** | ColumnTransformer, OneHotEncoder, StandardScaler, Linear Regression |
-| **Pandas 2.1+ & NumPy 1.26+** | Dataset manipulation, array processing, and numerical calculations |
-| **XGBoost 2.0+ & Ensembles** | Comparative model evaluation benchmarks (Gradient Boosting, Random Forest) |
-| **Joblib 1.3+** | High-efficiency serialization and loading of trained model pipelines |
-| **ReportLab 4.0+** | Dynamic generation of downloadable PDF quotation summaries |
-| **Matplotlib 3.8+ / Chart.js** | Actuarial charts, residual plots, and XAI feature importance visualizations |
-| **Git & GitHub** | Distributed version control and remote code collaboration repository |
+| Regressor Algorithm | Test MAE (INR) | Test MSE | Test RMSE (INR) | Test $R^2$ Score | Evaluation Summary |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Linear Regression** | **Rs. 2,603.32** | **11,570,814.72** | **Rs. 3,401.59** | **0.6527 (65.3%)** | **Selected for Production** |
+| **XGBoost Regressor** | Rs. 2,629.69 | 11,863,578.29 | Rs. 3,444.35 | 0.6439 (64.4%) | Strong gradient-boosted candidate |
+| **Gradient Boosting** | Rs. 2,640.68 | 11,908,669.51 | Rs. 3,451.12 | 0.6425 (64.2%) | Robust ensemble estimator |
+| **Random Forest** | Rs. 2,776.42 | 13,252,803.11 | Rs. 3,640.44 | 0.6022 (60.2%) | Baseline decision tree ensemble |
 
-#### 4. System Architecture
-The system follows a 4-Tier Layered Architecture:
-1. **Presentation Layer:** Responsive user forms, What-If sliders, and trilingual interface.
-2. **Business Logic Layer:** Request routing, BMI computation, and data validation.
-3. **ML Pipeline Layer:** Feature encoding, scaling, and Linear Regression inference.
-4. **Persistence Layer:** 8,000 underwriting records, 118 insurance policies, and user accounts.
+*Linear Regression was selected for production because it achieved the lowest Mean Absolute Error (Rs. 2,603.32) and the highest $R^2$ score (0.6527) while offering fast, deterministic execution and clean interpretability.*
 
-#### 5. Working Process
-1. Applicant accesses HealthSecure web dashboard.
-2. User provides Age, Sex, Height, Weight, Children, Smoking habits, Region, Liquor habits, and Salary.
-3. System computes BMI = Weight / (Height^2) and validates inputs.
-4. Pipeline encodes categorical fields and scales numerical values.
-5. Pre-trained Linear Regression model predicts estimated annual premium in INR.
-6. System computes feature attribution bars and identifies matching insurer policies.
-7. User adjusts What-If sliders to observe potential premium savings.
-8. User clicks 'Download Quote' to export an official PDF summary.
+### Requirements Traceability Matrix
+| Requirement ID | Design Artifact | Source File Location | Verification Test Case |
+| :--- | :--- | :--- | :--- |
+| **FR-1 (User Management)** | Class: `User`, Use Case: UC1 | `app.py`, lines 645–715 | `TC-02` (Registration Flow) |
+| **FR-2 (ML Inference)** | Class: `MLModelEngine`, UC4 | `model.py`, lines 71–98 | `TC-05` (Premium Inference) |
+| **FR-3 (Dynamic BMI)** | Sequence Diagram: Step 4, UC3 | `app.py`, lines 400–415 | `TC-04` (BMI Calculation) |
+| **FR-4 (Explainable AI)** | Sequence Diagram: Step 7, UC5 | `model.py`, lines 136–304 | `TC-07` (XAI Attribution) |
+| **FR-5 (Policy Matching)** | Architecture: Tier 2, UC7 | `app.py`, lines 320–385 | `TC-06` (Policy Matching) |
+| **FR-6 (What-If Analysis)** | UI/UX Wireframe 4, UC6 | `app.py`, lines 1114–1200 | `TC-08` (Scenario Savings) |
+| **FR-7 (Plan Comparison)** | UI/UX Wireframe 1, UC8 | `app.py`, lines 950–1050 | `TC-01` (Plan Exploration) |
+| **FR-8 (PDF Generation)** | Architecture: Tier 5, UC9 | `report_generator.py`, lines 18–320 | `TC-09` (PDF Export) |
 
-#### 6. Machine Learning Model & Actuarial Calibration
-A fundamental innovation in this project is the prevention of data leakage. In raw insurance datasets, `total_claim_amount` is a historical variable only available after claims occur. To price prospective policies fairly, `total_claim_amount` is strictly excluded from prediction features and utilized solely during preprocessing to calibrate the ground-truth target:
+### Key Platform Strengths
+- **Transparent Underwriting:** Explainable AI visualizations clarify why an applicant receives a specific quote, eliminating pricing guesswork.
+- **Zero Data Leakage:** Keeps historical claim payouts strictly isolated during feature engineering.
+- **Interactive Lifestyle Modeling:** Demonstrates the financial benefits of healthier habits by showing real-time savings when users lower their BMI or stop smoking.
+- **Documented Code Quality:** Verified through Basis Path analysis ($V(G) = 5$), Boundary Value Analysis, and automated integration suites.
 
-Charges (INR/year) = 5000 + (Age * 180) + (Claim Exposure * 0.06) + (Smoker * 4500) + [max(BMI - 25, 0) * 250] + (Liquor * 1200) + (Children * 2200)
+### Result
+The complete Health Insurance Premium Prediction and Policy Recommendation System (HealthSecure) was implemented, tested, and documented across all phases of the software development lifecycle.
 
-**Evaluation Results on 1,600 Held-Out Test Records:**
-- **Linear Regression:** MAE = INR 2,615.84, RMSE = INR 3,418.62, R² = 0.6492 (Best production model)
-- **XGBoost Regressor:** MAE = INR 2,629.69, RMSE = INR 3,444.60, R² = 0.6439
-- **Gradient Boosting:** MAE = INR 2,640.68, RMSE = INR 3,451.29, R² = 0.6425
-- **Random Forest:** MAE = INR 2,776.21, RMSE = INR 3,642.49, R² = 0.6019
+---
 
-#### 7. Project Workflow Diagram
-```text
-       [ Applicant Input Form ]
-                  │
-                  ▼
-       [ Dynamic BMI Calculation ]
-                  │
-                  ▼
-     [ OneHotEncoder & StandardScaler ]
-                  │
-                  ▼
-     [ Linear Regression Pipeline ]
-                  │
-        ┌─────────┴─────────┐
-        ▼                   ▼
-[ Annual Premium (INR) ] [ XAI Feature Impacts ]
-        │                   │
-        └─────────┬─────────┘
-                  ▼
-    [ Multi-Insurer Policy Matcher ]
-                  │
-                  ▼
-   [ Interactive What-If Simulator ]
-                  │
-                  ▼
-       [ Download PDF Quote ]
-```
+## Laboratory Viva Questions and Model Answers
 
-![Full SDLC Lifecycle](lab_manual_diagrams/10_mini_project_lifecycle.png)
+**Q1: What is the operational difference between an `<<include>>` and an `<<extend>>` relationship in UML Use Case modeling?**  
+*Answer:* An `<<include>>` relationship represents mandatory functionality that always executes whenever the base use case runs (such as *Predict Premium* always including *Calculate BMI*). In contrast, an `<<extend>>` relationship represents optional or conditional functionality that executes only when specific circumstances are met (such as a user choosing to launch the *What-If Simulator* or request a *Download PDF Quote*).
 
-#### 8. Sample Project Profiles & Output
-| Profile ID | Demographics & Biometrics | Lifestyle Habits | Predicted Premium | Recommended Plan |
-| :--- | :--- | :--- | :--- | :--- |
-| **P101** | Age: 22, Male, BMI: 21.5 (Normal), 0 kids | Non-smoker, No alcohol | **INR 9,850 / year** | Star Health Young Star |
-| **P102** | Age: 35, Female, BMI: 24.2 (Normal), 1 kid | Non-smoker, Occasional | **INR 14,250 / year** | HDFC ERGO Optima Secure |
-| **P103** | Age: 42, Male, BMI: 28.5 (Overweight), 2 kids | Smoker, Regular alcohol | **INR 22,600 / year** | Care Health Supreme |
-| **P104** | Age: 58, Male, BMI: 32.1 (Obese), 0 kids | Smoker, No alcohol | **INR 27,450 / year** | Niva Bupa Senior First |
-| **P105** | Age: 29, Female, BMI: 19.8 (Normal), 0 kids | Non-smoker, No alcohol | **INR 10,200 / year** | ICICI Lombard Health Care |
+**Q2: Why is the relationship between `Prediction` and `Recommendation` modeled as a Composition rather than a simple Association?**  
+*Answer:* Composition denotes strict lifecycle ownership. In HealthSecure, every recommendation record belongs entirely to a specific prediction. If an applicant's prediction is removed from the database, all linked recommendations become obsolete and are dropped automatically via cascade rules (`cascade="all, delete-orphan"`).
 
-#### 9. Advantages
-- **High Accuracy & Robustness:** Produces reliable predictions with low error (MAE INR 2,615.84).
-- **Zero Data Leakage:** Strictly isolates historical claim payouts, enabling genuine prospective underwriting.
-- **Explainable AI (XAI):** Empowers consumers with transparent breakdowns of exact risk charges.
-- **Interactive What-If Simulation:** Encourages healthier lifestyles by demonstrating financial savings.
-- **Automated Policy Matching:** Eliminates broker bias by objectively filtering 118 policies from top Indian insurers.
-- **Trilingual Inclusivity:** Bridges linguistic barriers with English, Tamil, and Hindi language options.
-- **Publication-Grade PDF Quotes:** Produces instant downloadable quotes formatted for formal documentation.
+**Q3: How does Basis Path Testing establish that five test cases are sufficient for `parse_form()`?**  
+*Answer:* By mapping all branches in `parse_form()` into a Control Flow Graph, we evaluate Cyclomatic Complexity as $V(G) = E - N + 2P = 13 - 10 + 2(1) = 5$. This proves that the method contains exactly five linearly independent execution paths. Testing these five paths achieves complete branch and statement coverage.
 
-#### 10. Future Enhancements
-- **IoT & Wearable Health Integration:** Incorporate live health metrics (daily step count, resting heart rate) via smartwatches.
-- **OCR Medical Document Processing:** Enable automatic scanning and extraction of preexisting condition reports using Tesseract OCR.
-- **Deep Learning Survival Models:** Implement neural multi-task survival analysis for longitudinal risk trajectory forecasting.
-- **Blockchain Policy Verification:** Deploy smart contracts on Ethereum / Hyperledger for tamper-proof policy issuance and instant claim settlements.
+**Q4: Why was URL encoding necessary when building the MySQL database connection string?**  
+*Answer:* Database connection URIs use the format `dialect://user:password@host:port/dbname`, treating the `@` symbol as the delimiter between credentials and network addresses. When passwords contain special characters—such as `@` in `Haris@128`—parsers misinterpret the password boundary, resulting in connection failures (`Errno 11003`). Passing the password through `urllib.parse.quote_plus` encodes `@` into `%40`, preventing connection errors.
 
-### RESULT:
-The complete Health Insurance Premium Prediction and Policy Recommendation System (HealthSecure) was successfully developed, integrated, tested, and documented across all phases of the Software Development Life Cycle (SDLC). The system accurately predicts personalized annual premiums, provides Explainable AI transparency, and dynamically matches optimal insurance policies.
+**Q5: Why did Linear Regression outperform more complex ensemble algorithms like Random Forest in your benchmarks?**  
+*Answer:* In our actuarial dataset, charges increase largely linearly with age, baseline medical factors, and binary risk switches (smoking status and alcohol consumption). Linear Regression captured these direct relationships cleanly without overfitting, yielding the lowest Mean Absolute Error (Rs. 2,603.32) and the highest $R^2$ score (0.6527), while executing with negligible latency.
+
+---
+*End of Laboratory Manual Record*

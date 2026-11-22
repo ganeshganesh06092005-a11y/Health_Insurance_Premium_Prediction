@@ -150,11 +150,7 @@ nav {
     z-index: 1000;
     border-bottom: 1px solid rgba(130, 227, 207, 0.18);
     box-shadow: 0 4px 20px rgba(4, 28, 36, 0.25);
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-nav::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
 }
 nav > a:first-child {
     color: #ffffff;
@@ -1447,7 +1443,7 @@ td { color: var(--ink); }
 /* Multi-Factor Biometric Breakdown in BMI Card */
 .bmi-biometric-metrics {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 10px;
     margin: 12px 0;
 }
@@ -1460,6 +1456,7 @@ td { color: var(--ink); }
     display: flex;
     flex-direction: column;
     gap: 2px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .bio-chip-label {
@@ -1474,6 +1471,19 @@ td { color: var(--ink); }
     font-size: 0.95rem;
     font-weight: 800;
     color: var(--navy);
+}
+
+[data-theme="dark"] .biometric-chip {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .bio-chip-label {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .bio-chip-val {
+    color: #f1f5f9;
 }
 
 .submit-premium-btn {
@@ -2049,9 +2059,10 @@ td { color: var(--ink); }
     align-items: center;
     gap: 6px;
     outline: none;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     font-family: inherit;
     white-space: nowrap;
+    user-select: none;
 }
 .lang-dropbtn:hover,
 .lang-dropdown:hover .lang-dropbtn,
@@ -2059,51 +2070,69 @@ td { color: var(--ink); }
     background: rgba(255, 255, 255, 0.18);
     border-color: var(--mint);
     color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+.lang-chevron {
+    font-size: 10px;
+    margin-left: 2px;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-block;
+    opacity: 0.75;
+}
+.lang-dropdown.open .lang-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
 }
 .lang-dropdown-content {
     display: none;
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     right: 0;
-    min-width: 155px;
+    min-width: 175px;
     background: #092832;
     border: 1px solid rgba(130, 227, 207, 0.35);
-    border-radius: 12px;
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
     padding: 6px;
-    z-index: 1100;
-    backdrop-filter: blur(8px);
+    z-index: 2000;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    flex-direction: column;
+    gap: 3px;
 }
 .lang-dropdown:hover .lang-dropdown-content,
 .lang-dropdown.open .lang-dropdown-content {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    animation: langFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes langFadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
+    animation: langMenuSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .lang-dropdown-content a {
-    display: block;
-    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 13px;
     color: #cbd5e1;
     font-size: 12.5px;
     font-weight: 600;
     text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.15s ease;
+    border-radius: 10px;
+    transition: all 0.18s ease;
     white-space: nowrap;
 }
 .lang-dropdown-content a:hover {
-    background: rgba(13, 155, 136, 0.22);
+    background: rgba(13, 155, 136, 0.25);
     color: #82e3cf;
+    transform: translateX(2px);
 }
 .lang-dropdown-content a.active {
-    background: rgba(13, 155, 136, 0.4);
+    background: rgba(13, 155, 136, 0.45);
     color: #ffffff;
     font-weight: 700;
+}
+.lang-dropdown-content a.active::after {
+    content: '✓';
+    font-weight: 800;
+    color: var(--mint);
+    margin-left: 8px;
 }
 
 /* NOTIFICATIONS BELL IN NAVBAR */
@@ -2877,6 +2906,88 @@ td { color: var(--ink); }
     background: #1e384b !important;
 }
 
+/* =====================================================================
+   HIGH-CONTRAST TYPOGRAPHY & COMPONENT ENGINE (DARK THEME)
+   ===================================================================== */
+[data-theme="dark"] .bmi-advisory-tip {
+    background: #142735 !important;
+    border-color: #1e384b !important;
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .bmi-advisory-tip b,
+[data-theme="dark"] .bmi-advisory-tip strong {
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .card.premium-form-card,
+[data-theme="dark"] .plan-rec-card.closest-match,
+[data-theme="dark"] .company-match-card,
+[data-theme="dark"] .catalog-empty-card {
+    background: #101e28 !important;
+    border-color: #1e384b !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .form-field input:focus,
+[data-theme="dark"] .form-field select:focus,
+[data-theme="dark"] .catalog-search-input,
+[data-theme="dark"] .catalog-sort-select {
+    background: #132431 !important;
+    border-color: #2dd4bf !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .btn-action-plans,
+[data-theme="dark"] .btn-action-details {
+    background: #142735 !important;
+    border-color: #2dd4bf !important;
+    color: #2dd4bf !important;
+}
+
+[data-theme="dark"] .btn-action-plans:hover,
+[data-theme="dark"] .btn-action-details:hover {
+    background: rgba(45, 212, 191, 0.18) !important;
+    color: #5eead4 !important;
+}
+
+[data-theme="dark"] .csr-pill,
+[data-theme="dark"] .price-chip-unit.tax-chip,
+[data-theme="dark"] .email-status-success,
+[data-theme="dark"] .form-pill-btn.good-choice.active {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+    color: #6ee7b7 !important;
+}
+
+[data-theme="dark"] .member-badge {
+    background: rgba(56, 189, 248, 0.18) !important;
+    border-color: rgba(56, 189, 248, 0.35) !important;
+    color: #38bdf8 !important;
+}
+
+[data-theme="dark"] .hub-card-icon,
+[data-theme="dark"] .hub-card-action {
+    color: #2dd4bf !important;
+}
+
+[data-theme="dark"] .hub-card-icon {
+    background: rgba(45, 212, 191, 0.15) !important;
+}
+
+[data-theme="dark"] .hub-card-action:hover {
+    color: #5eead4 !important;
+}
+
+[data-theme="dark"] .match-score-pill {
+    background: rgba(45, 212, 191, 0.18) !important;
+    color: #2dd4bf !important;
+    border-color: rgba(45, 212, 191, 0.35) !important;
+}
+
+[data-theme="dark"] .form-pill-btn.duration-btn small {
+    color: #2dd4bf !important;
+}
 
 /* =====================================================================
    GOOGLE TRANSLATE SUPPRESSION & CLEAN EMBED STYLES

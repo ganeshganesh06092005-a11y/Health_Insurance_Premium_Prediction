@@ -32,26 +32,36 @@
             expires = '; expires=' + date.toUTCString();
         }
         var host = window.location.hostname;
-        document.cookie = name + '=' + encodeURIComponent(val) + expires + '; path=/;';
+        document.cookie = name + '=' + val + expires + '; path=/;';
         if (host && host.indexOf('.') !== -1) {
-            document.cookie = name + '=' + encodeURIComponent(val) + expires + '; path=/; domain=' + host + ';';
+            document.cookie = name + '=' + val + expires + '; path=/; domain=' + host + ';';
         }
     }
 
-    function clearCookie(name) {
+    // 3. Clear googtrans cookies comprehensively across all domains and paths
+    function clearAllGoogTransCookies() {
         var host = window.location.hostname;
-        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + host + ';';
+        var domains = ['', host, '.' + host];
         if (host && host.indexOf('.') !== -1) {
-            var domainParts = host.split('.');
-            if (domainParts.length >= 2) {
-                var rootDomain = '.' + domainParts.slice(-2).join('.');
-                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + rootDomain + ';';
+            var parts = host.split('.');
+            if (parts.length >= 2) {
+                domains.push('.' + parts.slice(-2).join('.'));
             }
         }
+        var paths = ['/', window.location.pathname];
+
+        ['googtrans', 'googtrans_saved'].forEach(function(cname) {
+            domains.forEach(function(d) {
+                paths.forEach(function(p) {
+                    var s = cname + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=' + p + ';';
+                    if (d) s += ' domain=' + d + ';';
+                    document.cookie = s;
+                });
+            });
+        });
     }
 
-    // Determine target initial language (localStorage > cookie > default 'en')
+    // Determine target initial language (localStorage is the source of truth)
     var savedLang = 'en';
     try {
         savedLang = localStorage.getItem(STORAGE_KEY) || 'en';
@@ -59,23 +69,22 @@
         savedLang = 'en';
     }
 
-    var cookieVal = getCookie(COOKIE_KEY);
-    if (cookieVal) {
-        var parts = cookieVal.split('/');
-        if (parts.length >= 3 && parts[2]) {
-            savedLang = parts[2];
+    // If English, immediately eradicate any lingering googtrans cookies
+    if (savedLang === 'en') {
+        clearAllGoogTransCookies();
+    } else {
+        var cookieVal = getCookie(COOKIE_KEY);
+        if (cookieVal) {
+            var parts = cookieVal.split('/');
+            if (parts.length >= 3 && parts[2]) {
+                savedLang = parts[2];
+            }
         }
-    }
-
-    // If a saved non-English language is set, guarantee cookie is primed before Google script loads
-    if (savedLang && savedLang !== 'en') {
         setCookie(COOKIE_KEY, '/en/' + savedLang, 30);
         setCookie(COOKIE_KEY, '/auto/' + savedLang, 30);
-    } else {
-        clearCookie(COOKIE_KEY);
     }
 
-    // 3. Define Google Translate Element Init Callback
+    // 4. Define Google Translate Element Init Callback
     window.googleTranslateElementInit = function() {
         if (!window.google || !window.google.translate) return;
         new window.google.translate.TranslateElement({
@@ -89,7 +98,7 @@
         applyWhenComboReady(savedLang);
     };
 
-    // 4. Inject Google Translate Library
+    // 5. Inject Google Translate Library (loaded when a translation is requested)
     function initGoogleTranslate() {
         // Ensure container exists
         if (!document.getElementById('google_translate_element')) {
@@ -99,14 +108,16 @@
             document.body.appendChild(div);
         }
 
-        // Add script if not already added
-        if (!document.getElementById('google-translate-script')) {
-            var s = document.createElement('script');
-            s.id = 'google-translate-script';
-            s.type = 'text/javascript';
-            s.async = true;
-            s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-            document.head.appendChild(s);
+        // Only inject Google script if non-English translation is active
+        if (savedLang !== 'en') {
+            if (!document.getElementById('google-translate-script')) {
+                var s = document.createElement('script');
+                s.id = 'google-translate-script';
+                s.type = 'text/javascript';
+                s.async = true;
+                s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+                document.head.appendChild(s);
+            }
         }
     }
 
@@ -135,63 +146,67 @@
         }
     }
 
-    // 5. Global API: Change Language Programmatically
+    // 6. Global API: Change Language Programmatically
     window.changeLanguage = function(langCode, event) {
         if (event && event.preventDefault) {
             event.preventDefault();
         }
 
         langCode = (langCode || 'en').toLowerCase();
-        var prevLang = savedLang;
         savedLang = langCode;
 
         try {
             localStorage.setItem(STORAGE_KEY, langCode);
         } catch (e) {}
 
-        // Keep backend in sync asynchronously without full page navigation
-        try {
-            fetch('/set-language/' + langCode, { credentials: 'same-origin' }).catch(function() {});
-        } catch (e) {}
+        // Close any open dropdowns immediately
+        document.querySelectorAll('.lang-dropdown.open').forEach(function(d) {
+            d.classList.remove('open');
+        });
+
+        // Immediate visual update on button
+        updateCustomUI(langCode);
 
         if (langCode === 'en') {
-            clearCookie(COOKIE_KEY);
-            setCookie(COOKIE_KEY, '', -1);
-            
-            // Trigger combo reset or reload if translating from another language
+            clearAllGoogTransCookies();
+
             var combo = document.querySelector('.goog-te-combo');
             if (combo) {
                 combo.value = '';
                 combo.dispatchEvent(new Event('change'));
             }
-            if (prevLang && prevLang !== 'en') {
-                // Smooth reload to guarantee complete restoration of English text nodes
-                window.location.reload();
-                return;
-            }
+
+            // Sync with backend session and cleanly reload in English
+            fetch('/set-language/en', { credentials: 'same-origin' })
+                .then(function() {
+                    clearAllGoogTransCookies();
+                    window.location.reload();
+                })
+                .catch(function() {
+                    clearAllGoogTransCookies();
+                    window.location.href = '/set-language/en';
+                });
         } else {
             setCookie(COOKIE_KEY, '/en/' + langCode, 30);
             setCookie(COOKIE_KEY, '/auto/' + langCode, 30);
-            var combo = document.querySelector('.goog-te-combo');
-            if (combo) {
-                combo.value = langCode;
-                combo.dispatchEvent(new Event('change'));
-            } else {
-                // If combo not ready yet, reload so Google reads the cookie on boot
-                window.location.reload();
-                return;
-            }
-        }
 
-        updateCustomUI(langCode);
+            // Sync with backend session and cleanly reload in target language
+            fetch('/set-language/' + langCode, { credentials: 'same-origin' })
+                .then(function() {
+                    window.location.reload();
+                })
+                .catch(function() {
+                    window.location.href = '/set-language/' + langCode;
+                });
+        }
     };
 
-    // 6. Update Custom HealthSecure Dropdown UI
+    // 7. Update Custom HealthSecure Dropdown UI
     function updateCustomUI(langCode) {
         var title = LANG_NAMES[langCode] || 'English';
         var dropbtns = document.querySelectorAll('.lang-dropbtn, .landing-lang-btn');
         dropbtns.forEach(function(btn) {
-            btn.innerHTML = '🌐 ' + title;
+            btn.innerHTML = '🌐 ' + title + ' <span class="lang-chevron">▾</span>';
         });
 
         // Update active class on dropdown links
@@ -207,14 +222,49 @@
         });
     }
 
-    // 7. Initialize once DOM is ready
+    // 8. Interactive Dropdown Toggle Setup (Click, Touch, Outside Click, Keyboard)
+    function setupDropdownToggles() {
+        document.querySelectorAll('.lang-dropbtn').forEach(function(btn) {
+            btn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var parent = btn.closest('.lang-dropdown');
+                if (!parent) return;
+                var isOpen = parent.classList.contains('open');
+                document.querySelectorAll('.lang-dropdown.open').forEach(function(d) {
+                    if (d !== parent) d.classList.remove('open');
+                });
+                parent.classList.toggle('open', !isOpen);
+            };
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.lang-dropdown')) {
+                document.querySelectorAll('.lang-dropdown.open').forEach(function(d) {
+                    d.classList.remove('open');
+                });
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.lang-dropdown.open').forEach(function(d) {
+                    d.classList.remove('open');
+                });
+            }
+        });
+    }
+
+    // 9. Initialize once DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             initGoogleTranslate();
+            setupDropdownToggles();
             updateCustomUI(savedLang);
         });
     } else {
         initGoogleTranslate();
+        setupDropdownToggles();
         updateCustomUI(savedLang);
     }
 })();

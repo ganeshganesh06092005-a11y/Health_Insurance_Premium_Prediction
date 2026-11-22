@@ -264,6 +264,14 @@
 
                         <div class="biometric-chip">
 
+                            <span class="bio-chip-label">Applicant Age</span>
+
+                            <strong class="bio-chip-val" id="bioAgeVal">-- yrs</strong>
+
+                        </div>
+
+                        <div class="biometric-chip">
+
                             <span class="bio-chip-label">Est. Body Fat %</span>
 
                             <strong class="bio-chip-val" id="bodyFatVal">--.-%</strong>
@@ -974,6 +982,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const underwritingTierVal = document.getElementById("underwritingTierVal");
 
+    const bioAgeVal = document.getElementById("bioAgeVal");
+
 
 
     function calculateBMI() {
@@ -982,11 +992,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const weight = parseFloat(weightInput.value);
 
-        const age = parseFloat(ageInput ? ageInput.value : 30) || 30;
+        const rawAge = ageInput ? parseFloat(ageInput.value) : NaN;
+
+        const hasValidAge = !isNaN(rawAge) && rawAge >= 18 && rawAge <= 100;
+
+        const age = hasValidAge ? rawAge : (!isNaN(rawAge) && rawAge > 0 ? rawAge : 30);
 
         const gender = (sexHiddenInput ? sexHiddenInput.value : "female").toLowerCase();
 
         const isMale = gender === "male";
+
+
+
+        // Live Biometric Display for Age
+
+        if (bioAgeVal) {
+
+            if (hasValidAge) {
+
+                bioAgeVal.textContent = Math.round(rawAge) + " yrs";
+
+                bioAgeVal.style.color = "";
+
+            } else if (!isNaN(rawAge) && rawAge > 0) {
+
+                bioAgeVal.textContent = Math.round(rawAge) + " yrs";
+
+                bioAgeVal.style.color = "var(--warning, #b45309)";
+
+            } else {
+
+                bioAgeVal.textContent = "-- yrs";
+
+                bioAgeVal.style.color = "";
+
+            }
+
+        }
 
 
 
@@ -1020,7 +1062,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             estBodyFat = Math.max(5, Math.min(60, estBodyFat));
 
-            if (bodyFatVal) bodyFatVal.textContent = estBodyFat.toFixed(1) + "%";
+            if (bodyFatVal) {
+
+                bodyFatVal.textContent = estBodyFat.toFixed(1) + "%";
+
+            }
 
 
 
@@ -1036,7 +1082,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const genderTitle = isMale ? "Male" : "Female";
 
+            const ageLabel = hasValidAge ? `Age ${Math.round(rawAge)}` : `Age ~${Math.round(age)}`;
+
+
+
+            let tierText = "Standard";
+
             if (bmi < 18.5) {
+
+                tierText = (age >= 50) ? "Moderate (Senior Underweight)" : "Moderate (Underweight)";
 
                 bmiBadge.textContent = "Underweight (< 18.5)";
 
@@ -1044,15 +1098,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 bmiBadge.style.color = "#0369a1";
 
-                if (underwritingTierVal) underwritingTierVal.textContent = "Moderate (Underweight)";
-
                 if (bmiAdvisoryTip) {
 
-                    bmiAdvisoryTip.innerHTML = `ℹ️ <b>Clinical Profile (${genderTitle}, Age ${Math.round(age)}):</b> Body Mass Index of <b>${bmi.toFixed(2)}</b> is below standard threshold. Target healthy weight is <b>${minW}–${maxW} kg</b>. Essential inpatient hospitalization protection recommended.`;
+                    bmiAdvisoryTip.innerHTML = `ℹ️ <b>Clinical Profile (${genderTitle}, ${ageLabel}):</b> Body Mass Index of <b>${bmi.toFixed(2)}</b> is below standard threshold. Target healthy weight is <b>${minW}–${maxW} kg</b>. Essential inpatient hospitalization protection recommended.`;
 
                 }
 
             } else if (bmi <= 24.9) {
+
+                if (hasValidAge && age <= 35) {
+
+                    tierText = "Preferred / Optimal";
+
+                } else if (age >= 55) {
+
+                    tierText = "Standard Senior";
+
+                } else {
+
+                    tierText = "Preferred Healthy";
+
+                }
 
                 bmiBadge.textContent = "Normal Healthy (18.5 – 24.9)";
 
@@ -1060,15 +1126,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 bmiBadge.style.color = "#15803d";
 
-                if (underwritingTierVal) underwritingTierVal.textContent = "Preferred / Optimal";
-
                 if (bmiAdvisoryTip) {
 
-                    bmiAdvisoryTip.innerHTML = `🌟 <b>Optimal Clinical Tier (${genderTitle}, Age ${Math.round(age)}):</b> Congratulations! Your BMI of <b>${bmi.toFixed(2)}</b> and ~<b>${estBodyFat.toFixed(1)}%</b> body fat qualify for Preferred Underwriting with up to <b>15% wellness discounts</b>.`;
+                    bmiAdvisoryTip.innerHTML = `🌟 <b>Optimal Clinical Tier (${genderTitle}, ${ageLabel}):</b> Congratulations! Your BMI of <b>${bmi.toFixed(2)}</b> and ~<b>${estBodyFat.toFixed(1)}%</b> body fat qualify for Preferred Underwriting with up to <b>15% wellness discounts</b>.`;
 
                 }
 
             } else if (bmi <= 29.9) {
+
+                tierText = (age >= 50) ? "Elevated Senior Loading" : "Standard Loading";
 
                 bmiBadge.textContent = "Overweight (25.0 – 29.9)";
 
@@ -1076,15 +1142,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 bmiBadge.style.color = "#b45309";
 
-                if (underwritingTierVal) underwritingTierVal.textContent = "Standard Loading";
-
                 if (bmiAdvisoryTip) {
 
-                    bmiAdvisoryTip.innerHTML = `⚠️ <b>Moderate Risk Tier (${genderTitle}, Age ${Math.round(age)}):</b> Current weight is above the ideal <b>${maxW} kg</b> ceiling for your height. Moderate morbidity loading applied. Silver flagship tier recommended.`;
+                    bmiAdvisoryTip.innerHTML = `⚠️ <b>Moderate Risk Tier (${genderTitle}, ${ageLabel}):</b> Current weight is above the ideal <b>${maxW} kg</b> ceiling for your height. Moderate morbidity loading applied. Silver flagship tier recommended.`;
 
                 }
 
             } else {
+
+                tierText = (age >= 50) ? "High Senior Risk" : "Elevated Actuarial";
 
                 bmiBadge.textContent = "Obese Range (≥ 30.0)";
 
@@ -1092,15 +1158,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 bmiBadge.style.color = "#b91c1c";
 
-                if (underwritingTierVal) underwritingTierVal.textContent = "Elevated Actuarial";
-
                 if (bmiAdvisoryTip) {
 
-                    bmiAdvisoryTip.innerHTML = `❗ <b>Elevated Risk Tier (${genderTitle}, Age ${Math.round(age)}):</b> BMI of <b>${bmi.toFixed(2)}</b> with ~<b>${estBodyFat.toFixed(1)}%</b> body fat. Cardiovascular and diabetes protection recommended with comprehensive Silver or Gold coverage.`;
+                    bmiAdvisoryTip.innerHTML = `❗ <b>Elevated Risk Tier (${genderTitle}, ${ageLabel}):</b> BMI of <b>${bmi.toFixed(2)}</b> with ~<b>${estBodyFat.toFixed(1)}%</b> body fat. Cardiovascular and diabetes protection recommended with comprehensive Silver or Gold coverage.`;
 
                 }
 
             }
+
+            if (underwritingTierVal) underwritingTierVal.textContent = tierText;
 
         } else {
 
@@ -1138,7 +1204,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         weightInput.addEventListener("input", calculateBMI);
 
-        if (ageInput) ageInput.addEventListener("input", calculateBMI);
+        if (ageInput) {
+
+            ageInput.addEventListener("input", calculateBMI);
+
+            ageInput.addEventListener("change", calculateBMI);
+
+            ageInput.addEventListener("keyup", calculateBMI);
+
+        }
 
         calculateBMI();
 
